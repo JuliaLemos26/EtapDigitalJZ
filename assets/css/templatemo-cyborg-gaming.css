@@ -159,7 +159,7 @@ p {
 .main-button a {
   font-size: 14px;
   color: #fff;
-  background-color: #e75e8d;
+  background-color: #F8A5C2;
   padding: 12px 30px;
   display: inline-block;
   border-radius: 25px;
@@ -167,13 +167,11 @@ p {
   text-transform: capitalize;
   letter-spacing: 0.5px;
   transition: all .3s;
-  position: relative;
-  overflow: hidden;
 }
 
 .main-button a:hover {
   background-color: #fff;
-  color: #e75e8d;
+  color: #F8A5C2;
 }
 
 .main-border-button a {
@@ -211,19 +209,6 @@ p {
 
 section {
  /* margin-top: 120px;*/
-}
-
-.heading-section h4 {
-  color: #ec6090;
-  font-size: 34px;
-  text-decoration: none;
-  margin-bottom: 30px;
-}
-
-.heading-section h4 em {
-  color: #fff;
-  font-style: normal;
-  text-decoration: underline;
 }
 
 /* 
@@ -772,6 +757,20 @@ Banner Style
 --------------------------------------------- 
 */
 
+.score-display {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  background: #A6E4B2;
+  color: #EDEDED;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 9999; 
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
 .main-banner {
   margin-top: 30px;
   background-position: center center;
@@ -798,16 +797,30 @@ Banner Style
 Most Popular Style
 --------------------------------------------- 
 */
+.heading-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  margin-bottom: 20px;
+}
+
+.heading-wrapper h4 {
+  margin: 0;          
+  line-height: 1.2;  
+  font-size: 24px;  
+  color: #1C1C1E;
+  font-style: normal;  
+}
 
 .most-popular {
   margin-top: 60px;
   padding: 30px;
-  background-color: #1f2122;
+  background-color: #DADAE0;
   border-radius: 23px;
 }
 
 .most-popular .item {
-  background-color: #27292a;
+  background-color: #FAFAFC;
   padding: 30px 15px;
   border-radius: 23px;
   margin-bottom: 30px;
@@ -829,10 +842,11 @@ Most Popular Style
   margin-top: 20px;
   margin-bottom: 0px;
   display: inline-block;
+  color: #1C1C1E;
 }
 
 .most-popular .item span {
-  color: #666;
+  color: #1C1C1E;
   display: block;
   margin-top: 7px;
   font-weight: 400;
@@ -857,75 +871,189 @@ Most Popular Style
   color: #ec6090;
 }
 
+.most-popular .item-pequeno {
+  background-color: #FAFAFC;
+  border-radius: 23px;
+  text-align: center;
+  padding: 20px 10px;
+  margin-bottom: 20px;
+  flex: 1 1 250px; 
+  max-width: 200px;
+  box-sizing: border-box;
+}
+
+.most-popular .item-pequeno img {
+  width: 100%;
+  max-width: 160px; 
+  aspect-ratio: 1/1; 
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+}
+
+.most-popular .item-pequeno h4 {
+  font-size: 14px;
+  margin-top: 12px;
+  color: #1C1C1E;
+}
+
+.most-popular .item-pequeno span {
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+
+.most-popular.itemgrande {
+    background-color: #FAFAFC;
+    padding: 30px;
+    border-radius: 23px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.most-popular.itemgrande {
+    background-color: #FAFAFC;
+    padding: 30px;
+    border-radius: 23px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.most-popular.itemgrande {
+    background-color: #FAFAFC;
+    padding: 30px;
+    border-radius: 23px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.most-popular.itemgrande img {
+    border-radius: 23px;
+    width: 150px;
+    height: auto;
+}
+
+.most-popular.itemgrande .itemgrande-content {
+    flex: 1;
+}
+
+.most-popular.itemgrande h4 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1C1C1E;
+}
+
+.most-popular.itemgrande span {
+    color: #1C1C1E;
+    display: block;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+.most-popular.itemgrande p {
+    margin-top: 10px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.most-popular.itemgrande.left {
+    flex-direction: row;
+}
+
+.most-popular.itemgrande.right {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
 .most-popular .main-button {
   text-align: center;
-  margin-bottom: -53px;
 }
 
-/* 
----------------------------------------------
-Gaming Library Style
---------------------------------------------- 
-*/
-
-.gaming-library {
-  margin-top: 60px;
-  padding: 30px;
-  background-color: #1f2122;
-  border-radius: 23px;
+.most-popular-carousel {
+  display: flex;           
+  gap: 20px;               
+  overflow-x: auto;        
+  scroll-behavior: smooth; 
+  padding-bottom: 15px;
+  -webkit-overflow-scrolling: touch; 
 }
 
-.gaming-library .item {
-  border-bottom: 1px solid #27292a;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
+.most-popular-carousel > .col-lg-3,
+.most-popular-carousel > .col-lg-6 {
+  flex: 0 0 auto; 
 }
 
-.gaming-library .last-item {
-  margin-bottom: 30px;
+.most-popular-carousel::-webkit-scrollbar {
+  height: 8px;
 }
 
-.profile-library .last-item {
-  border-bottom: none;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
+.most-popular-carousel::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
 
-.gaming-library .item ul li {
-  margin-top: 15px;
+.most-popular-carousel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.gaming-library .item ul li img {
-  margin-top: -30px;
-}
-
-.gaming-library .item ul li {
-  display: inline-block;
-  width: 17%;
-}
-
-.gaming-library .item ul li:first-child {
-  width: 110px;
-}
-
-.gaming-library .item ul li:last-child {
-  width: 15%;
-  text-align: right;
-}
-
-.gaming-library .item ul li h4 {
-  font-size: 15px;
-  margin-bottom: 5px;
-}
-
-.gaming-library .item ul li span {
-  color: #666;
-  font-size: 14px;
-}
-
-.gaming-library .main-button {
+.pagination-wrapper {
   text-align: center;
-  margin-bottom: -53px;
+  margin: 40px 0;
+}
+
+.pagination {
+  display: inline-block;
+  height: 70px;
+  margin-top: 70px;
+  padding: 0 25px;
+  border-radius: 35px;
+  background-color: #FAFAFC;
+}
+
+.page-numbers {
+  display: block;
+  padding: 0 25px;
+  float: left;
+  transition: 0.4s ease;
+  font-size: 20px;
+  line-height: 70px;
+  color: #1C1C1E;
+}
+
+.page-numbers:hover,
+.page-numbers.current {
+  background-color: #A6E4B2;
+  color: #fff;
+}
+
+.page-numbers.prev:hover,
+.page-numbers.next:hover {
+  background-color: transparent;
+  color: #A6E4B2;
+}
+
+@media only screen and (max-width: 768px) {
+  .pagination {
+    height: 50px;
+    margin-top: 50px;
+    padding: 0 10px;
+    border-radius: 25px;
+  }
+
+  .page-numbers {
+    padding: 0 15px;
+    font-size: 16px;
+    line-height: 50px;
+  }
 }
 
 /* 
@@ -937,17 +1065,17 @@ Footer Style
 footer p {
   text-align: center;
   padding: 30px 0px;
-  color: #fff;
+  color: #1C1C1E;
   font-weight: 300;
 }
 
 footer p a {
-  color: #fff;
+  color: #1C1C1E;
   transition: all .3s;
 }
 
 footer p a:hover {
-  color: #ec6090;
+  color: #A6E4B2;
 }
 
 /* 
@@ -1133,6 +1261,99 @@ Featured Games Style
 Start Stream Style
 --------------------------------------------- 
 */
+/* dropdown relativo ao container */
+.dropdown {
+  position: relative; /* agora relativo à most-popular */
+  width: 150px; /* menor largura */
+  filter: url(#goo);
+  font-family: "Lato", Arial, sans-serif;
+  margin-left: auto; /* alinha à direita dentro do container */
+}
+
+.dropdown__face {
+  display: block;
+  background-color: #fff;
+  padding: 12px 15px; /* padding menor */
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.dropdown__text {
+  display: inline-block;
+  font-size: 14px;
+}
+
+.dropdown__arrow {
+  border-bottom: 2px solid #000;
+  border-right: 2px solid #000;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg) translateY(-50%);
+  transform-origin: right;
+}
+
+.dropdown__items {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 20px;
+  position: absolute;
+  top: 100%;
+  right: 0; 
+  width: 100%;
+  display: flex;
+  flex-direction: column; 
+  gap: 8px;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100; 
+}
+
+.dropdown__items li {
+  cursor: pointer;          
+  padding: 8px 12px;       
+  border-radius: 12px;      
+  background-color: #f5f5f5; 
+  transition: background-color 0.2s, transform 0.1s;
+  text-align: center;
+  font-size: 14px;
+}
+
+.dropdown__items li:hover {
+  background-color: #e0e0e0; 
+  transform: scale(1.05);    
+}
+
+
+.dropdown input[type="checkbox"] {
+  display: none;
+}
+
+.dropdown input[type="checkbox"]:checked ~ .dropdown__items {
+  visibility: visible;
+  opacity: 1;
+}
+
+svg {
+  display: none;
+}
+
+
+
+.heading-section h4 {
+  color: #1C1C1E;
+  font-size: 34px;
+  text-decoration: none;
+  margin-bottom: 30px;
+  
+}
 
 .start-stream .heading-section {
   margin-top: 60px;
