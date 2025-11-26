@@ -1,21 +1,38 @@
-from django.conf import settings
-from django.urls import include, path
-from django.contrib import admin
-
-from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
+from django.conf import settings
+from django.contrib import admin
+from django.urls import path, include
+from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
-
+from django.views.generic import RedirectView
+from core.views import IndexView, dashboard
 from search import views as search_views
+from core.views import IndexView, spa_page
+from django.urls import path
+from .views import user_logout
 
 urlpatterns = [
+    #minha parte
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    path("accounts/", include("django.contrib.auth.urls")),
+
+    #parte autenticaçao
     path("accounts/", include("core.signup_urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/profile/", RedirectView.as_view(url="/index/")),
+
+    #path("search/", search_views.search, name="search"),
+    #path("", include(wagtail_urls)),  
+    #path("login/", signup, name="login"),
+    #path("signup/", signup, name="signup"),
+
+    path('index/', IndexView.as_view(), name='index'),
     path("search/", search_views.search, name="search"),
-    path("", include(wagtail_urls)),  
+    path("index/", IndexView.as_view(), name="index"),
+    path("dashboard/", dashboard, name="dashboard"),
+    path('pages/<str:page_name>/', spa_page, name='spa-page'),
+    path('logout/', user_logout, name='logout'),
 ]
 
 

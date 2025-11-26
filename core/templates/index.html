@@ -2,10 +2,12 @@
 <!-- Website - www.codingnepalweb.com -->
 <html lang="pt" dir="ltr">
   <head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}" defer></script>
     <meta charset="UTF-8" />
-    <title>Responsive Sidebar Menu HTML CSS | CodingNepal</title>
-    <link rel="stylesheet" href="style.css" />
-    <!-- Boxicons CDN Link -->
+    <title>ETAP Digital</title>
+    <!--link rel="stylesheet" href="style.css" /-->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
@@ -36,53 +38,53 @@
       </div>
       <ul class="nav-list">
         <li>
-          <a href="home.html">
+          <a href="#/home">
             <i class="bx bx-grid-alt"  ></i>
             <span class="links_name">Início</span>
           </a>
-          <span class="tooltip">Dashboard</span>
+          <span class="tooltip">Início</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/tarefas">
             <i class='bx  bx-list-ul'></i> 
             <span class="links_name">Tarefas</span>
           </a>
-          <span class="tooltip">User</span>
+          <span class="tooltip">Tarefas</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/concursos">
             <i class='bx  bx-trophy'  ></i> 
             <span class="links_name">Concursos</span>
           </a>
-          <span class="tooltip">Messages</span>
+          <span class="tooltip">Concursos</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/eventos">
             <i class='bx  bx-calendar'  ></i> 
             <span class="links_name">Eventos</span>
           </a>
-          <span class="tooltip">Analytics</span>
+          <span class="tooltip">Eventos</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/projetos">
             <i class='bx  bx-book-bookmark'  ></i> 
             <span class="links_name">Projetos</span>
           </a>
-          <span class="tooltip">Files</span>
+          <span class="tooltip">Projetos</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/angariacoes">
             <i class='bx  bx-wallet'  ></i> 
             <span class="links_name">Angariações</span>
           </a>
-          <span class="tooltip">Order</span>
+          <span class="tooltip">Angariações</span>
         </li>
         <li>
-          <a href="#">
+          <a href="#/lojinha">
             <i class='bx  bx-store'  ></i> 
             <span class="links_name">Lojinha</span>
           </a>
-          <span class="tooltip">Saved</span>
+          <span class="tooltip">Lojinha</span>
         </li>
         <li class="profile">
           <div class="profile-details">
@@ -90,14 +92,17 @@
               <div class="name">Perfil</div>
             </div>
           </div>
-          <i class="bx bx-log-out" id="log_out"></i>
+          <!--i class="bx bx-log-out" id="log_out"></i-->
+          <a href="{% url 'logout' %}">
+            <i class="bx bx-log-out" id="log_out"></i>
+          </a>
         </li>
       </ul>
     </div>
     <section class="home-section">
-      <?php include 'home.html'; ?>
+      
     </section>
 
-    <script src="script.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
   </body>
 </html>

@@ -2,25 +2,27 @@ let sidebar = document.querySelector(".sidebar");
 let closeBtn = document.querySelector("#btn");
 let searchBtn = document.querySelector(".bx-search");
 
-closeBtn.addEventListener("click", ()=>{
-  sidebar.classList.toggle("open");
-  menuBtnChange();//calling the function(optional)
-});
 
-if (searchBtn) {
-  searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
+if (closeBtn) {
+  closeBtn.addEventListener("click", () => {
     sidebar.classList.toggle("open");
-    menuBtnChange(); //calling the function(optional)
+    menuBtnChange();
   });
 }
 
-// following are the code to change sidebar button(optional)
+if (searchBtn) {
+  searchBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    menuBtnChange();
+  });
+}
+
 function menuBtnChange() {
- if(sidebar.classList.contains("open")){
-   closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
- }else {
-   closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
- }
+  if (sidebar.classList.contains("open")) {
+    closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+  } else {
+    closeBtn.classList.replace("bx-menu-alt-right","bx-menu");
+  }
 }
 
 // --------- Simple hash router to load pages inside .home-section ---------
@@ -29,13 +31,14 @@ function menuBtnChange() {
   if (!container) return;
 
   const routeToFileMap = {
-    home: 'home.html',
-    browse: 'browse.html',
-    details: 'details.html',
-    streams: 'streams.html',
-    profile: 'profile.html',
-    menu: 'menu.html'
-  };
+  home: '/pages/home/',
+  tarefas: '/pages/tarefas/',
+  concursos: '/pages/concursos/',
+  eventos: '/pages/eventos/',
+  projetos: '/pages/projetos/',
+  angariacoes: '/pages/angariacoes/',
+  lojinha: '/pages/lojinha/'
+};
 
   function normalizeRoute(hash) {
     const cleaned = (hash || '').replace(/^#\/?/, '').trim();
@@ -60,22 +63,21 @@ function menuBtnChange() {
 
   function loadRoute() {
     const route = normalizeRoute(window.location.hash);
-    const file = routeToFileMap[route] || `${route}.html`;
-
-    setActiveLink(route);
-
+    const file = routeToFileMap[route] || routeToFileMap['home'];
     const frame = ensureFrame();
     frame.src = file;
+    setActiveLink(route);
   }
 
   function setActiveLink(route) {
     document.querySelectorAll('.nav-list a[href^="#/"]').forEach(a => {
       const hrefRoute = a.getAttribute('href').replace(/^#\/?/, '');
-      if (hrefRoute === route) {
-        a.classList.add('active');
-      } else {
-        a.classList.remove('active');
-      }
+      //if (hrefRoute === route) {
+        //a.classList.add('active');
+      //} else {
+        //a.classList.remove('active');
+      //}
+      a.classList.toggle('active', hrefRoute === route);
     });
   }
 
@@ -83,14 +85,13 @@ function menuBtnChange() {
     if (window.location.hash !== `#/${route}`) {
       window.location.hash = `#/${route}`;
     } else {
-      // Force reload same route
       loadRoute();
     }
   }
 
   window.addEventListener('hashchange', loadRoute);
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.nav-list a[href^="#/\"]');
+    const link = e.target.closest('.nav-list a[href^="#/"]');
     if (link) {
       e.preventDefault();
       const route = link.getAttribute('href').replace(/^#\/?/, '');

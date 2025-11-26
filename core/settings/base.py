@@ -15,6 +15,10 @@ import os
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
+LOGIN_URL = "/accounts/login/"         
+LOGIN_REDIRECT_URL = "/index/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
+STATIC_URL = '/static/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -54,9 +58,11 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # "core.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    # 'core.middleware.ProtectIndexMiddleware',
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -86,11 +92,19 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'etapdigital',
+        'USER': 'tgpsi23julialemos',
+        'PASSWORD': 'ETAPDigital',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
+
 
 
 # Password validation
