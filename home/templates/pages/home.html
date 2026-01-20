@@ -2,21 +2,24 @@
 <html lang="pt">
 
   <head>
-    {% load static %}
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Inicio</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
-    <link rel="stylesheet" href="{% static 'css/templatemo-cyborg-gaming.css' %}">
-    <link rel="stylesheet" href="{% static 'css/owl.css' %}">
-    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- Additional CSS Files -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
     <!--TemplateMo 579 Cyborg Gaming
     https://templatemo.com/tm-579-cyborg-gaming-->
@@ -24,7 +27,16 @@
 <body>
   
   <!-- ***** Preloader Start ***** -->
-  
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
@@ -34,29 +46,31 @@
             </div>
           <!-- ***** Banner Start ***** -->
             <div id="carouselExampleIndicators" class="carousel slide main-banner" data-bs-ride="carousel" data-bs-interval="3000">
-            <div class="carousel-indicators">
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+              </div>
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="imagensteste/testeamarelo.png" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                  <img src="imagensteste/testerosa.png" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                  <img src="imagensteste/testeazul.png" class="d-block w-100" alt="...">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
             </div>
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
-              </div>
-              <div class="carousel-item">
-                <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-              </div>
-              <div class="carousel-item">
-                <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-              </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
-          </div>
           
           <!-- ***** Banner End ***** -->
 
@@ -73,37 +87,37 @@
                 <div class="most-popular-carousel">
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testerosa.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeamarelo.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeazul.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeverde.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testerosa.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeamarelo.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
@@ -126,37 +140,37 @@
                 <div class="most-popular-carousel">
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testerosa.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeamarelo.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeazul.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeverde.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testerosa.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <div class="item">
-                      <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100" alt="...">
+                      <img src="imagensteste/testeamarelo.png" alt="">
                       <h4>Titulo<br><span>Nome Usuario</span></h4>
                     </div>
                   </div>
@@ -184,12 +198,11 @@
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
-  <script src="{% static 'js/jquery.min.js' %}"></script>
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'js/custom.js' %}"></script>
-  <script src="{% static 'js/isotope.js' %}"></script>
-  <script src="{% static 'js/novo.js' %}"></script>
-  
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/custom.js"></script>
 
 
   </body>

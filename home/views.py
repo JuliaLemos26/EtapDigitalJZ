@@ -45,8 +45,13 @@ def user_logout(request):
     logout(request)
     return redirect('signup')
 
-@login_required
-@xframe_options_exempt 
+def spa_page(request, page_name):
+    allowed_pages = ['home', 'tarefas', 'concursos', 'eventos', 'projetos', 'angariacoes', 'lojinha']
+    if page_name not in allowed_pages:
+        page_name = 'home'
+    return render(request, f'pages/{page_name}.html')
+
+@xframe_options_exempt
 def spa_page(request, page_name):
     allowed_pages = ['home', 'tarefas', 'concursos', 'eventos', 'projetos', 'angariacoes', 'lojinha']
     if page_name not in allowed_pages:

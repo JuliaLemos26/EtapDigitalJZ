@@ -31,13 +31,13 @@ function menuBtnChange() {
   if (!container) return;
 
   const routeToFileMap = {
-  home: '/pages/home/',
-  tarefas: '/pages/tarefas/',
-  concursos: '/pages/concursos/',
-  eventos: '/pages/eventos/',
-  projetos: '/pages/projetos/',
-  angariacoes: '/pages/angariacoes/',
-  lojinha: '/pages/lojinha/'
+  home: '/pages/home',
+  tarefas: '/pages/tarefas',
+  concursos: '/pages/concursos',
+  eventos: '/pages/eventos',
+  projetos: '/pages/projetos',
+  angariacoes: '/pages/angariacoes',
+  lojinha: '/pages/lojinha'
 };
 
   function normalizeRoute(hash) {
