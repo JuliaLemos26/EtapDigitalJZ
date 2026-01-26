@@ -20,6 +20,26 @@ class SignupForm(UserCreationForm):
 
         return email
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+            from .models import Aluno, Professor
+            import re
+            
+            email = user.email.lower()
+            aluno_pattern = r"^(tgpsi|tag|tmult|tsj|tcab)(\d{2})[a-z]+@etap\.pt$"
+            match = re.match(aluno_pattern, email)
+
+            if match:
+                curso = match.group(1)
+                ano_inicio = match.group(2)
+                Aluno.objects.create(user=user, curso=curso, ano_inicio=ano_inicio)
+            else:
+                Professor.objects.create(user=user)
+        return user
+
 class LoginForm(forms.Form):
     username = forms.CharField(label="Nome de usuário")
     password = forms.CharField(label="Senha", widget=forms.PasswordInput)
