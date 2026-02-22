@@ -94,13 +94,14 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'etapdigital',
-        'USER': 'tgpsi23julialemos',
-        'PASSWORD': 'ETAPDigital',
+        'NAME': 'pap_base',
+        'USER': 'root',
+        'PASSWORD': 'Root',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+            'init_command': "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",
         },
     }
 }
