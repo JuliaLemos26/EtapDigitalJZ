@@ -1,0 +1,18 @@
+from django.core.management.base import BaseCommand
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+
+class Command(BaseCommand):
+    help = 'Cria os grupos de usuários Aluno, Professor e Administrador'
+
+    def handle(self, *args, **options):
+        roles = ['Aluno', 'Professor', 'Administrador']
+        
+        for role in roles:
+            group, created = Group.objects.get_or_create(name=role)
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Grupo "{role}" criado com sucesso.'))
+            else:
+                self.stdout.write(self.style.WARNING(f'Grupo "{role}" já existe.'))
+
+        # Configurações adicionais de permissão podem ser adicionadas aqui no futuro

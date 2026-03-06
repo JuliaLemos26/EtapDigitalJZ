@@ -23,19 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sidebar.classList.contains("open")) {
       closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
     } else {
-      closeBtn.classList.replace("bx-menu-alt-right","bx-menu");
+      closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
     }
   }
 
-const routeToFileMap = {
-  home: '/pages/home/',
-  tarefas: '/pages/tarefas/',
-  concursos: '/pages/concursos/',
-  eventos: '/pages/eventos/',
-  projetos: '/pages/projetos/',
-  angariacoes: '/pages/angariacoes/',
-  lojinha: '/pages/lojinha/'
-};
+  const routeToFileMap = {
+    home: '/pages/home/',
+    tarefas: '/pages/tarefas/',
+    concursos: '/pages/concursos/',
+    eventos: '/pages/eventos/',
+    projetos: '/pages/projetos/',
+    angariacoes: '/pages/angariacoes/',
+    lojinha: '/pages/lojinha/',
+    formpost: '/pages/formpost/'
+  };
 
   function normalizeRoute(hash) {
     return (hash || '').replace(/^#\/?/, '').trim() || 'home';

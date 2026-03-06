@@ -8,6 +8,10 @@ from .forms import SignupForm
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import user_passes_test
+
+def is_admin(user):
+    return user.is_superuser
 
 @login_required
 def dashboard(request):
@@ -48,7 +52,21 @@ def user_logout(request):
 @login_required
 @xframe_options_exempt 
 def spa_page(request, page_name):
-    allowed_pages = ['home', 'tarefas', 'concursos', 'eventos', 'projetos', 'angariacoes', 'lojinha']
+    allowed_pages = ['home', 'tarefas', 'concursos', 'eventos', 'projetos', 'angariacoes', 'lojinha', 'formpost']
     if page_name not in allowed_pages:
         page_name = 'home'
+    
+    # Restrição para formpost: Superuser ou pertença aos grupos Administrador/Professor
+    if page_name == 'formpost':
+        is_auth = request.user.is_superuser or \
+                  request.user.groups.filter(name__in=['Administrador', 'Professor']).exists() or \
+                  hasattr(request.user, 'professor_profile')
+        
+        if not is_auth:
+            return render(request, 'pages/home.html')
+        
     return render(request, f'pages/{page_name}.html')
+
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    return render(request, 'admin/dashboard.html')

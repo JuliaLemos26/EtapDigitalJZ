@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1>Painel de Administração Master</h1>
+    <p>Bem-vindo, Administrador. Aqui você terá acesso às ferramentas de gerenciamento da plataforma.</p>
+
+    <div class="admin-sections">
+        <div class="card">
+            <h3>Gerenciamento de Usuários</h3>
+            <p>Em breve: Ferramentas para modificar cargos e permissões.</p>
+        </div>
+        <div class="card">
+            <h3>Gerenciamento de Conteúdo</h3>
+            <p>Em breve: Integração total com comandos do Wagtail.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-dashboard {
+        padding: 20px;
+        color: white;
+    }
+
+    .admin-sections {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        flex: 1;
+    }
+
+    .card h3 {
+        margin-top: 0;
+    }
+</style>
+{% endblock %}

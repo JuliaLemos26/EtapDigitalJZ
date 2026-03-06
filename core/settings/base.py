@@ -30,6 +30,8 @@ STATIC_URL = '/static/'
 INSTALLED_APPS = [
     "home",
     "search",
+    "publications",
+    "core.apps.CoreConfig",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -105,6 +107,13 @@ DATABASES = {
         },
     }
 }
+
+import sys
+if 'test' in sys.argv or 'test_rbac' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 
 
 
@@ -194,3 +203,6 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 # if untrusted users are allowed to upload files -
 # see https://docs.wagtail.org/en/stable/advanced_topics/deploying.html#user-uploaded-files
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
+
+# RBAC Settings
+MASTER_ADMIN_EMAIL = 'admin_master@etap.pt' # Altere para o email desejado
