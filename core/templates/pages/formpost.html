@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="{% static 'css/templatemo-cyborg-gaming.css' %}">
     <link rel="stylesheet" href="{% static 'css/owl.css' %}">
     <link rel="stylesheet" href="{% static 'css/animate.css' %}">
-    <link rel="stylesheet" href="{% static 'css/formpost.css' %}">
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{% static 'css/postform.css' %}">
 </head>
 
 <body>
@@ -34,6 +34,77 @@
                             <div class="heading-section">
                                 <h4>Fábrica de Post's</h4>
                             </div>
+                            <form class="form" action="">
+                                <div class="field">
+                                    <label class="label">Tipo de Post</label>
+                                    <ul class="options">
+                                    <li class="option">
+                                        <input class="option-input" type="radio" name="option" value="0" id="option-0">
+                                        <label class="option-label" for="option-0">Tarefa</label>
+                                    </li>
+                                    <li class="option">
+                                        <input class="option-input" type="radio" name="option" value="1" id="option-1">
+                                        <label class="option-label" for="option-1">Concurso</label>
+                                    </li>
+                                    <li class="option">
+                                        <input class="option-input" type="radio" name="option" value="2" id="option-2">
+                                        <label class="option-label" for="option-2">Projeto</label>
+                                    </li>
+                                    <li class="option">
+                                        <input class="option-input" type="radio" name="option" value="3" id="option-3">
+                                        <label class="option-label" for="option-3">Evento</label>
+                                    </li>
+                                    </ul>
+                                </div>
+                                <p class="field required">
+                                    <label class="label required" for="name">Título do Post</label>
+                                    <input class="text-input" id="name" type="text" name="name" required value="Use Tab">
+                                </p>
+                                <p class="field required half">
+                                    <label class="label" for="secundario">Autor Secundario</label>
+                                    <input class="text-input" id="secundario" type="email" name="email" required>
+                                </p>
+
+                                <p class="field half">
+                                    <label class="label" for="phone">Phone</label>
+                                    <input class="text-input" id="phone" type="phone" name="phone">
+                                </p>
+                                <p class="field half required error">
+                                    <label class="label" for="login">Login</label>
+                                    <input class="text-input" id="login" type="text" name="login" required value="mican">
+                                    <!-- <span class="message">Already taken</span> -->
+                                </p>
+                                <p class="field half required">
+                                    <label class="label" for="password">Password</label>
+                                    <input class="text-input" id="password" type="password" name="password" required>
+                                </p>
+                                <p class="field">
+                                    <label class="label" for="about">About</label>
+                                    <textarea class="textarea" id="about" name="about" cols="50" rows="4"></textarea>
+                                </p>
+                                <p class="field half">
+                                    <label class="label" for="select">Position</label>
+                                    <select class="select" id="select">
+                                    <option value="" selected></option>
+                                    <option value="ceo">CEO</option>
+                                    <option value="front-end">Front-end developer</option>
+                                    <option value="back-end">Back-end developer</option>
+                                    </select>
+                                </p>
+                                <p class="field">
+                                    <label class="label" for="file-upload">Upload file</label>
+                                    <div class="upload-area">
+                                        <input type="file" id="file-upload" class="upload-input">
+                                        <label for="file-upload" class="upload-box">
+                                        <span class="upload-icon">⬆</span>
+                                        <span class="upload-text">Drag & Drop file or Click to upload</span>
+                                        </label>
+                                    </div>
+                                </p>
+                                <p class="field half">
+                                    <input class="button" type="submit" value="Send">
+                                </p>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -58,6 +129,7 @@
     <script src="{% static 'js/custom.js' %}"></script>
     <script src="{% static 'js/isotope.js' %}"></script>
     <script src="{% static 'js/novo.js' %}"></script>
+    <script src="{% static 'js/formpost.js' %}"></script>
 </body>
 
 </html>

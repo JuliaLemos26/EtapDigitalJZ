@@ -1,0 +1,293 @@
+/* BLOCK BASE */
+.form .label,
+.form .text-input,
+.form .textarea,
+.form .select,
+.form .button,
+.form .message {
+  padding: .75em 1em;
+  appearance: none;
+  outline: none;
+  line-height: normal;
+  border-radius: 0;
+  border: none;
+  background: none;
+  display: block;
+}
+
+/* LABEL */
+.form .label {
+  font-weight: bold;
+  color: white;
+  padding-top: 0;
+  padding-left: 0;
+  letter-spacing: .025em;
+  font-size: 1.125em;
+  line-height: 1.25;
+  position: relative;
+  z-index: 100;
+}
+
+.required .label:after {
+  content: "\0020*";
+  color: #f8a5c2;
+  font-weight: normal;
+  font-size: .75em;
+  vertical-align: top;
+}
+
+/* INPUT BASE */
+.form .text-input,
+.form .textarea,
+.form .select {
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  background: #9EC1FB;
+  color: white;
+  position: relative;
+}
+
+.form .text-input::placeholder,
+.form .textarea::placeholder {
+  color: white;
+}
+
+.form .text-input:-webkit-autofill,
+.form .textarea:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #9EC1FB inset;
+  -webkit-text-fill-color: white;
+  border-top-color: #111111;
+  border-left-color: #111111;
+  border-right-color: #111111;
+}
+
+/* FOCUS */
+.form:not(.has-magic-focus) .text-input:focus,
+.form:not(.has-magic-focus) .textarea:focus,
+.form:not(.has-magic-focus) .select:focus {
+  background: #4E4E4E;
+}
+
+/* ERROR MESSAGE */
+.form .message {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 100;
+  font-size: .625em;
+  color: white;
+}
+
+/* BUTTON */
+
+.form .field.half:last-child {
+    width: 100%;              /* Faz o botão ocupar toda a linha */
+    text-align: center;       /* Centraliza o conteúdo horizontalmente */
+    margin-top: 2em;          /* Espaço extra acima do botão */
+}
+
+.form .button {
+  font: inherit;
+  cursor: pointer;
+  background: #f8a5c2;
+  color: white;
+  font-weight: bold;
+  width: auto;
+  margin-left: auto;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+.form .button:hover,
+.form .button:focus,
+.form .button:active {
+  color: white;
+  border-color: white;
+}
+
+.form .button:active {
+  position: relative;
+  top: 1px;
+  left: 1px;
+}
+
+/* FORM LAYOUT */
+.form {
+  max-width: 40em;
+  margin: 0 auto;
+  position: relative;
+
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.form .field {
+  width: 100%;
+  margin: 0 0 1.5em 0;
+}
+
+@media screen and (min-width: 40em) {
+  .form .field.half {
+    width: calc(50% - 1px);
+  }
+}
+
+.form .field.last {
+  margin-left: auto;
+}
+
+.form .textarea {
+  max-width: 100%;
+}
+
+/* SELECT */
+.form .select {
+  text-indent: 0.01px;
+  text-overflow: "";
+}
+
+.form .select::-ms-expand {
+  display: none;
+}
+
+/* CHECKBOX / RADIO LIST */
+.form .checkboxes,
+.form .options {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  overflow: hidden;
+}
+
+.form .checkbox,
+.form .option {
+  float: left;
+  margin: 1px;
+}
+
+/* HIDDEN INPUT */
+.form .checkbox-input,
+.form .option-input {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/* LABEL FOR CHECKBOX/RADIO */
+.form .checkbox-input + label,
+.form .option-input + label {
+  padding: .75em 1em;
+  background: #84B0FA;
+  color: #4E4E4E;
+  display: inline-block;
+  width: auto;
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+}
+
+.form .checkbox-input:focus + label,
+.form .option-input:focus + label {
+  color: #4E4E4E;
+}
+
+.form .checkbox-input:checked + label,
+.form .option-input:checked + label {
+  color: white;
+}
+
+/* CUSTOM SELECT */
+.customSelect {
+  background: #222222;
+  color: white;
+  pointer-events: none;
+  position: relative;
+}
+
+.customSelect:after {
+  content: "";
+  pointer-events: none;
+  width: .5em;
+  height: .5em;
+  border-style: solid;
+  border-color: white;
+  border-width: 0 3px 3px 0;
+  position: absolute;
+  top: 50%;
+  margin-top: -.625em;
+  right: 1em;
+  transform-origin: 0 0;
+  transform: rotate(45deg);
+}
+
+.customSelect.customSelectFocus {
+  background: #4E4E4E;
+}
+
+.customSelect.customSelectFocus:after {
+  border-color: white;
+}
+
+/* MAGIC FOCUS EFFECT */
+.magic-focus {
+  position: absolute;
+  z-index: 0;
+  width: 0;
+  pointer-events: none;
+  background: rgba(255,255,255,.15);
+
+  transition: top .2s, left .2s, width .2s;
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: top, left, width;
+
+  transform-origin: 0 0;
+}
+
+/* UPLOAD AREA */
+
+.upload-area {
+  position: relative;
+  width: 100%;
+}
+
+.upload-input {
+  display: none;
+}
+
+.upload-box {
+  display: block;
+  width: 100%;
+  padding: 2em;
+  text-align: center;
+  background: #84B0FA;
+  border: 2px dashed #4E4E4E;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-box:hover {
+  background: #4E4E4E;
+  border-color: #f8a5c2;
+}
+
+.upload-icon {
+  display: block;
+  font-size: 2em;
+  margin-bottom: .5em;
+}
+
+.upload-text {
+  font-size: .9em;
+  opacity: 0.8;
+}
