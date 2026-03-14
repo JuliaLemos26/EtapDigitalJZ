@@ -9,10 +9,11 @@
   appearance: none;
   outline: none;
   line-height: normal;
-  border-radius: 0;
+  border-radius: 8px; /* Cantos arredondados suavizados */
   border: none;
   background: none;
   display: block;
+  transition: all 0.3s ease;
 }
 
 /* LABEL */
@@ -166,19 +167,22 @@
 .form .option {
   float: left;
   margin: 1px;
+  position: relative; /* CRUCIAL: Para conter o input absoluto */
+  overflow: hidden;   /* Garantir layout limpo */
 }
 
 /* HIDDEN INPUT */
 .form .checkbox-input,
 .form .option-input {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
   position: absolute;
-  width: 1px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 5; /* Aumentar para ficar acima do label */
+  pointer-events: all;
 }
 
 /* LABEL FOR CHECKBOX/RADIO */
@@ -192,6 +196,7 @@
   position: relative;
   user-select: none;
   cursor: pointer;
+  z-index: 4; /* Abaixo do input */
 }
 
 .form .checkbox-input:focus + label,
@@ -290,4 +295,79 @@
 .upload-text {
   font-size: .9em;
   opacity: 0.8;
+}
+
+/* DYNAMIC FIELDS & BLOCKING */
+.dynamic-field {
+    transition: all 0.3s ease;
+    position: relative;
+    display: block;
+}
+
+.dynamic-field.blocked-field {
+    pointer-events: none !important;
+}
+
+.dynamic-field.blocked-field::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(248, 165, 194, 0.8) !important; /* Rosa do projeto com transparência */
+    z-index: 10000;
+    cursor: not-allowed;
+    border-radius: 8px;
+    pointer-events: auto !important;
+    display: block !important;
+}
+
+.dynamic-field.blocked-field > * {
+    opacity: 0.1 !important;
+    pointer-events: none !important;
+}
+
+/* MELHORIA NOS INPUTS DE DATA */
+.form .text-input[type="datetime-local"],
+.form .text-input[type="number"] {
+    cursor: pointer;
+}
+
+.form .text-input:focus,
+.form .textarea:focus,
+.form .select:focus {
+    background: #4E4E4E;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+}
+
+/* ESTILO PARA OPÇÕES SELECIONADAS */
+.form .option-input:checked + label {
+    background: #f8a5c2;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(248, 165, 194, 0.4);
+    transform: scale(1.05);
+}
+
+.form .option-label {
+    border-radius: 20px;
+    margin: 5px;
+    transition: all 0.2s ease;
+}
+
+/* BOTÃO PREMIUM */
+.form .button {
+    border-radius: 30px;
+    background: linear-gradient(135deg, #f8a5c2 0%, #f78fb3 100%);
+    box-shadow: 0 4px 15px rgba(248, 165, 194, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    margin-top: 1em;
+}
+
+.form .button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(248, 165, 194, 0.5);
 }

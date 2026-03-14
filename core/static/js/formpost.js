@@ -1,69 +1,106 @@
-class MagicFocus {
+(function() {
+    // Flag absoluta de execução
+    if (window.__formPostEngineRunning) {
+        console.log('🔄 Sincronizando Motor de Bloqueio...');
+        if (typeof window.__runFormPatch === 'function') window.__runFormPatch();
+        return;
+    }
 
-  constructor(parent) {
-    this.parent = parent;
-    if (!this.parent) return;
+    window.__runFormPatch = function() {
+        const form = document.getElementById('post-form');
+        if (!form) return;
 
-    this.focus = document.createElement("div");
-    this.focus.classList.add("magic-focus");
+        const selectedRadio = form.querySelector('input[name="post_type"]:checked');
+        const selectedType = selectedRadio ? selectedRadio.value : 'tarefa';
 
-    this.parent.classList.add("has-magic-focus");
-    this.parent.appendChild(this.focus);
+        const dynamicFields = document.querySelectorAll('.dynamic-field');
+        dynamicFields.forEach(field => {
+            const allowedTypes = (field.getAttribute('data-types') || "").split(/\s+/);
+            const isAllowed = allowedTypes.includes(selectedType);
+            const inputs = field.querySelectorAll('input, select, textarea');
+            const isBlocked = field.classList.contains('blocked-field');
 
-    const inputs = this.parent.querySelectorAll("input, textarea, select");
+            if (isAllowed && isBlocked) {
+                field.classList.remove('blocked-field');
+                inputs.forEach(i => { i.disabled = false; i.readOnly = false; i.removeAttribute('tabindex'); });
+                console.log('🔓 Campo liberado:', field.getAttribute('data-types'));
+            } else if (!isAllowed && !isBlocked) {
+                field.classList.add('blocked-field');
+                inputs.forEach(i => {
+                    i.disabled = true;
+                    i.readOnly = true;
+                    i.setAttribute('tabindex', '-1');
+                    if (i.type !== 'submit' && i.type !== 'button') {
+                        if (i.type === 'checkbox' || i.type === 'radio') i.checked = false;
+                        else if (i.type !== 'file') i.value = '';
+                    }
+                });
+                console.log('🔒 Campo BLOQUEADO:', field.getAttribute('data-types'));
+            }
+        });
+    };
 
-    inputs.forEach(input => {
-      input.addEventListener("focus", () => {
-        window.magicFocus.show();
-      });
+    console.log('🚀 REATIVANDO BLOQUEIO ESCURO V7.1');
 
-      input.addEventListener("blur", () => {
-        window.magicFocus.hide();
-      });
+    // Escuta mudanças globais
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.name === 'post_type') window.__runFormPatch();
+    }, true);
+
+    // Eventos de Bloqueio Físico (Captura)
+    const stopInteraction = (e) => {
+        if (e.target.closest('.blocked-field')) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.type === 'focusin') e.target.blur();
+            return false;
+        }
+    };
+
+    ['focusin', 'keydown', 'mousedown', 'click'].forEach(evt => {
+        document.addEventListener(evt, stopInteraction, true);
     });
-  }
 
-  show() {
-    let el = document.activeElement;
+    // Re-sincronização automática para SPA
+    document.addEventListener('spaPageLoaded', () => {
+        console.log('📡 SPA Sinalizou nova página. Re-sincronizando bloqueios...');
+        setTimeout(window.__runFormPatch, 250);
+    });
+    
+    // Polling de segurança
+    setInterval(window.__runFormPatch, 1500);
 
-    if (!["INPUT", "SELECT", "TEXTAREA"].includes(el.nodeName)) return;
+    // AJAX Form Submission
+    document.addEventListener('submit', (e) => {
+        const form = e.target.closest('#post-form');
+        if (!form) return;
 
-    clearTimeout(this.reset);
+        e.preventDefault();
+        console.log('📡 Enviando POST via AJAX...');
+        
+        const formData = new FormData(form);
+        const container = document.querySelector('.home-section');
 
-    if (["checkbox", "radio"].includes(el.type)) {
-      el = document.querySelector(`[for=${el.id}]`);
-    }
+        fetch('/pages/formpost/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            if (container) {
+                container.innerHTML = doc.body.innerHTML;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Re-inicializa bloqueios após injeção
+                if (typeof window.__runFormPatch === 'function') setTimeout(window.__runFormPatch, 100);
+            }
+        })
+        .catch(err => console.error('Erro no envio AJAX:', err));
+    });
 
-    this.focus.style.top = (el.offsetTop || 0) + "px";
-    this.focus.style.left = (el.offsetLeft || 0) + "px";
-    this.focus.style.width = (el.offsetWidth || 0) + "px";
-    this.focus.style.height = (el.offsetHeight || 0) + "px";
-  }
-
-  hide() {
-    const el = document.activeElement;
-
-    if (!["INPUT", "SELECT", "TEXTAREA", "LABEL"].includes(el.nodeName)) {
-      this.focus.style.width = 0;
-    }
-
-    this.reset = setTimeout(() => {
-      window.magicFocus.focus.removeAttribute("style");
-    }, 200);
-  }
-}
-
-/* Inicializar */
-window.magicFocus = new MagicFocus(document.querySelector(".form"));
-
-/* jQuery (para custom select) */
-$(function () {
-  $(".select").customSelect();
-});
-
-const upload = document.getElementById("file-upload");
-
-upload.addEventListener("change", function(){
-  const fileName = this.files[0].name;
-  document.querySelector(".upload-text").textContent = fileName;
-});
+    window.__formPostEngineRunning = true;
+})();

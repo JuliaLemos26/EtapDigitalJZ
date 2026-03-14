@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt" dir="ltr">
 
 <head>
@@ -7,8 +8,9 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <title>Formulários</title>
-    <!-- Additional CSS Files -->
+    <title>Formulários - Etapa Digital</title>
+    
+    <!-- CSS Dependencies (O Menu SPA irá extrair estes recursos) -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
@@ -16,11 +18,10 @@
     <link rel="stylesheet" href="{% static 'css/owl.css' %}">
     <link rel="stylesheet" href="{% static 'css/animate.css' %}">
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{% static 'css/postform.css' %}">
+    <link rel="stylesheet" href="{% static 'css/postform.css' %}?v=4.6">
 </head>
 
 <body>
-    <!-- ***** Preloader Start ***** -->
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -34,75 +35,134 @@
                             <div class="heading-section">
                                 <h4>Fábrica de Post's</h4>
                             </div>
-                            <form class="form" action="">
+
+                            {% if messages %}
+                            <div class="messages-container" style="margin-bottom: 20px;">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}" style="padding: 15px; border-radius: 8px; margin-bottom: 10px; background: {% if message.tags == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if message.tags == 'success' %}#155724{% else %}#721c24{% endif %};">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <form class="form" id="post-form" enctype="multipart/form-data" method="POST">
+                                {% csrf_token %}
                                 <div class="field">
                                     <label class="label">Tipo de Post</label>
                                     <ul class="options">
-                                    <li class="option">
-                                        <input class="option-input" type="radio" name="option" value="0" id="option-0">
-                                        <label class="option-label" for="option-0">Tarefa</label>
-                                    </li>
-                                    <li class="option">
-                                        <input class="option-input" type="radio" name="option" value="1" id="option-1">
-                                        <label class="option-label" for="option-1">Concurso</label>
-                                    </li>
-                                    <li class="option">
-                                        <input class="option-input" type="radio" name="option" value="2" id="option-2">
-                                        <label class="option-label" for="option-2">Projeto</label>
-                                    </li>
-                                    <li class="option">
-                                        <input class="option-input" type="radio" name="option" value="3" id="option-3">
-                                        <label class="option-label" for="option-3">Evento</label>
-                                    </li>
+                                        <li class="option">
+                                            <input class="option-input" type="radio" name="post_type" value="tarefa" id="type-tarefa" required checked>
+                                            <label class="option-label" for="type-tarefa">Tarefa</label>
+                                        </li>
+                                        <li class="option">
+                                            <input class="option-input" type="radio" name="post_type" value="concurso" id="type-concurso">
+                                            <label class="option-label" for="type-concurso">Concurso</label>
+                                        </li>
+                                        <li class="option">
+                                            <input class="option-input" type="radio" name="post_type" value="projeto" id="type-projeto">
+                                            <label class="option-label" for="type-projeto">Projeto</label>
+                                        </li>
+                                        <li class="option">
+                                            <input class="option-input" type="radio" name="post_type" value="evento" id="type-evento">
+                                            <label class="option-label" for="type-evento">Evento</label>
+                                        </li>
                                     </ul>
                                 </div>
-                                <p class="field required">
-                                    <label class="label required" for="name">Título do Post</label>
-                                    <input class="text-input" id="name" type="text" name="name" required value="Use Tab">
-                                </p>
-                                <p class="field required half">
-                                    <label class="label" for="secundario">Autor Secundario</label>
-                                    <input class="text-input" id="secundario" type="email" name="email" required>
-                                </p>
 
-                                <p class="field half">
-                                    <label class="label" for="phone">Phone</label>
-                                    <input class="text-input" id="phone" type="phone" name="phone">
+                                <!-- Campos Comuns -->
+                                <p class="field required">
+                                    <label class="label" for="title">Título do Post</label>
+                                    <input class="text-input" id="title" type="text" name="title" required placeholder="Digite o título...">
                                 </p>
-                                <p class="field half required error">
-                                    <label class="label" for="login">Login</label>
-                                    <input class="text-input" id="login" type="text" name="login" required value="mican">
-                                    <!-- <span class="message">Already taken</span> -->
-                                </p>
-                                <p class="field half required">
-                                    <label class="label" for="password">Password</label>
-                                    <input class="text-input" id="password" type="password" name="password" required>
-                                </p>
-                                <p class="field">
-                                    <label class="label" for="about">About</label>
-                                    <textarea class="textarea" id="about" name="about" cols="50" rows="4"></textarea>
-                                </p>
-                                <p class="field half">
-                                    <label class="label" for="select">Position</label>
-                                    <select class="select" id="select">
-                                    <option value="" selected></option>
-                                    <option value="ceo">CEO</option>
-                                    <option value="front-end">Front-end developer</option>
-                                    <option value="back-end">Back-end developer</option>
+                                
+                                <p class="field dynamic-field" data-types="tarefa concurso projeto">
+                                    <label class="label" for="course">Curso Destinado</label>
+                                    <select class="select" id="course" name="course">
+                                        <option value="GPSI">Gestão e Programação de Sistemas Informáticos</option>
+                                        <option value="MULT">Multimédia</option>
+                                        <option value="AG">Artes Gráficas</option>
+                                        <option value="SJ">Serviços Jurídicos</option>
+                                        <option value="CAB">Cabeleireiro</option>
+                                        <option value="nenhum" selected>Nenhum (Para todos os cursos)</option>
                                     </select>
                                 </p>
-                                <p class="field">
-                                    <label class="label" for="file-upload">Upload file</label>
+
+                                <p class="field dynamic-field" data-types="tarefa concurso projeto">
+                                    <label class="label" for="school_year">Ano Escolar</label>
+                                    <select class="select" id="school_year" name="school_year">
+                                        <option value="10">10º Ano</option>
+                                        <option value="11">11º Ano</option>
+                                        <option value="12">12º Ano</option>
+                                        <option value="todos" selected>Todos os Anos</option>
+                                    </select>
+                                </p>
+
+                                <p class="field dynamic-field" data-types="tarefa concurso">
+                                    <label class="label" for="secondary_author">Autor Secundário (Parceria com Aluno)</label>
+                                    <select class="select" id="secondary_author" name="secondary_author">
+                                        <option value="">Nenhuma parceria (Só Professor/Adm)</option>
+                                        {% for aluno in alunos %}
+                                            <option value="{{ aluno.user.id }}">{{ aluno.user.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </p>
+
+                                <!-- Campo de Imagem (Todos) -->
+                                <div class="field">
+                                    <label class="label" for="image-upload">Imagem de Destaque</label>
                                     <div class="upload-area">
-                                        <input type="file" id="file-upload" class="upload-input">
-                                        <label for="file-upload" class="upload-box">
-                                        <span class="upload-icon">⬆</span>
-                                        <span class="upload-text">Drag & Drop file or Click to upload</span>
+                                        <input type="file" id="image-upload" name="image" class="upload-input" accept="image/*">
+                                        <label for="image-upload" class="upload-box">
+                                            <span class="upload-icon"><i class='bx bx-image-add'></i></span>
+                                            <span class="upload-text">Clique ou arraste a imagem aqui</span>
                                         </label>
                                     </div>
+                                </div>
+
+                                <!-- Campo de Documento (Concursos e Projetos) -->
+                                <div class="field dynamic-field" data-types="concurso projeto">
+                                    <label class="label" for="document-upload">Documento/Edital</label>
+                                    <div class="upload-area">
+                                        <input type="file" id="document-upload" name="document" class="upload-input" accept=".pdf,.doc,.docx">
+                                        <label for="document-upload" class="upload-box">
+                                            <span class="upload-icon"><i class='bx bx-file-blank'></i></span>
+                                            <span class="upload-text">Clique para upload do documento (PDF/DOC)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Datas Fim (Concursos e Eventos) -->
+                                <div class="dynamic-field" data-types="concurso evento">
+                                    <p class="field">
+                                        <label class="label" for="end_date">Data de Conclusão</label>
+                                        <input class="text-input" id="end_date" type="datetime-local" name="end_date">
+                                    </p>
+                                </div>
+
+                                <!-- Limite de Participantes (Tarefas) -->
+                                <div class="dynamic-field" data-types="tarefa">
+                                    <p class="field">
+                                        <label class="label" for="participant_limit">Limite de Participantes</label>
+                                        <input class="text-input" id="participant_limit" type="number" name="participant_limit" min="0">
+                                    </p>
+                                </div>
+
+                                <!-- Link Externo (Eventos) -->
+                                <div class="dynamic-field" data-types="evento">
+                                    <p class="field">
+                                        <label class="label" for="link">Link Externo (Inscrição/Informação)</label>
+                                        <input class="text-input" id="link" type="url" name="link" placeholder="https://exemplo.com">
+                                    </p>
+                                </div>
+
+                                <!-- Texto/Descrição (Todos) -->
+                                <p class="field required">
+                                    <label class="label" for="content">Descrição do Post</label>
+                                    <textarea class="textarea" id="content" name="content" cols="50" rows="6" required placeholder="Escreva o conteúdo do post..."></textarea>
                                 </p>
-                                <p class="field half">
-                                    <input class="button" type="submit" value="Send">
+
+                                <p class="field">
+                                    <input class="button" type="submit" value="Publicar Post">
                                 </p>
                             </form>
                         </div>
@@ -111,25 +171,9 @@
             </div>
         </div>
     </div>
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <p>Uma plataforma de estutantes <a href="#">ETAP</a> para estudantes ETAP.
-                        <br>Se precisar: <a href="#" target="_blank" title="free CSS templates">Ajuda</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/custom.js' %}"></script>
-    <script src="{% static 'js/isotope.js' %}"></script>
-    <script src="{% static 'js/novo.js' %}"></script>
-    <script src="{% static 'js/formpost.js' %}"></script>
+    
+    <!-- Scripts Adicionais -->
+    <script src="{% static 'js/formpost.js' %}?v=6.2"></script>
 </body>
 
 </html>
