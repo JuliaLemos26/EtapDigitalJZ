@@ -44,74 +44,46 @@
                                 </div>
                                 
                                 <div class="row">
-                                    <!-- Coluna 1 -->
+                                    {% for evento in eventos %}
                                     <div class="col-lg-6 col-sm-12">
-                                        <div class="most-popular itemgrande left">
-                                            <img src="{% static 'imagensteste/testeamarelo.png' %}" alt="Projeto A">
+                                        <div class="most-popular itemgrande {% cycle 'left' 'right' %}" onclick="openPostModal(this)"
+                                             data-title="{{ evento.title }}"
+                                             data-author-primary="{{ evento.author.username }}"
+                                             data-author-secondary="{{ evento.secondary_author.username|default:'' }}"
+                                             data-content="{{ evento.content }}"
+                                             data-image="{% if evento.image %}{{ evento.image.url }}{% else %}{% static 'imagensteste/testeverde.png' %}{% endif %}"
+                                             data-link="{{ evento.link|default:'' }}"
+                                             data-expiry="{{ evento.expiration_date|date:'d/m/Y' }}"
+                                             data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
+                                            <img src="{% if evento.image %}{{ evento.image.url }}{% else %}{% static 'imagensteste/testeverde.png' %}{% endif %}" alt="{{ evento.title }}">
                                             <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="most-popular itemgrande right">
-                                            <img src="{% static 'imagensteste/testeverde.png' %}" alt="Projeto B">
-                                            <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="most-popular itemgrande left">
-                                            <img src="{% static 'imagensteste/testeazul.png' %}" alt="Projeto C">
-                                            <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
+                                                <h4>{{ evento.title }}<br><span>{% if evento.secondary_author %}{{ evento.secondary_author.username }}{% else %}{{ evento.author.username }}{% endif %}</span></h4>
+                                                <p>{{ evento.content|truncatechars:100 }}</p>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Coluna 2 -->
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="most-popular itemgrande left">
-                                            <img src="{% static 'imagensteste/testerosa.png' %}" alt="Projeto D">
-                                            <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="most-popular itemgrande right">
-                                            <img src="{% static 'imagensteste/testeamarelo.png' %}" alt="Projeto E">
-                                            <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="most-popular itemgrande left">
-                                            <img src="{% static 'imagensteste/testeverde.png' %}" alt="Projeto F">
-                                            <div class="itemgrande-content">
-                                                <h4>Projeto<br><span>Usuário</span></h4>
-                                                <p>Descrição Descrição Descrição Descrição Descrição Descrição </p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {% empty %}
+                                    <p style="color: #666; padding: 20px;">Nenhum evento encontrado.</p>
+                                    {% endfor %}
                                 </div>
+                                <!-- Paginação Real -->
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
-                                        <a class="prev page-numbers" href="javascript:;">prev</a>
-                                        <span aria-current="page" class="page-numbers current">1</span>
-                                        <a class="page-numbers" href="javascript:;">2</a>
-                                        <a class="page-numbers" href="javascript:;">3</a>
-                                        <a class="page-numbers" href="javascript:;">4</a>
-                                        <a class="page-numbers" href="javascript:;">5</a>
-                                        <a class="page-numbers" href="javascript:;">6</a>
-                                        <a class="page-numbers" href="javascript:;">7</a>
-                                        <a class="page-numbers" href="javascript:;">8</a>
-                                        <a class="page-numbers" href="javascript:;">9</a>
-                                        <a class="page-numbers" href="javascript:;">10</a>
-                                        <a class="next page-numbers" href="javascript:;">next</a>
+                                        {% if eventos.has_previous %}
+                                            <a class="prev page-numbers" href="#/eventos?page={{ eventos.previous_page_number }}">prev</a>
+                                        {% endif %}
+
+                                        {% for num in eventos.paginator.page_range %}
+                                            {% if eventos.number == num %}
+                                                <span aria-current="page" class="page-numbers current">{{ num }}</span>
+                                            {% else %}
+                                                <a class="page-numbers" href="#/eventos?page={{ num }}">{{ num }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if eventos.has_next %}
+                                            <a class="next page-numbers" href="#/eventos?page={{ eventos.next_page_number }}">next</a>
+                                        {% endif %}
                                     </div>
                                 </div>
 

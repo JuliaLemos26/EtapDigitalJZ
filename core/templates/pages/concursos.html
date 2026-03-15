@@ -41,124 +41,52 @@
                                     </ul>
                                 </div>
                                 <div class="heading-section">
-                                <h4>Concursos</h4>
+                                    <h4>Concursos</h4>
                                 </div>
                                 <div class="row">
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
+                                    {% for concurso in concursos %}
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="item" onclick="openPostModal(this)"
+                                             data-title="{{ concurso.title }}"
+                                             data-author-primary="{{ concurso.author.username }}"
+                                             data-author-secondary="{{ concurso.secondary_author.username|default:'' }}"
+                                             data-content="{{ concurso.content }}"
+                                             data-image="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}"
+                                             data-course="{{ concurso.course }}"
+                                             data-year="{{ concurso.school_year }}"
+                                             data-end="{{ concurso.end_date|date:'d/m/Y H:i' }}"
+                                             data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
+                                            <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
+                                            <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
+                                        </div>
                                     </div>
+                                    {% empty %}
+                                    <p style="color: #666; padding: 20px;">Nenhum concurso encontrado.</p>
+                                    {% endfor %}
                                 </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeazul.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6">
-                                    <div class="item">
-                                    <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-                                    <h4>Título<br><span>Usuário</span></h4>
-                                    </div>
-                                </div>
+                                <!-- Paginação Real -->
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
-                                        <a class="prev page-numbers" href="javascript:;">prev</a>
-                                        <span aria-current="page" class="page-numbers current">1</span>
-                                        <a class="page-numbers" href="javascript:;">2</a>
-                                        <a class="page-numbers" href="javascript:;">3</a>
-                                        <a class="page-numbers" href="javascript:;">4</a>
-                                        <a class="page-numbers" href="javascript:;">5</a>
-                                        <a class="page-numbers" href="javascript:;">6</a>
-                                        <a class="page-numbers" href="javascript:;">7</a>
-                                        <a class="page-numbers" href="javascript:;">8</a>
-                                        <a class="page-numbers" href="javascript:;">9</a>
-                                        <a class="page-numbers" href="javascript:;">10</a>
-                                        <a class="next page-numbers" href="javascript:;">next</a>
+                                        {% if concursos.has_previous %}
+                                            <a class="prev page-numbers" href="#/concursos?page={{ concursos.previous_page_number }}">prev</a>
+                                        {% endif %}
+
+                                        {% for num in concursos.paginator.page_range %}
+                                            {% if concursos.number == num %}
+                                                <span aria-current="page" class="page-numbers current">{{ num }}</span>
+                                            {% else %}
+                                                <a class="page-numbers" href="#/concursos?page={{ num }}">{{ num }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if concursos.has_next %}
+                                            <a class="next page-numbers" href="#/concursos?page={{ concursos.next_page_number }}">next</a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            </div>
                         </div>
+                    </div>
                             </div>
                         </div>
                     </div>
