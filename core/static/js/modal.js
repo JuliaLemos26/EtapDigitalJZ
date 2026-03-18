@@ -18,6 +18,7 @@ window.openPostModal = function (element) {
   const start = element.getAttribute("data-start");
   const end = element.getAttribute("data-end");
   const link = element.getAttribute("data-link");
+  const documentPath = element.getAttribute("data-document");
   const expiry = element.getAttribute("data-expiry");
   const color = element.getAttribute("data-color") || "#f8a5c2";
 
@@ -98,6 +99,17 @@ window.openPostModal = function (element) {
         <div class="content-box">
           <a href="${link}" target="_blank" style="color: #444; font-weight: 600; display: flex; align-items: center; gap: 8px;">
             <i class='bx bx-globe'></i> Aceder à ligação oficial
+          </a>
+        </div>
+      </div>`;
+  }
+  if (documentPath && documentPath !== "" && documentPath !== "None") {
+    extrasHtml += `
+      <div class="info-block" style="grid-column: span 2;">
+        <label><i class='bx bx-file'></i> Documento de Apoio</label>
+        <div class="content-box" style="background: linear-gradient(135deg, #fff5d1 0%, #ffefba 100%); border-color: #ffe29a;">
+          <a href="${documentPath}" target="_blank" style="color: #664d03; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bxs-file-pdf'></i> Baixar / Ver Arquivo Enviado
           </a>
         </div>
       </div>`;

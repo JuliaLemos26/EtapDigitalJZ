@@ -381,6 +381,19 @@
   justify-content: center;
 }
 
+.itemgrande-content p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
 /* --- Modal Structure (Redesign Premium) --- */
 @keyframes modalZoomIn {
   from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
@@ -533,6 +546,7 @@
   max-height: 220px;
   overflow-y: auto;
   padding-right: 15px; /* Espaço para a scrollbar */
+  white-space: pre-wrap;
 }
 
 /* Scrollbar interna da descrição */

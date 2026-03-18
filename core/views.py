@@ -30,7 +30,7 @@ def signup(request):
                 #return redirect("/index.html#/home")
                 return redirect("/index/")
         else:  
-            login_form = AuthenticationForm(data=request.POST)
+            login_form = AuthenticationForm(data=request.POST) 
             if login_form.is_valid():
                 user = login_form.get_user()
                 login(request, user)

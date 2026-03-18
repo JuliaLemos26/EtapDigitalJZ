@@ -8,7 +8,7 @@ from home.models import Aluno, Professor
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        email = instance.email.lower()
+        email = instance.email.lower() 
         
         # Padrão para Aluno: sigla(tgpsi|tag|tmult|tsj|tcab) + 2 dígitos + nome + @etap.pt
         aluno_regex = r'^(tgpsi|tag|tmult|tsj|tcab)(\d{2})(.*)@etap\.pt$'

@@ -1,0 +1,102 @@
+/* Post Cards Styles */
+.most-popular {
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.home-section .most-popular .item,
+.home-section .most-popular .itemgrande {
+  background-color: #ededed !important;
+  color: #333 !important;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 45px !important;
+  /* Espaço vertical entre as linhas de posts */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.most-popular .item:hover,
+.most-popular .itemgrande:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.most-popular .item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.most-popular .itemgrande img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.most-popular .item h4,
+.most-popular .itemgrande h4 {
+  color: #333 !important;
+  font-size: 16px;
+  margin-top: 0;
+  flex-grow: 1;
+}
+
+.most-popular .item span,
+.most-popular .itemgrande span {
+  color: #f8a5c2 !important;
+  font-size: 13px;
+  display: block;
+  margin-top: 5px;
+}
+
+.most-popular.itemgrande.left,
+.most-popular.itemgrande.right {
+  display: flex !important;
+  background: white !important;
+  padding: 20px;
+  align-items: center;
+}
+
+.most-popular.itemgrande.left {
+  flex-direction: row;
+}
+
+.most-popular.itemgrande.right {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.most-popular.itemgrande.left img,
+.most-popular.itemgrande.right img {
+  width: 40%;
+  height: 180px;
+  margin-bottom: 0;
+}
+
+.itemgrande-content {
+  padding: 0 20px;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.itemgrande-content p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}

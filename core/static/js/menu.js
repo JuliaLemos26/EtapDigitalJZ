@@ -153,6 +153,7 @@ window.openPostModal = function (element) {
   const start = element.getAttribute("data-start");
   const end = element.getAttribute("data-end");
   const link = element.getAttribute("data-link");
+  const documentPath = element.getAttribute("data-document");
   const expiry = element.getAttribute("data-expiry");
   const color = element.getAttribute("data-color") || "#f8a5c2";
 
@@ -160,7 +161,6 @@ window.openPostModal = function (element) {
   const header = document.querySelector(".modal__header-custom");
   if (header) {
     header.style.backgroundColor = color;
-    // Opcional: ajustar cor do texto dependendo da luminosidade
     if (color === "#FFE29A") {
         header.style.color = "#333";
     } else {
@@ -180,21 +180,15 @@ window.openPostModal = function (element) {
   }
   document.getElementById("popup-autor").innerHTML = authorText;
 
-  // Preencher o Modal - Conteúdo Principal
+  // Preencher o Modal - Conteúdo Principal (Usando innerText para preservar quebras de linha com white-space: pre-wrap no CSS)
   document.getElementById("popup-content").innerText = content || "Sem descrição disponível.";
 
-  // Imagem (Coluna Esquerda)
+  // Imagem
   const imgElement = document.getElementById("popup-imagem");
   const imgContainer = document.getElementById("popup-imagem-container");
-  if (image && !image.includes("static")) {
-    imgElement.src = image;
-    imgContainer.style.display = "block";
-  } else {
-    imgElement.src = image;
-    imgContainer.style.display = "block";
-  }
+  if (imgElement) imgElement.src = image || "";
 
-  // Info Extra (Coluna Direita - Info Group)
+  // Info Extra
   const extras = document.getElementById("popup-extras");
   let extrasHtml = "";
 
@@ -244,7 +238,17 @@ window.openPostModal = function (element) {
         </div>
       </div>`;
   }
-
+  if (documentPath && documentPath !== "" && documentPath !== "None") {
+    extrasHtml += `
+      <div class="info-block" style="grid-column: span 2;">
+        <label><i class='bx bx-file'></i> Documento de Apoio</label>
+        <div class="content-box" style="background: linear-gradient(135deg, #fff5d1 0%, #ffefba 100%); border-color: #ffe29a;">
+          <a href="${documentPath}" target="_blank" style="color: #664d03; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bxs-file-pdf'></i> Baixar / Ver Arquivo Enviado
+          </a>
+        </div>
+      </div>`;
+  }
   extras.innerHTML = extrasHtml;
 
   // Mostrar Modal

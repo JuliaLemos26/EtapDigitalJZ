@@ -55,6 +55,7 @@
                                              data-course="{{ concurso.course }}"
                                              data-year="{{ concurso.school_year }}"
                                              data-end="{{ concurso.end_date|date:'d/m/Y H:i' }}"
+                                             data-document="{% if concurso.document %}{{ concurso.document.url }}{% endif %}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                                             <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
                                             <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>

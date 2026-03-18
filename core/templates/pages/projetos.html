@@ -53,6 +53,7 @@
                                              data-image="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}"
                                              data-link="{{ projeto.link|default:'' }}"
                                              data-expiry="{{ projeto.expiration_date|date:'d/m/Y' }}"
+                                             data-document="{% if projeto.document %}{{ projeto.document.url }}{% endif %}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                                             <img src="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" alt="{{ projeto.title }}">
                                             <div class="itemgrande-content">
