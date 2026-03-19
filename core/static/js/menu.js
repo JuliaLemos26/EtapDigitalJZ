@@ -35,7 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     projetos: '/pages/projetos/',
     angariacoes: '/pages/angariacoes/',
     lojinha: '/pages/lojinha/',
-    formpost: '/pages/formpost/'
+    formpost: '/pages/formpost/',
+    meusarquivos: '/publications/meus-arquivos/'
   };
 
   function normalizeRoute(hash) {
@@ -239,12 +240,23 @@ window.openPostModal = function (element) {
       </div>`;
   }
   if (documentPath && documentPath !== "" && documentPath !== "None") {
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const fileExt = documentPath.split('.').pop().toLowerCase();
+    const isDoc = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExt);
+    
+    // Se for um documento do Office e não estiver rodando localmente, usamos o Google Docs Viewer
+    let finalUrl = documentPath;
+    if (isDoc && !isLocal) {
+        const absoluteUrl = window.location.origin + documentPath;
+        finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(absoluteUrl)}&embedded=true`;
+    }
+
     extrasHtml += `
       <div class="info-block" style="grid-column: span 2;">
         <label><i class='bx bx-file'></i> Documento de Apoio</label>
-        <div class="content-box" style="background: linear-gradient(135deg, #fff5d1 0%, #ffefba 100%); border-color: #ffe29a;">
-          <a href="${documentPath}" target="_blank" style="color: #664d03; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bxs-file-pdf'></i> Baixar / Ver Arquivo Enviado
+        <div class="content-box">
+          <a href="${finalUrl}" target="_blank" style="color: #444; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-show'></i> Visualizar Documento Online
           </a>
         </div>
       </div>`;
@@ -282,4 +294,180 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+});
+
+// --- CRUD Logic (Global Scope) ---
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+        }
+    }
+  }
+  return cookieValue;
+}
+
+function closeCrudModal() {
+  const crudOverlay = document.getElementById("js-crud-overlay");
+  const crudModal = document.getElementById("js-crud-holder");
+  if (crudModal) crudModal.classList.remove("show");
+  if (crudOverlay) crudOverlay.classList.remove("show");
+}
+
+window.confirmDelete = (type, id) => {
+  if (confirm("Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.")) {
+    fetch(`/publications/delete/${type}/${id}/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert(data.message);
+        const currentPage = window.location.hash.substring(1) || 'home';
+        if (typeof loadRoute === 'function') loadRoute(currentPage);
+        else window.location.reload();
+      } else {
+        alert("Erro: " + data.error);
+      }
+    });
+  }
+};
+
+window.openEditModal = (type, id) => {
+  const crudOverlay = document.getElementById("js-crud-overlay");
+  const crudModal = document.getElementById("js-crud-holder");
+  if (!crudOverlay || !crudModal) return;
+
+  crudOverlay.classList.add("show");
+  crudModal.classList.add("show");
+  const container = document.getElementById("crud-form-content");
+  container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin" style="font-size:30px;color:#6C9FF9;"></i></div>';
+  
+  document.getElementById("edit-post-id").value = id;
+  document.getElementById("edit-post-type").value = type;
+
+  fetch(`/publications/get-data/${type}/${id}/`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.success) {
+        renderEditForm(type, result.data);
+      } else {
+        container.innerHTML = `<p style="color:red;text-align:center;">${result.error}</p>`;
+      }
+    });
+};
+
+function renderEditForm(type, data) {
+  const container = document.getElementById("crud-form-content");
+  let html = `
+    <div style="margin-bottom:15px;">
+      <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Título</label>
+      <input type="text" name="title" value="${data.title}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;" required>
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Descrição</label>
+      <textarea name="content" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;min-height:120px;" required>${data.content}</textarea>
+    </div>
+  `;
+
+  if (type === 'tarefa' || type === 'concurso' || type === 'projeto') {
+     html += `
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+          <div>
+              <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Curso</label>
+              <select name="course" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+                  <option value="GPSI" ${data.course === 'GPSI' ? 'selected' : ''}>Sistemas Informáticos</option>
+                  <option value="MULT" ${data.course === 'MULT' ? 'selected' : ''}>Multimédia</option>
+                  <option value="AG" ${data.course === 'AG' ? 'selected' : ''}>Artes Gráficas</option>
+                  <option value="SJ" ${data.course === 'SJ' ? 'selected' : ''}>Jurídicos</option>
+                  <option value="CAB" ${data.course === 'CAB' ? 'selected' : ''}>Cabeleireiro</option>
+                  <option value="nenhum" ${data.course === 'nenhum' ? 'selected' : ''}>Todos</option>
+              </select>
+          </div>
+          <div>
+              <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Ano</label>
+              <select name="school_year" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+                  <option value="10" ${data.school_year === '10' ? 'selected' : ''}>10º Ano</option>
+                  <option value="11" ${data.school_year === '11' ? 'selected' : ''}>11º Ano</option>
+                  <option value="12" ${data.school_year === '12' ? 'selected' : ''}>12º Ano</option>
+                  <option value="todos" ${data.school_year === 'todos' ? 'selected' : ''}>Todos</option>
+              </select>
+          </div>
+       </div>
+     `;
+  }
+
+  if (data.end_date !== undefined) {
+      html += `
+        <div style="margin-bottom:15px;">
+          <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Data Limite</label>
+          <input type="datetime-local" name="end_date" value="${data.end_date || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+        </div>
+      `;
+  }
+
+  if (data.link !== undefined) {
+      html += `
+        <div style="margin-bottom:15px;">
+          <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Link Externo</label>
+          <input type="url" name="link" value="${data.link || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+        </div>
+      `;
+  }
+
+  html += `
+    <div style="margin-bottom:10px;">
+      <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Atualizar Imagem (Opcional)</label>
+      <input type="file" name="image" accept="image/*" style="font-size:13px;">
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// Inicializar listeners de fecho globais
+document.addEventListener('DOMContentLoaded', () => {
+    const crudOverlay = document.getElementById("js-crud-overlay");
+    const crudClose = document.getElementById("js-crud-close");
+    const crudCancel = document.getElementById("js-crud-cancel");
+    const crudForm = document.getElementById("crud-form");
+
+    [crudClose, crudCancel, crudOverlay].forEach(btn => {
+        if (btn) btn.addEventListener('click', (e) => {
+            if (e.target === btn || btn !== crudOverlay) closeCrudModal();
+        });
+    });
+
+    if (crudForm) {
+        crudForm.onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const type = document.getElementById("edit-post-type").value;
+            const id = document.getElementById("edit-post-id").value;
+
+            fetch(`/publications/edit/${type}/${id}/`, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    closeCrudModal();
+                    const currentPage = window.location.hash.substring(1) || 'home';
+                    if (typeof loadRoute === 'function') loadRoute(currentPage);
+                    else window.location.reload();
+                } else {
+                    alert("Erro ao salvar: " + data.error);
+                }
+            });
+        };
+    }
 });

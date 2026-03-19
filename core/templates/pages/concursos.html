@@ -57,9 +57,20 @@
                                              data-end="{{ concurso.end_date|date:'d/m/Y H:i' }}"
                                              data-document="{% if concurso.document %}{{ concurso.document.url }}{% endif %}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
-                                            <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
-                                            <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
-                                        </div>
+                                             <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
+                                             <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
+                                             
+                                             {% if user.is_superuser or concurso.author == user or concurso.secondary_author == user %}
+                                             <div class="post-actions">
+                                                 <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('concurso', {{ concurso.id }})" title="Editar">
+                                                     <i class='bx bx-edit-alt'></i>
+                                                 </button>
+                                                 <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('concurso', {{ concurso.id }})" title="Excluir">
+                                                     <i class='bx bx-trash'></i>
+                                                 </button>
+                                             </div>
+                                             {% endif %}
+                                         </div>
                                     </div>
                                     {% empty %}
                                     <p style="color: #666; padding: 20px;">Nenhum concurso encontrado.</p>

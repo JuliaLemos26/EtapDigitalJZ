@@ -56,9 +56,20 @@
                                              data-year="{{ tarefa.school_year }}"
                                              data-end="{{ tarefa.end_date|date:'d/m/Y H:i' }}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
-                                            <img src="{% if tarefa.image %}{{ tarefa.image.url }}{% else %}{% static 'imagensteste/testeazul.png' %}{% endif %}" class="d-block w-100" alt="{{ tarefa.title }}">
-                                            <h4>{{ tarefa.title }}<br><span>{% if tarefa.secondary_author %}{{ tarefa.secondary_author.username }}{% else %}{{ tarefa.author.username }}{% endif %}</span></h4>
-                                        </div>
+                                             <img src="{% if tarefa.image %}{{ tarefa.image.url }}{% else %}{% static 'imagensteste/testeazul.png' %}{% endif %}" class="d-block w-100" alt="{{ tarefa.title }}">
+                                             <h4>{{ tarefa.title }}<br><span>{% if tarefa.secondary_author %}{{ tarefa.secondary_author.username }}{% else %}{{ tarefa.author.username }}{% endif %}</span></h4>
+                                             
+                                             {% if user.is_superuser or tarefa.author == user or tarefa.secondary_author == user %}
+                                             <div class="post-actions">
+                                                 <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('tarefa', {{ tarefa.id }})" title="Editar">
+                                                     <i class='bx bx-edit-alt'></i>
+                                                 </button>
+                                                 <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('tarefa', {{ tarefa.id }})" title="Excluir">
+                                                     <i class='bx bx-trash'></i>
+                                                 </button>
+                                             </div>
+                                             {% endif %}
+                                         </div>
                                     </div>
                                     {% empty %}
                                     <p style="color: #666; padding: 20px;">Nenhuma tarefa encontrada.</p>

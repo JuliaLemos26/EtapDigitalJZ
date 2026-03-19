@@ -1,0 +1,180 @@
+{% load static %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="most-popular">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="heading-section">
+                            <h4><em>Minhas</em> Publicações</h4>
+                            <p style="color: #666; margin-bottom: 25px;">Gerencie suas participações de forma organizada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegação por Abas -->
+                <div class="tabs-navigation" style="display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+                    <a href="#/meusarquivos?tab=tarefas" class="tab-link {% if active_tab == 'tarefas' %}active{% endif %}" data-tab="tarefas">
+                        <i class='bx bx-task'></i> Tarefas <span class="badge">{{ counts.tarefas }}</span>
+                    </a>
+                    <a href="#/meusarquivos?tab=concursos" class="tab-link {% if active_tab == 'concursos' %}active{% endif %}" data-tab="concursos">
+                        <i class='bx bx-trophy'></i> Concursos <span class="badge">{{ counts.concursos }}</span>
+                    </a>
+                    <a href="#/meusarquivos?tab=projetos" class="tab-link {% if active_tab == 'projetos' %}active{% endif %}" data-tab="projetos">
+                        <i class='bx bx-book-bookmark'></i> Projetos <span class="badge">{{ counts.projetos }}</span>
+                    </a>
+                    <a href="#/meusarquivos?tab=eventos" class="tab-link {% if active_tab == 'eventos' %}active{% endif %}" data-tab="eventos">
+                        <i class='bx bx-calendar'></i> Eventos <span class="badge">{{ counts.eventos }}</span>
+                    </a>
+                </div>
+
+                <!-- Conteúdo da Aba Ativa -->
+                <div class="row">
+                    {% for item in page_obj %}
+                        {% if active_tab == 'tarefas' or active_tab == 'concursos' %}
+                            <!-- Cards Pequenos -->
+                            <div class="col-lg-4 col-sm-6 mb-5">
+                                <div class="item" onclick="openPostModal(this)"
+                                     data-title="{{ item.title }}"
+                                     data-author-primary="{{ item.author.username }}"
+                                     data-author-secondary="{{ item.secondary_author.username|default:'' }}"
+                                     data-content="{{ item.content }}"
+                                     data-image="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}"
+                                     {% if active_tab == 'tarefas' %}
+                                     data-course="{{ item.course }}" data-year="{{ item.school_year }}" data-end="{{ item.end_date|date:'d/m/Y H:i' }}"
+                                     data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}"
+                                     {% else %}
+                                     data-link="{{ item.link|default:'' }}" data-expiry="{{ item.expiration_date|date:'d/m/Y' }}"
+                                     data-color="#FFE29A"
+                                     {% endif %}>
+                                     <img src="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}" alt="{{ item.title }}">
+                                     <h4>{{ item.title }}<br><span>{% if item.secondary_author %}{{ item.secondary_author.username }}{% else %}{{ item.author.username }}{% endif %}</span></h4>
+                                     
+                                     <div class="post-actions">
+                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{{ active_tab|slice:':-1' }}', {{ item.id }})" title="Editar">
+                                             <i class='bx bx-edit-alt'></i>
+                                         </button>
+                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{{ active_tab|slice:":-1" }}', {{ item.id }})" title="Excluir">
+                                             <i class='bx bx-trash'></i>
+                                         </button>
+                                     </div>
+                                 </div>
+                            </div>
+                        {% else %}
+                            <!-- Cards Grandes (Projetos / Eventos) -->
+                            <div class="col-lg-6 col-sm-12 mb-5">
+                                <div class="most-popular itemgrande {% cycle 'left' 'right' %}" onclick="openPostModal(this)"
+                                     data-title="{{ item.title }}"
+                                     data-author-primary="{{ item.author.username }}"
+                                     data-author-secondary="{{ item.secondary_author.username|default:'' }}"
+                                     data-content="{{ item.content }}"
+                                     data-image="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'eventos' %}{% static 'imagensteste/testeverde.png' %}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}{% endif %}"
+                                     data-link="{{ item.link|default:'' }}"
+                                     data-document="{% if item.document %}{{ item.document.url }}{% endif %}"
+                                     data-expiry="{{ item.expiration_date|date:'d/m/Y' }}"
+                                     data-color="{% if active_tab == 'eventos' %}#A6E4B2{% else %}#F8A5C2{% endif %}">
+                                    <img src="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'eventos' %}{% static 'imagensteste/testeverde.png' %}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}{% endif %}" alt="{{ item.title }}">
+                                    <div class="itemgrande-content">
+                                        <h4>{{ item.title }}<br><span style="color: #666;">{% if item.secondary_author %}{{ item.secondary_author.username }}{% else %}{{ item.author.username }}{% endif %}</span></h4>
+                                        <p>{{ item.content|truncatechars:100 }}</p>
+                                    </div>
+                                     
+                                     <div class="post-actions">
+                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{{ active_tab|slice:':-1' }}', {{ item.id }})" title="Editar">
+                                             <i class='bx bx-edit-alt'></i>
+                                         </button>
+                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{{ active_tab|slice:":-1" }}', {{ item.id }})" title="Excluir">
+                                             <i class='bx bx-trash'></i>
+                                         </button>
+                                     </div>
+                                 </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="col-lg-12">
+                            <div style="background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; text-align: center;">
+                                <i class='bx bx-file-blank' style="font-size: 50px; color: #888; margin-bottom: 15px; display: block;"></i>
+                                <p style="color: #888; font-style: italic;">Nenhuma publicação encontrada nesta categoria.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Paginação -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <div class="pagination-wrapper" style="margin-top: 30px;">
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a class="prev page-numbers" href="#/meusarquivos?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}">prev</a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span aria-current="page" class="page-numbers current">{{ num }}</span>
+                            {% else %}
+                                <a class="page-numbers" href="#/meusarquivos?tab={{ active_tab }}&page={{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a class="next page-numbers" href="#/meusarquivos?tab={{ active_tab }}&page={{ page_obj.next_page_number }}">next</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* --- Meus Arquivos Tabs --- */
+.tab-link {
+  padding: 10px 18px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+}
+
+.tab-link i { font-size: 18px; }
+.tab-link .badge { 
+    background: rgba(255, 255, 255, 0.15); 
+    padding: 3px 8px; 
+    border-radius: 10px; 
+    font-size: 10px; 
+}
+
+.tab-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.tab-link.active {
+  background: #6C9FF9;
+  border-color: #6C9FF9;
+  box-shadow: 0 4px 15px rgba(108, 159, 249, 0.3);
+}
+
+.tab-link.active[data-tab="concursos"] { background: #FFE29A; border-color: #FFE29A; color: #333 !important; }
+.tab-link.active[data-tab="projetos"] { background: #F8A5C2; border-color: #F8A5C2; }
+.tab-link.active[data-tab="eventos"] { background: #A6E4B2; border-color: #A6E4B2; color: #333 !important; }
+
+/* Ajuste nos cards grandes para alinhar conteúdo */
+.itemgrande-content {
+    padding: 0 15px;
+    flex-grow: 1;
+}
+.itemgrande-content h4 { margin-top: 0 !important; }
+.itemgrande-content p { font-size: 14px; color: #666; margin-top: 5px; line-height: 1.4; }
+
+/* Paginação fixa para SPA */
+.pagination-wrapper { text-align: center; }
+</style>

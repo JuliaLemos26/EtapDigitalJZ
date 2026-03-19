@@ -581,3 +581,75 @@
 .modal-content-wrapper::-webkit-scrollbar-track { background: transparent; }
 .modal-content-wrapper::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
 .modal-content-wrapper::-webkit-scrollbar-thumb:hover { background: #d0d0d0; }
+
+/* --- CRUD Post Actions (Refined Premium Design) --- */
+.item, .itemgrande {
+  position: relative !important;
+}
+
+.post-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  z-index: 110;
+}
+
+.item:hover .post-actions, 
+.itemgrande:hover .post-actions {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn.edit {
+  color: #6C9FF9;
+}
+
+.action-btn.delete {
+  color: #f8a5c2;
+}
+
+.action-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.action-btn.edit:hover {
+  background: #6C9FF9;
+  color: white;
+}
+
+.action-btn.delete:hover {
+  background: #ff4d4d;
+  color: white;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Ajuste para card grande no modo horizontal à direita */
+.most-popular.itemgrande.right .post-actions {
+  left: 15px;
+  right: auto;
+}

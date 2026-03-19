@@ -56,11 +56,22 @@
                                              data-document="{% if projeto.document %}{{ projeto.document.url }}{% endif %}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                                             <img src="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" alt="{{ projeto.title }}">
-                                            <div class="itemgrande-content">
-                                                <h4>{{ projeto.title }}<br><span>{% if projeto.secondary_author %}{{ projeto.secondary_author.username }}{% else %}{{ projeto.author.username }}{% endif %}</span></h4>
-                                                <p>{{ projeto.content|truncatechars:100 }}</p>
-                                            </div>
-                                        </div>
+                                             <div class="itemgrande-content">
+                                                 <h4>{{ projeto.title }}<br><span>{% if projeto.secondary_author %}{{ projeto.secondary_author.username }}{% else %}{{ projeto.author.username }}{% endif %}</span></h4>
+                                                 <p>{{ projeto.content|truncatechars:100 }}</p>
+                                             </div>
+                                             
+                                             {% if user.is_superuser or projeto.author == user or projeto.secondary_author == user %}
+                                             <div class="post-actions">
+                                                 <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('projeto', {{ projeto.id }})" title="Editar">
+                                                     <i class='bx bx-edit-alt'></i>
+                                                  </button>
+                                                 <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('projeto', {{ projeto.id }})" title="Excluir">
+                                                     <i class='bx bx-trash'></i>
+                                                 </button>
+                                             </div>
+                                             {% endif %}
+                                         </div>
                                     </div>
                                     {% empty %}
                                     <p style="color: #666; padding: 20px;">Nenhum projeto encontrado.</p>

@@ -60,7 +60,18 @@
                                                 <h4>{{ evento.title }}<br><span>{% if evento.secondary_author %}{{ evento.secondary_author.username }}{% else %}{{ evento.author.username }}{% endif %}</span></h4>
                                                 <p>{{ evento.content|truncatechars:100 }}</p>
                                             </div>
-                                        </div>
+                                             
+                                             {% if user.is_superuser or evento.author == user or evento.secondary_author == user %}
+                                             <div class="post-actions">
+                                                 <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('evento', {{ evento.id }})" title="Editar">
+                                                     <i class='bx bx-edit-alt'></i>
+                                                 </button>
+                                                 <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('evento', {{ evento.id }})" title="Excluir">
+                                                     <i class='bx bx-trash'></i>
+                                                 </button>
+                                             </div>
+                                             {% endif %}
+                                         </div>
                                     </div>
                                     {% empty %}
                                     <p style="color: #666; padding: 20px;">Nenhum evento encontrado.</p>

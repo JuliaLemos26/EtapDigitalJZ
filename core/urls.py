@@ -29,6 +29,7 @@ urlpatterns = [
     path('pages/<str:page_name>/', spa_page, name='spa-page'),
     path('logout/', user_logout, name='logout'),
     path('admin-dashboard/', admin_dashboard, name='admin-dashboard'),
+    path('publications/', include('publications.urls')),
 ]
 
 

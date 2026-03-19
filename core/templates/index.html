@@ -4,12 +4,12 @@
 
 <head>
   {% load static %}
-  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.1">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.2">
   <meta charset="UTF-8" />
   <title>ETAP Digital</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="{% static 'js/menu.js' %}?v=3.0"></script>
+  <script src="{% static 'js/menu.js' %}?v=6.0"></script>
 </head>
 
 <body>
@@ -100,6 +100,13 @@
           <span class="links_name">Projetos</span>
         </a>
         <span class="tooltip">Projetos</span>
+      </li>
+      <li>
+        <a href="#/meusarquivos">
+          <i class='bx bx-folder-open'></i>
+          <span class="links_name">Meus Arquivos</span>
+        </a>
+        <span class="tooltip">Meus Arquivos</span>
       </li>
       <!--<li>
         <a href="#/angariacoes">
@@ -192,6 +199,41 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ***** Sistema de Modal CRUD (Edição e Exclusão) ***** -->
+  <div class="modal-overlay" id="js-crud-overlay"></div>
+  <div class="modal-holder" id="js-crud-holder" style="max-width: 650px;">
+    <div class="modal__close" id="js-crud-close">
+      <i class='bx bx-x'></i>
+    </div>
+    <div class="modal__header-custom" id="crud-header" style="padding: 25px 40px; background: #6C9FF9; color: white;">
+      <h4 id="crud-title" style="margin: 0; font-size: 22px;">Gerenciar Post</h4>
+      <span id="crud-subtitle" style="font-size: 14px; opacity: 0.9;">Edite as informações do seu post</span>
+    </div>
+    <div class="modal__body-custom" style="padding: 30px 40px; background: #fff;">
+      <form id="crud-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" id="edit-post-id">
+        <input type="hidden" name="post_type" id="edit-post-type">
+        
+        <div id="crud-form-content">
+          <!-- Campos dinâmicos injetados via JS -->
+          <div style="display: flex; justify-content: center; padding: 40px;">
+             <i class='bx bx-loader-alt bx-spin' style="font-size: 40px; color: #6C9FF9;"></i>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
+          <button type="button" class="action-btn" id="js-crud-cancel" style="background: #eee; color: #666; width: auto; padding: 0 25px; font-size: 15px; font-weight: 500;">
+            Cancelar
+          </button>
+          <button type="submit" class="action-btn" id="js-crud-save" style="background: #6C9FF9; color: white; width: auto; padding: 0 30px; font-size: 15px; font-weight: 600;">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
     </div>
   </div>
   <!-- Scripts Globais -->
