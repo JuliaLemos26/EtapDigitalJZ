@@ -205,4 +205,5 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
 
 # RBAC Settings
-MASTER_ADMIN_EMAIL = 'admin_master@etap.pt' # Altere para o email desejado
+MASTER_ADMIN_EMAIL = 'etapdigital@etap.pt' # Altere para o email desejado
+
