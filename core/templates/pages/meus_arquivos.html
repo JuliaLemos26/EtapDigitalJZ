@@ -35,11 +35,15 @@
                             <!-- Cards Pequenos -->
                             <div class="col-lg-4 col-sm-6 mb-5">
                                 <div class="item" onclick="openPostModal(this)"
+                                     data-post-type="{% if active_tab == 'tarefas' %}tarefa{% else %}concurso{% endif %}"
+                                     data-post-id="{{ item.id }}"
+                                     data-author-ids="{{ item.author.id }},{{ item.secondary_author.id|default:'' }}"
                                      data-title="{{ item.title }}"
                                      data-author-primary="{{ item.author.username }}"
                                      data-author-secondary="{{ item.secondary_author.username|default:'' }}"
                                      data-content="{{ item.content }}"
                                      data-image="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}"
+                                     data-is-subscribed="{{ item.is_subscribed|yesno:'true,false' }}"
                                      {% if active_tab == 'tarefas' %}
                                      data-course="{{ item.course }}" data-year="{{ item.school_year }}" data-end="{{ item.end_date|date:'d/m/Y H:i' }}"
                                      data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}"
@@ -50,20 +54,29 @@
                                      <img src="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}" alt="{{ item.title }}">
                                      <h4>{{ item.title }}<br><span>{% if item.secondary_author %}{{ item.secondary_author.username }}{% else %}{{ item.author.username }}{% endif %}</span></h4>
                                      
+                                     {% if user.is_superuser or user.professor_profile and item.author == user or user.professor_profile and item.secondary_author == user %}
                                      <div class="post-actions">
-                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{{ active_tab|slice:':-1' }}', {{ item.id }})" title="Editar">
+                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{% if active_tab == 'tarefas' %}tarefa{% else %}concurso{% endif %}', {{ item.id }})" title="Editar">
                                              <i class='bx bx-edit-alt'></i>
                                          </button>
-                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{{ active_tab|slice:":-1" }}', {{ item.id }})" title="Excluir">
+                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{% if active_tab == 'tarefas' %}tarefa{% else %}concurso{% endif %}', {{ item.id }})" title="Excluir">
                                              <i class='bx bx-trash'></i>
                                          </button>
                                      </div>
+                                     {% elif item.is_subscribed %}
+                                     <div class="subscribed-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(108, 159, 249, 0.9); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;">
+                                         <i class='bx bxs-check-circle'></i> Inscrito
+                                     </div>
+                                     {% endif %}
                                  </div>
                             </div>
                         {% else %}
                             <!-- Cards Grandes (Projetos / Eventos) -->
                             <div class="col-lg-6 col-sm-12 mb-5">
                                 <div class="most-popular itemgrande {% cycle 'left' 'right' %}" onclick="openPostModal(this)"
+                                     data-post-type="{% if active_tab == 'eventos' %}evento{% else %}projeto{% endif %}"
+                                     data-post-id="{{ item.id }}"
+                                     data-author-ids="{{ item.author.id }},{{ item.secondary_author.id|default:'' }}"
                                      data-title="{{ item.title }}"
                                      data-author-primary="{{ item.author.username }}"
                                      data-author-secondary="{{ item.secondary_author.username|default:'' }}"
@@ -79,14 +92,16 @@
                                         <p>{{ item.content|truncatechars:100 }}</p>
                                     </div>
                                      
+                                     {% if user.is_superuser or user.professor_profile and item.author == user or user.professor_profile and item.secondary_author == user %}
                                      <div class="post-actions">
-                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{{ active_tab|slice:':-1' }}', {{ item.id }})" title="Editar">
+                                         <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{% if active_tab == 'eventos' %}evento{% else %}projeto{% endif %}', {{ item.id }})" title="Editar">
                                              <i class='bx bx-edit-alt'></i>
                                          </button>
-                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{{ active_tab|slice:":-1" }}', {{ item.id }})" title="Excluir">
+                                         <button class="action-btn delete" onclick="event.stopPropagation(); confirmDelete('{% if active_tab == 'eventos' %}evento{% else %}projeto{% endif %}', {{ item.id }})" title="Excluir">
                                              <i class='bx bx-trash'></i>
                                          </button>
                                      </div>
+                                     {% endif %}
                                  </div>
                             </div>
                         {% endif %}
@@ -160,21 +175,40 @@
 .tab-link.active {
   background: #6C9FF9;
   border-color: #6C9FF9;
-  box-shadow: 0 4px 15px rgba(108, 159, 249, 0.3);
+  box-shadow: 0 5px 15px rgba(108, 159, 249, 0.3);
 }
 
-.tab-link.active[data-tab="concursos"] { background: #FFE29A; border-color: #FFE29A; color: #333 !important; }
-.tab-link.active[data-tab="projetos"] { background: #F8A5C2; border-color: #F8A5C2; }
-.tab-link.active[data-tab="eventos"] { background: #A6E4B2; border-color: #A6E4B2; color: #333 !important; }
-
-/* Ajuste nos cards grandes para alinhar conteúdo */
-.itemgrande-content {
-    padding: 0 15px;
-    flex-grow: 1;
+.post-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
-.itemgrande-content h4 { margin-top: 0 !important; }
-.itemgrande-content p { font-size: 14px; color: #666; margin-top: 5px; line-height: 1.4; }
 
-/* Paginação fixa para SPA */
-.pagination-wrapper { text-align: center; }
+.item:hover .post-actions,
+.itemgrande:hover .post-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 18px;
+}
+
+.action-btn.edit { background: #fff; color: #6C9FF9; }
+.action-btn.delete { background: #fff; color: #ff4d4d; }
+
+.action-btn:hover { transform: scale(1.1); }
 </style>

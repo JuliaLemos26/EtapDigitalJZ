@@ -152,21 +152,26 @@ window.openPostModal = function (element) {
   const course = element.getAttribute("data-course");
   const year = element.getAttribute("data-year");
   const start = element.getAttribute("data-start");
-  const end = element.getAttribute("data-end");
+  const end = element.getAttribute("data-end") || element.getAttribute("data-expiry");
   const link = element.getAttribute("data-link");
   const documentPath = element.getAttribute("data-document");
-  const expiry = element.getAttribute("data-expiry");
   const color = element.getAttribute("data-color") || "#f8a5c2";
+  const postId = element.getAttribute("data-post-id");
+
+  // Determinar o tipo real: Priorizar data-attribute, fallback para hash
+  let postType = element.getAttribute("data-post-type");
+  if (!postType) {
+      if (window.location.hash.includes('concursos')) postType = 'concurso';
+      else if (window.location.hash.includes('eventos')) postType = 'evento';
+      else if (window.location.hash.includes('projetos')) postType = 'projeto';
+      else postType = 'tarefa';
+  }
 
   // Preencher o Modal - Cabeçalho
   const header = document.querySelector(".modal__header-custom");
   if (header) {
     header.style.backgroundColor = color;
-    if (color === "#FFE29A") {
-        header.style.color = "#333";
-    } else {
-        header.style.color = "#222";
-    }
+    header.style.color = (color === "#FFE29A" || color === "#A6E4B2") ? "#333" : "#222";
   }
 
   document.getElementById("popup-titulo").innerText = title || "Sem Título";
@@ -176,124 +181,250 @@ window.openPostModal = function (element) {
     authorText = `<i class='bx bxs-user-detail'></i> ${authorPrimary} & ${authorSecondary}`;
   } else if (authorPrimary) {
     authorText = `<i class='bx bxs-user'></i> ${authorPrimary}`;
-  } else if (authorSecondary && authorSecondary !== "None") {
-    authorText = `<i class='bx bxs-user'></i> ${authorSecondary}`;
   }
   document.getElementById("popup-autor").innerHTML = authorText;
 
-  // Preencher o Modal - Conteúdo Principal (Usando innerText para preservar quebras de linha com white-space: pre-wrap no CSS)
   document.getElementById("popup-content").innerText = content || "Sem descrição disponível.";
 
-  // Imagem
   const imgElement = document.getElementById("popup-imagem");
-  const imgContainer = document.getElementById("popup-imagem-container");
   if (imgElement) imgElement.src = image || "";
 
-  // Info Extra
   const extras = document.getElementById("popup-extras");
   let extrasHtml = "";
 
-  if (course && course !== "None") {
-    extrasHtml += `
-      <div class="info-block">
-        <label><i class='bx bx-category-alt'></i> Categoria</label>
-        <div class="content-box"><i class='bx bx-book-bookmark'></i> ${course}</div>
-      </div>`;
+  if (course) {
+    extrasHtml += `<div class="info-block"><label>Curso</label><div class="content-box">${course}</div></div>`;
   }
-  if (year && year !== "None") {
-    extrasHtml += `
-      <div class="info-block">
-        <label><i class='bx bx-graduation'></i> Ano Escolar</label>
-        <div class="content-box"><i class='bx bx-user-voice'></i> ${year}</div>
-      </div>`;
+  if (year) {
+    const yearLabel = (year === "todos") ? "Todos os Anos" : year + "º Ano";
+    extrasHtml += `<div class="info-block"><label>Ano</label><div class="content-box">${yearLabel}</div></div>`;
   }
-  if (start && start !== "None") {
-    extrasHtml += `
-      <div class="info-block">
-        <label><i class='bx bx-calendar-event'></i> Início</label>
-        <div class="content-box"><i class='bx bx-time-five'></i> ${start}</div>
-      </div>`;
+  if (end) {
+    extrasHtml += `<div class="info-block"><label>Expira em</label><div class="content-box">${end}</div></div>`;
   }
-  if (end && end !== "None") {
-    extrasHtml += `
-      <div class="info-block">
-        <label><i class='bx bx-calendar-check'></i> Prazo / Fim</label>
-        <div class="content-box"><i class='bx bx-alarm-exclamation'></i> ${end}</div>
-      </div>`;
+  if (link && link !== "None" && link !== "") {
+    extrasHtml += `<div class="info-block" style="grid-column: span 2;"><label>Link Externo</label><a href="${link}" target="_blank" class="content-box-link">${link}</a></div>`;
   }
-  if (expiry && expiry !== "None") {
-    extrasHtml += `
-      <div class="info-block">
-        <label><i class='bx bx-time'></i> Expiração</label>
-        <div class="content-box"><i class='bx bx-error-circle'></i> ${expiry}</div>
-      </div>`;
+  if (documentPath && documentPath !== "None" && documentPath !== "") {
+    extrasHtml += `<div class="info-block" style="grid-column: span 2;"><label>Documento</label><a href="${documentPath}" target="_blank" class="content-box-link"><i class='bx bx-file'></i> Visualizar Documento</a></div>`;
   }
-  if (link && link !== "" && link !== "None") {
-    extrasHtml += `
-      <div class="info-block" style="grid-column: span 2;">
-        <label><i class='bx bx-link-external'></i> Recurso Externo</label>
-        <div class="content-box">
-          <a href="${link}" target="_blank" style="color: #444; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-globe'></i> Aceder à ligação oficial
-          </a>
-        </div>
-      </div>`;
-  }
-  if (documentPath && documentPath !== "" && documentPath !== "None") {
-    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const fileExt = documentPath.split('.').pop().toLowerCase();
-    const isDoc = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExt);
-    
-    // Se for um documento do Office e não estiver rodando localmente, usamos o Google Docs Viewer
-    let finalUrl = documentPath;
-    if (isDoc && !isLocal) {
-        const absoluteUrl = window.location.origin + documentPath;
-        finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(absoluteUrl)}&embedded=true`;
-    }
 
-    extrasHtml += `
-      <div class="info-block" style="grid-column: span 2;">
-        <label><i class='bx bx-file'></i> Documento de Apoio</label>
-        <div class="content-box">
-          <a href="${finalUrl}" target="_blank" style="color: #444; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-show'></i> Visualizar Documento Online
-          </a>
-        </div>
-      </div>`;
+  // NOVA LÓGICA: Botões de Inscrição / Gerenciamento
+  const authorIds = (element.getAttribute("data-author-ids") || "").split(",");
+  const isAuthor = authorIds.includes(window.currentUserId);
+  const isSubscribed = element.getAttribute("data-is-subscribed") === "true";
+  const userRole = window.userRole || 'aluno';
+
+  if (postType === 'tarefa' || postType === 'concurso') {
+      if (isAuthor) {
+          extrasHtml += `
+            <div class="info-block" style="grid-column: span 2; margin-top: 15px; margin-bottom: 30px;">
+              <button class="btn-manage" onclick="openManageInscriptions('${postType}', '${postId}', '${color}')" 
+                style="background: transparent; color: ${color}; width: 100%; height: 45px; border-radius: 25px; font-weight: 600; border: 2px solid ${color}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"
+                onmouseover="this.style.background='${color}'; this.style.color='white';" 
+                onmouseout="this.style.background='transparent'; this.style.color='${color}';">
+                <i class='bx bx-group'></i> Ver Inscrições Recebidas
+              </button>
+            </div>`;
+      } else if (userRole === 'aluno' && !isAuthor) {
+          const btnText = isSubscribed ? "Cancelar Minha Inscrição" : "Inscrever-se Agora";
+          const btnColor = isSubscribed ? "#ff4d4d" : color;
+          const actualAction = isSubscribed ? "cancelarInscricao" : "openInscriptionModal";
+          
+          extrasHtml += `
+            <div class="info-block" style="grid-column: span 2; margin-top: 15px; margin-bottom: 30px;">
+              <button class="btn-subscribe" onclick="${actualAction}('${postType}', '${postId}', '${color}')" 
+                style="background: transparent; color: ${btnColor}; width: 100%; height: 45px; border-radius: 25px; font-weight: 700; border: 2px solid ${btnColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"
+                onmouseover="this.style.background='${btnColor}'; this.style.color='white';" 
+                onmouseout="this.style.background='transparent'; this.style.color='${btnColor}';">
+                <i class='bx bx-edit'></i> ${btnText}
+              </button>
+            </div>`;
+      }
   }
+
+  extrasHtml += '<div style="height: 50px; width: 100%; grid-column: span 2;"></div>';
   extras.innerHTML = extrasHtml;
-
-  // Mostrar Modal
   overlay.classList.add("show");
   modal.classList.add("show");
 };
 
-// Event Listeners para fechar o Modal
-document.addEventListener('spaPageLoaded', () => {
-    // Re-bind listeners se necessário, mas como são triggers fixos no index, 
-    // os de fecho podem ficar globais
-});
+// --- Inscription Flow ---
 
+window.openInscriptionModal = function(type, id, color) {
+    const mainModal = document.getElementById("js-modal-holder");
+    const insOverlay = document.getElementById("js-inscription-overlay");
+    const insModal = document.getElementById("js-inscription-holder");
+    const header = document.getElementById("inscription-header");
+    const form = document.getElementById("inscription-form");
+    
+    // Resetar formulário para limpar dados anteriores
+    if (form) form.reset();
+    
+    // Cor do Modal
+    if (header && color) {
+        header.style.backgroundColor = color;
+        const confirmBtn = form.querySelector('button[type="submit"]');
+        if (confirmBtn) confirmBtn.style.backgroundColor = color;
+    }
+    
+    // Fechar modal de detalhes
+    if (mainModal) mainModal.classList.remove("show");
+    
+    // Preparar modal de inscrição
+    document.getElementById("ins-post-id").value = id;
+    document.getElementById("ins-post-type").value = type;
+    
+    const fileField = document.getElementById("ins-file-field");
+    const fileInput = document.getElementById("ins-file-input");
+    if (type === 'concurso') {
+        fileField.style.display = 'block';
+        fileInput.required = true;
+    } else {
+        fileField.style.display = 'none';
+        fileInput.required = false;
+    }
+    
+    insOverlay.classList.add("show");
+    insModal.classList.add("show");
+};
+
+window.openManageInscriptions = function(type, id, color) {
+    const mainModal = document.getElementById("js-modal-holder");
+    const manageOverlay = document.getElementById("js-manage-overlay");
+    const manageModal = document.getElementById("js-manage-holder");
+    const container = document.getElementById("manage-list-container");
+    const header = document.getElementById("manage-header");
+    
+    // Cor do Modal
+    if (header && color) {
+        header.style.backgroundColor = color;
+    }
+
+    if (mainModal) mainModal.classList.remove("show");
+    
+    container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 30px; color: #6C9FF9;"></i></div>';
+    
+    manageOverlay.classList.add("show");
+    manageModal.classList.add("show");
+    
+    fetch(`/publications/listar-inscricoes/${type}/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (data.inscricoes.length === 0) {
+                    container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px; color: #888;">Nenhuma inscrição recebida ainda.</div>';
+                } else {
+                    container.innerHTML = data.inscricoes.map(ins => `
+                        <div class="ins-card" onclick="openInscriptionDetail(${ins.id}, '${color}')" style="background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; cursor: pointer; transition: all 0.2s;">
+                            <h5 style="margin: 0; font-size: 15px; color: #333;">${ins.titulo}</h5>
+                            <span style="font-size: 12px; color: #888;"><i class='bx bx-user'></i> ${ins.username}</span>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                container.innerHTML = `<div style="grid-column: span 2; color: red;">${data.error}</div>`;
+            }
+        });
+};
+
+window.openInscriptionDetail = function(id, color) {
+    const detailOverlay = document.getElementById("js-ins-detail-overlay");
+    const detailModal = document.getElementById("js-ins-detail-holder");
+    const header = document.getElementById("ins-detail-header");
+    
+    if (header && color) header.style.backgroundColor = color;
+    
+    fetch(`/publications/detalhes-inscricao/${id}/`)
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                const d = result.data;
+                document.getElementById("det-ins-titulo").innerText = d.titulo;
+                document.getElementById("det-ins-user").innerText = d.username;
+                document.getElementById("det-ins-desc").innerText = d.descricao;
+                
+                const fileContainer = document.getElementById("det-ins-file-container");
+                if (d.arquivo_url) {
+                    fileContainer.style.display = 'block';
+                    document.getElementById("det-ins-file").innerHTML = `<a href="${d.arquivo_url}" target="_blank" style="color: ${color || '#6C9FF9'}; font-weight: 600;"><i class='bx bx-download'></i> Baixar ${d.arquivo_nome}</a>`;
+                } else {
+                    fileContainer.style.display = 'none';
+                }
+                
+                detailOverlay.classList.add("show");
+                detailModal.classList.add("show");
+            } else {
+                alert(result.error);
+            }
+        });
+};
+
+// Fechar todos os modais e overlays (Limpa o Blur)
+window.closeAllModals = function() {
+    const overlays = [
+        "js-modal-overlay", "js-crud-overlay", "js-inscription-overlay", 
+        "js-manage-overlay", "js-ins-detail-overlay"
+    ];
+    const modals = [
+        "js-modal-holder", "js-crud-holder", "js-inscription-holder", 
+        "js-manage-holder", "js-ins-detail-holder"
+    ];
+
+    overlays.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("show");
+    });
+    modals.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("show");
+    });
+};
+
+// Listeners de Fecho
 document.addEventListener('DOMContentLoaded', () => {
-  const overlay = document.getElementById("js-modal-overlay");
-  const modal = document.getElementById("js-modal-holder");
-  const closeBtn = document.getElementById("js-close-button");
-
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      modal.classList.remove("show");
-      overlay.classList.remove("show");
+    // Configurações de fecho para cada par overlay/modal
+    const configs = [
+        { overlay: 'js-inscription-overlay', modal: 'js-inscription-holder', close: 'js-inscription-close' },
+        { overlay: 'js-manage-overlay', modal: 'js-manage-holder', close: 'js-manage-close' },
+        { overlay: 'js-ins-detail-overlay', modal: 'js-ins-detail-holder', close: 'js-ins-detail-close' },
+        { overlay: 'js-modal-overlay', modal: 'js-modal-holder', close: 'js-close-button' },
+        { overlay: 'js-crud-overlay', modal: 'js-crud-holder', close: 'js-crud-close' }
+    ];
+    
+    configs.forEach(cfg => {
+        const ov = document.getElementById(cfg.overlay);
+        const md = document.getElementById(cfg.modal);
+        const cl = document.getElementById(cfg.close);
+        
+        if (cl) cl.onclick = () => closeAllModals();
+        if (ov) ov.onclick = (e) => { if (e.target === ov) closeAllModals(); };
     });
-  }
 
-  if (overlay) {
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) {
-        modal.classList.remove("show");
-        overlay.classList.remove("show");
-      }
-    });
-  }
+    const insForm = document.getElementById("inscription-form");
+    if (insForm) {
+        insForm.onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/publications/fazer-inscricao/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    closeAllModals();
+                    loadRoute();
+                    // Fallback se loadRoute não recarregar tudo
+                    setTimeout(() => { if(window.location.hash.includes('meus_arquivos')) loadRoute(); }, 500);
+                } else {
+                    alert("Erro: " + data.error);
+                }
+            });
+        };
+    }
 });
 
 // --- CRUD Logic (Global Scope) ---
@@ -376,7 +507,7 @@ function renderEditForm(type, data) {
     </div>
   `;
 
-  if (type === 'tarefa' || type === 'concurso' || type === 'projeto') {
+  if (type === 'tarefa' || type === 'concurso' || type === 'projeto' || type === 'evento') {
      html += `
        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
           <div>

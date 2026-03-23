@@ -46,11 +46,16 @@
                                     {% for projeto in projetos %}
                                     <div class="col-lg-6 col-sm-12 mb-5">
                                         <div class="most-popular itemgrande {% cycle 'left' 'right' %}" onclick="openPostModal(this)"
+                                             data-post-type="projeto"
+                                             data-post-id="{{ projeto.id }}"
+                                             data-author-ids="{{ projeto.author.id }},{{ projeto.secondary_author.id|default:'' }}"
                                              data-title="{{ projeto.title }}"
                                              data-author-primary="{{ projeto.author.username }}"
                                              data-author-secondary="{{ projeto.secondary_author.username|default:'' }}"
                                              data-content="{{ projeto.content }}"
                                              data-image="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}"
+                                             data-course="{{ projeto.course }}"
+                                             data-year="{{ projeto.school_year }}"
                                              data-link="{{ projeto.link|default:'' }}"
                                              data-expiry="{{ projeto.expiration_date|date:'d/m/Y' }}"
                                              data-document="{% if projeto.document %}{{ projeto.document.url }}{% endif %}"

@@ -47,6 +47,9 @@
                                     {% for concurso in concursos %}
                                     <div class="col-lg-3 col-sm-6 mb-5">
                                         <div class="item" onclick="openPostModal(this)"
+                                             data-post-type="concurso"
+                                             data-post-id="{{ concurso.id }}"
+                                             data-author-ids="{{ concurso.author.id }},{{ concurso.secondary_author.id|default:'' }}"
                                              data-title="{{ concurso.title }}"
                                              data-author-primary="{{ concurso.author.username }}"
                                              data-author-secondary="{{ concurso.secondary_author.username|default:'' }}"
@@ -60,7 +63,7 @@
                                              <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
                                              <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
                                              
-                                             {% if user.is_superuser or concurso.author == user or concurso.secondary_author == user %}
+                                             {% if user.is_superuser or user.professor_profile and concurso.author == user or user.professor_profile and concurso.secondary_author == user %}
                                              <div class="post-actions">
                                                  <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('concurso', {{ concurso.id }})" title="Editar">
                                                      <i class='bx bx-edit-alt'></i>

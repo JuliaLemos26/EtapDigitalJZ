@@ -47,11 +47,16 @@
                                     {% for evento in eventos %}
                                     <div class="col-lg-6 col-sm-12 mb-5">
                                         <div class="most-popular itemgrande {% cycle 'left' 'right' %}" onclick="openPostModal(this)"
+                                             data-post-type="evento"
+                                             data-post-id="{{ evento.id }}"
+                                             data-author-ids="{{ evento.author.id }},"
                                              data-title="{{ evento.title }}"
                                              data-author-primary="{{ evento.author.username }}"
                                              data-author-secondary="{{ evento.secondary_author.username|default:'' }}"
                                              data-content="{{ evento.content }}"
                                              data-image="{% if evento.image %}{{ evento.image.url }}{% else %}{% static 'imagensteste/testeverde.png' %}{% endif %}"
+                                             data-course="{{ evento.course|default:'' }}"
+                                             data-year="{{ evento.school_year|default:'' }}"
                                              data-link="{{ evento.link|default:'' }}"
                                              data-expiry="{{ evento.expiration_date|date:'d/m/Y' }}"
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">

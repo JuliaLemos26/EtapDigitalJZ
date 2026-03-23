@@ -105,3 +105,20 @@ class Evento(BasePublication):
     class Meta:
         verbose_name = "Evento"
         verbose_name_plural = "Eventos"
+
+class Inscricao(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")
+    post_type = models.CharField(max_length=20, choices=[('tarefa', 'Tarefa'), ('concurso', 'Concurso')], verbose_name="Tipo de Post")
+    post_id = models.PositiveIntegerField(verbose_name="ID do Post")
+    titulo = models.CharField(max_length=255, verbose_name="Título da Inscrição")
+    descricao = models.TextField(verbose_name="Descrição da Inscrição")
+    arquivo = models.FileField(upload_to='inscriptions/files/', null=True, blank=True, verbose_name="Arquivo da Inscrição")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data de Inscrição")
+
+    class Meta:
+        verbose_name = "Inscrição"
+        verbose_name_plural = "Inscrições"
+        unique_together = ('user', 'post_type', 'post_id')
+
+    def __str__(self):
+        return f"{self.titulo} - {self.user.username}"

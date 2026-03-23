@@ -134,7 +134,9 @@ def spa_page(request, page_name):
                     Evento.objects.create(
                         title=title, content=content, author=author,
                         image=image, expiration_date=request.POST.get('end_date') or None,
-                        link=request.POST.get('link')
+                        link=request.POST.get('link'),
+                        course=request.POST.get('course', 'nenhum'),
+                        school_year=request.POST.get('school_year', 'todos')
                     )
                 messages.success(request, "Post publicado com sucesso!")
             except Exception as e:

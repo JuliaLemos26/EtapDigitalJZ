@@ -47,6 +47,9 @@
                                     {% for tarefa in tarefas %}
                                     <div class="col-lg-3 col-sm-6 mb-5">
                                         <div class="item" onclick="openPostModal(this)"
+                                             data-post-type="tarefa"
+                                             data-post-id="{{ tarefa.id }}"
+                                             data-author-ids="{{ tarefa.author.id }},{{ tarefa.secondary_author.id|default:'' }}"
                                              data-title="{{ tarefa.title }}"
                                              data-author-primary="{{ tarefa.author.username }}"
                                              data-author-secondary="{{ tarefa.secondary_author.username|default:'' }}"
@@ -59,7 +62,7 @@
                                              <img src="{% if tarefa.image %}{{ tarefa.image.url }}{% else %}{% static 'imagensteste/testeazul.png' %}{% endif %}" class="d-block w-100" alt="{{ tarefa.title }}">
                                              <h4>{{ tarefa.title }}<br><span>{% if tarefa.secondary_author %}{{ tarefa.secondary_author.username }}{% else %}{{ tarefa.author.username }}{% endif %}</span></h4>
                                              
-                                             {% if user.is_superuser or tarefa.author == user or tarefa.secondary_author == user %}
+                                             {% if user.is_superuser or user.professor_profile and tarefa.author == user or user.professor_profile and tarefa.secondary_author == user %}
                                              <div class="post-actions">
                                                  <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('tarefa', {{ tarefa.id }})" title="Editar">
                                                      <i class='bx bx-edit-alt'></i>

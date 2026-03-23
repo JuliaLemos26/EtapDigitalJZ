@@ -9,7 +9,11 @@
   <title>ETAP Digital</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="{% static 'js/menu.js' %}?v=6.0"></script>
+   <script src="{% static 'js/menu.js' %}?v=6.0"></script>
+   <script>
+     window.currentUserId = "{{ user.id }}";
+     window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";
+   </script>
 </head>
 
 <body>
@@ -236,6 +240,93 @@
       </form>
     </div>
   </div>
+  <!-- ***** Sistema de Modal de Inscrição ***** -->
+  <div class="modal-overlay" id="js-inscription-overlay"></div>
+  <div class="modal-holder" id="js-inscription-holder" style="max-width: 600px;">
+    <div class="modal__close" id="js-inscription-close">
+      <i class='bx bx-x'></i>
+    </div>
+    <div class="modal__header-custom" id="inscription-header" style="background: #6C9FF9; color: white;">
+      <h4 id="inscription-title">Formulário de Inscrição</h4>
+      <span id="inscription-subtitle">Preencha os dados para participar</span>
+    </div>
+    <div class="modal__body-custom" style="padding: 30px;">
+      <form id="inscription-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" id="ins-post-id">
+        <input type="hidden" name="post_type" id="ins-post-type">
+        
+        <div class="info-block" style="margin-bottom: 20px;">
+          <label>Título da Inscrição</label>
+          <input type="text" name="titulo" class="text-input" style="width:100%;" required placeholder="Ex: Minha Proposta / Participação">
+        </div>
+        
+        <div class="info-block" style="margin-bottom: 20px;">
+          <label>Descrição / Motivação</label>
+          <textarea name="descricao" class="textarea" style="width:100%; min-height: 120px;" required placeholder="Explique por que deseja participar ou descreva sua ideia..."></textarea>
+        </div>
+        
+        <div id="ins-file-field" class="info-block" style="margin-bottom: 20px; display: none;">
+          <label>Anexar Arquivo (Obrigatório para Concursos)</label>
+          <input type="file" name="arquivo" class="upload-input" id="ins-file-input">
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
+          <button type="submit" class="action-btn" style="background: #6C9FF9; color: white; width: auto; padding: 0 30px;">
+            Confirmar Inscrição
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ***** Sistema de Modal de Gerenciamento de Inscrições (Autor) ***** -->
+  <div class="modal-overlay" id="js-manage-overlay"></div>
+  <div class="modal-holder" id="js-manage-holder" style="max-width: 700px;">
+    <div class="modal__close" id="js-manage-close">
+      <i class='bx bx-x'></i>
+    </div>
+    <div class="modal__header-custom" id="manage-header" style="background: #333; color: white;">
+      <h4 id="manage-title">Inscrições Recebidas</h4>
+      <span id="manage-subtitle">Veja quem se inscreveu no seu post</span>
+    </div>
+    <div class="modal__body-custom" style="padding: 25px;">
+      <div id="manage-list-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-height: 400px; overflow-y: auto;">
+        <!-- Cards de inscrição injetados via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ***** Sistema de Modal de Detalhes da Inscrição ***** -->
+  <div class="modal-overlay" id="js-ins-detail-overlay"></div>
+  <div class="modal-holder" id="js-ins-detail-holder" style="max-width: 550px;">
+    <div class="modal__close" id="js-ins-detail-close">
+      <i class='bx bx-x'></i>
+    </div>
+    <div class="modal__header-custom" id="ins-detail-header" style="background: #6C9FF9; color: white;">
+      <h4 id="ins-detail-title">Detalhes da Inscrição</h4>
+      <span id="ins-detail-subtitle">Informações enviadas pelo aluno</span>
+    </div>
+    <div class="modal__body-custom" style="padding: 25px;">
+        <div class="info-block" style="margin-bottom: 15px;">
+            <label>Título</label>
+            <div id="det-ins-titulo" class="content-box"></div>
+        </div>
+        <div class="info-block" style="margin-bottom: 15px;">
+            <label>Usuário</label>
+            <div id="det-ins-user" class="content-box"></div>
+        </div>
+        <div class="info-block" style="margin-bottom: 15px;">
+            <label>Descrição</label>
+            <div id="det-ins-desc" class="content-box" style="white-space: pre-wrap;"></div>
+        </div>
+        <div id="det-ins-file-container" class="info-block" style="margin-bottom: 15px;">
+            <label>Arquivo</label>
+            <div id="det-ins-file" class="content-box"></div>
+        </div>
+    </div>
+  </div>
+
   <!-- Scripts Globais -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/jquery.min.js' %}"></script>

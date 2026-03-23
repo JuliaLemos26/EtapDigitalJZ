@@ -74,6 +74,9 @@
                   {% for tarefa in tarefas_recentes %}
                   <div class="col-lg-3 col-sm-6">
                     <div class="item" onclick="openPostModal(this)"
+                         data-post-type="tarefa"
+                         data-post-id="{{ tarefa.id }}"
+                         data-author-ids="{{ tarefa.author.id }},{{ tarefa.secondary_author.id|default:'' }}"
                          data-title="{{ tarefa.title }}"
                          data-author-primary="{{ tarefa.author.username }}"
                          data-author-secondary="{{ tarefa.secondary_author.username|default:'' }}"
@@ -110,6 +113,9 @@
                   {% for concurso in concursos_recentes %}
                   <div class="col-lg-3 col-sm-6">
                     <div class="item" onclick="openPostModal(this)"
+                         data-post-type="concurso"
+                         data-post-id="{{ concurso.id }}"
+                         data-author-ids="{{ concurso.author.id }},{{ concurso.secondary_author.id|default:'' }}"
                          data-title="{{ concurso.title }}"
                          data-author-primary="{{ concurso.author.username }}"
                          data-author-secondary="{{ concurso.secondary_author.username|default:'' }}"
@@ -118,6 +124,7 @@
                          data-course="{{ concurso.course }}"
                          data-year="{{ concurso.school_year }}"
                          data-end="{{ concurso.end_date|date:'d/m/Y H:i' }}"
+                         data-document="{% if concurso.document %}{{ concurso.document.url }}{% endif %}"
                          data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                       <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" alt="{{ concurso.title }}">
                       <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
@@ -146,6 +153,9 @@
                   {% for projeto in projetos_recentes %}
                   <div class="col-lg-3 col-sm-6">
                     <div class="item" onclick="openPostModal(this)"
+                         data-post-type="projeto"
+                         data-post-id="{{ projeto.id }}"
+                         data-author-ids="{{ projeto.author.id }},{{ projeto.secondary_author.id|default:'' }}"
                          data-title="{{ projeto.title }}"
                          data-author-primary="{{ projeto.author.username }}"
                          data-author-secondary="{{ projeto.secondary_author.username|default:'' }}"
@@ -153,6 +163,7 @@
                          data-image="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}"
                          data-course="{{ projeto.course }}"
                          data-year="{{ projeto.school_year }}"
+                         data-document="{% if projeto.document %}{{ projeto.document.url }}{% endif %}"
                          data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                       <img src="{% if projeto.image %}{{ projeto.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" alt="{{ projeto.title }}">
                       <h4>{{ projeto.title }}<br><span>{% if projeto.secondary_author %}{{ projeto.secondary_author.username }}{% else %}{{ projeto.author.username }}{% endif %}</span></h4>
