@@ -172,10 +172,28 @@
   transform: translateY(-2px);
 }
 
-.tab-link.active {
+.tab-link[data-tab="tarefas"].active {
   background: #6C9FF9;
   border-color: #6C9FF9;
   box-shadow: 0 5px 15px rgba(108, 159, 249, 0.3);
+}
+
+.tab-link[data-tab="concursos"].active {
+  background: #A6E4B2;
+  border-color: #A6E4B2;
+  box-shadow: 0 5px 15px rgba(166, 228, 178, 0.3);
+}
+
+.tab-link[data-tab="projetos"].active {
+  background: #FFE29A;
+  border-color: #FFE29A;
+  box-shadow: 0 5px 15px rgba(255, 226, 154, 0.3);
+}
+
+.tab-link[data-tab="eventos"].active {
+  background: #F8A5C2;
+  border-color: #F8A5C2;
+  box-shadow: 0 5px 15px rgba(248, 165, 194, 0.3);
 }
 
 .post-actions {
