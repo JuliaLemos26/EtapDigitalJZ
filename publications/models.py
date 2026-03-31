@@ -9,6 +9,7 @@ class BasePublication(models.Model):
     secondary_author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_secondary', verbose_name="Autor Secundário (Aluno)")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
     image = models.ImageField(upload_to='publications/images/', null=True, blank=True, verbose_name="Imagem de Destaque")
+    views_count = models.PositiveIntegerField(default=0, verbose_name="Visualizações")
 
     class Meta:
         abstract = True

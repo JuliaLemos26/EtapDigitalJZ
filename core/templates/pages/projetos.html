@@ -13,6 +13,15 @@
     <link rel="stylesheet" href="{% static 'css/animate.css' %}">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
         <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+        <style>
+            .dropdown {
+                z-index: 9999 !important;
+                filter: none !important;
+            }
+            .dropdown__items {
+                z-index: 10000 !important;
+            }
+        </style>
     </head>
     <body>
         <!-- ***** Preloader Start ***** -->
@@ -33,9 +42,9 @@
                                         <div class="dropdown__arrow"></div>
                                     </label>
                                     <ul class="dropdown__items">
-                                        <li><a class="dropdown-item" href="#">Filtro 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 3</a></li>
+                                        <li><a class="dropdown-item" href="#/projetos?filter=recentes">Mais Recentes</a></li>
+                                        <li><a class="dropdown-item" href="#/projetos?filter=antigos">Mais Antigos</a></li>
+                                        <li><a class="dropdown-item" href="#/projetos?filter=populares">Mais Populares</a></li>
                                     </ul>
                                 </div>
                                 <div class="heading-section">
@@ -86,19 +95,19 @@
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
                                         {% if projetos.has_previous %}
-                                            <a class="prev page-numbers" href="#/projetos?page={{ projetos.previous_page_number }}">prev</a>
+                                            <a class="prev page-numbers" href="#/projetos?page={{ projetos.previous_page_number }}&filter={{ current_filter }}">prev</a>
                                         {% endif %}
 
                                         {% for num in projetos.paginator.page_range %}
                                             {% if projetos.number == num %}
                                                 <span aria-current="page" class="page-numbers current">{{ num }}</span>
                                             {% else %}
-                                                <a class="page-numbers" href="#/projetos?page={{ num }}">{{ num }}</a>
+                                                <a class="page-numbers" href="#/projetos?page={{ num }}&filter={{ current_filter }}">{{ num }}</a>
                                             {% endif %}
                                         {% endfor %}
 
                                         {% if projetos.has_next %}
-                                            <a class="next page-numbers" href="#/projetos?page={{ projetos.next_page_number }}">next</a>
+                                            <a class="next page-numbers" href="#/projetos?page={{ projetos.next_page_number }}&filter={{ current_filter }}">next</a>
                                         {% endif %}
                                     </div>
                                 </div>

@@ -1262,9 +1262,10 @@ Start Stream Style
 .dropdown {
   position: relative; /* agora relativo à most-popular */
   width: 150px; /* menor largura */
-  filter: url(#goo);
+  width: 150px; /* menor largura */
   font-family: "Lato", Arial, sans-serif;
   margin-left: auto; /* alinha à direita dentro do container */
+  z-index: 1100;
 }
 
 .dropdown__face {
@@ -1310,7 +1311,7 @@ Start Stream Style
   visibility: hidden;
   opacity: 0;
   transition: all 0.3s ease;
-  z-index: 100; 
+  z-index: 1000; 
 }
 
 .dropdown__items li {

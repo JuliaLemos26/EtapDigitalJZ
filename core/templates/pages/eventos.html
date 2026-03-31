@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-        <title>Tarefas</title>
+        <title>Eventos</title>
     
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
@@ -13,6 +13,15 @@
         <link rel="stylesheet" href="{% static 'css/owl.css' %}">
         <link rel="stylesheet" href="{% static 'css/animate.css' %}">
         <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+        <style>
+            .dropdown {
+                z-index: 9999 !important;
+                filter: none !important;
+            }
+            .dropdown__items {
+                z-index: 10000 !important;
+            }
+        </style>
     </head>
     <body>
         <!-- ***** Preloader Start ***** -->
@@ -34,9 +43,9 @@
                                         <div class="dropdown__arrow"></div>
                                     </label>
                                     <ul class="dropdown__items">
-                                        <li><a class="dropdown-item" href="#">Filtro 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 3</a></li>
+                                        <li><a class="dropdown-item" href="#/eventos?filter=recentes">Mais Recentes</a></li>
+                                        <li><a class="dropdown-item" href="#/eventos?filter=antigos">Mais Antigos</a></li>
+                                        <li><a class="dropdown-item" href="#/eventos?filter=populares">Mais Populares</a></li>
                                     </ul>
                                 </div>
                                 <div class="heading-section">
@@ -86,19 +95,19 @@
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
                                         {% if eventos.has_previous %}
-                                            <a class="prev page-numbers" href="#/eventos?page={{ eventos.previous_page_number }}">prev</a>
+                                            <a class="prev page-numbers" href="#/eventos?page={{ eventos.previous_page_number }}&filter={{ current_filter }}">prev</a>
                                         {% endif %}
 
                                         {% for num in eventos.paginator.page_range %}
                                             {% if eventos.number == num %}
                                                 <span aria-current="page" class="page-numbers current">{{ num }}</span>
                                             {% else %}
-                                                <a class="page-numbers" href="#/eventos?page={{ num }}">{{ num }}</a>
+                                                <a class="page-numbers" href="#/eventos?page={{ num }}&filter={{ current_filter }}">{{ num }}</a>
                                             {% endif %}
                                         {% endfor %}
 
                                         {% if eventos.has_next %}
-                                            <a class="next page-numbers" href="#/eventos?page={{ eventos.next_page_number }}">next</a>
+                                            <a class="next page-numbers" href="#/eventos?page={{ eventos.next_page_number }}&filter={{ current_filter }}">next</a>
                                         {% endif %}
                                     </div>
                                 </div>

@@ -14,6 +14,15 @@
         <link rel="stylesheet" href="{% static 'css/owl.css' %}">
         <link rel="stylesheet" href="{% static 'css/animate.css' %}">
         <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+        <style>
+            .dropdown {
+                z-index: 9999 !important;
+                filter: none !important;
+            }
+            .dropdown__items {
+                z-index: 10000 !important;
+            }
+        </style>
     </head>
     <body>
         <!-- ***** Preloader Start ***** -->
@@ -35,9 +44,9 @@
                                         <div class="dropdown__arrow"></div>
                                     </label>
                                     <ul class="dropdown__items">
-                                        <li><a class="dropdown-item" href="#">Filtro 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Filtro 3</a></li>
+                                        <li><a class="dropdown-item" href="#/concursos?filter=recentes">Mais Recentes</a></li>
+                                        <li><a class="dropdown-item" href="#/concursos?filter=antigos">Mais Antigos</a></li>
+                                        <li><a class="dropdown-item" href="#/concursos?filter=populares">Mais Populares</a></li>
                                     </ul>
                                 </div>
                                 <div class="heading-section">
@@ -83,19 +92,19 @@
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
                                         {% if concursos.has_previous %}
-                                            <a class="prev page-numbers" href="#/concursos?page={{ concursos.previous_page_number }}">prev</a>
+                                            <a class="prev page-numbers" href="#/concursos?page={{ concursos.previous_page_number }}&filter={{ current_filter }}">prev</a>
                                         {% endif %}
 
                                         {% for num in concursos.paginator.page_range %}
                                             {% if concursos.number == num %}
                                                 <span aria-current="page" class="page-numbers current">{{ num }}</span>
                                             {% else %}
-                                                <a class="page-numbers" href="#/concursos?page={{ num }}">{{ num }}</a>
+                                                <a class="page-numbers" href="#/concursos?page={{ num }}&filter={{ current_filter }}">{{ num }}</a>
                                             {% endif %}
                                         {% endfor %}
 
                                         {% if concursos.has_next %}
-                                            <a class="next page-numbers" href="#/concursos?page={{ concursos.next_page_number }}">next</a>
+                                            <a class="next page-numbers" href="#/concursos?page={{ concursos.next_page_number }}&filter={{ current_filter }}">next</a>
                                         {% endif %}
                                     </div>
                                 </div>

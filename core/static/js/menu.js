@@ -245,6 +245,10 @@ window.openPostModal = function (element) {
 
   extrasHtml += '<div style="height: 50px; width: 100%; grid-column: span 2;"></div>';
   extras.innerHTML = extrasHtml;
+
+  // Incrementar contador de visualizações (Background)
+  fetch(`/publications/increment-view/${postType}/${postId}/`);
+
   overlay.classList.add("show");
   modal.classList.add("show");
 };

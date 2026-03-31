@@ -65,28 +65,38 @@ def spa_page(request, page_name):
     
     context = {'page_name': page_name}
     page_number = request.GET.get('page', 1)
+    filter_type = request.GET.get('filter', 'recentes')
 
-    # Carregar dados específicos por página
+    # Lógica de Ordenação
+    order_by = '-pk' # Recentes por padrão
+    if filter_type == 'antigos':
+        order_by = 'pk'
+    elif filter_type == 'populares':
+        order_by = '-views_count'
+
+    # Carregar dados específicos por página com filtro
     if page_name == 'home':
-        context['tarefas_recentes'] = Tarefa.objects.all().order_by('-pk')[:6]
-        context['concursos_recentes'] = Concurso.objects.all().order_by('-pk')[:6]
-        context['projetos_recentes'] = Projeto.objects.all().order_by('-pk')[:6]
+        context['tarefas_recentes'] = Tarefa.objects.all().order_by('-created_at')[:6]
+        context['concursos_recentes'] = Concurso.objects.all().order_by('-created_at')[:6]
+        context['projetos_recentes'] = Projeto.objects.all().order_by('-created_at')[:6]
     elif page_name == 'tarefas':
-        queryset = Tarefa.objects.all().order_by('-pk')
+        queryset = Tarefa.objects.all().order_by(order_by)
         paginator = Paginator(queryset, 8)
         context['tarefas'] = paginator.get_page(page_number)
     elif page_name == 'concursos':
-        queryset = Concurso.objects.all().order_by('-pk')
+        queryset = Concurso.objects.all().order_by(order_by)
         paginator = Paginator(queryset, 8)
         context['concursos'] = paginator.get_page(page_number)
     elif page_name == 'projetos':
-        queryset = Projeto.objects.all().order_by('-pk')
+        queryset = Projeto.objects.all().order_by(order_by)
         paginator = Paginator(queryset, 6)
         context['projetos'] = paginator.get_page(page_number)
     elif page_name == 'eventos':
-        queryset = Evento.objects.all().order_by('-pk')
+        queryset = Evento.objects.all().order_by(order_by)
         paginator = Paginator(queryset, 6)
         context['eventos'] = paginator.get_page(page_number)
+    
+    context['current_filter'] = filter_type
     
     # Restrição e lógica para formpost
     if page_name == 'formpost':

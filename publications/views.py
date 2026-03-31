@@ -18,6 +18,17 @@ def get_post_model(post_type):
     return models.get(post_type)
 
 @login_required
+def increment_view_count(request, post_type, post_id):
+    model = get_post_model(post_type)
+    if not model:
+        return JsonResponse({'success': False, 'error': 'Tipo de post inválido'}, status=400)
+    
+    post = get_object_or_404(model, id=post_id)
+    post.views_count += 1
+    post.save(update_fields=['views_count'])
+    return JsonResponse({'success': True, 'views_count': post.views_count})
+
+@login_required
 def delete_post(request, post_type, post_id):
     model = get_post_model(post_type)
     if not model:

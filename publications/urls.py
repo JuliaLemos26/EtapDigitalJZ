@@ -10,4 +10,5 @@ urlpatterns = [
     path('cancelar-inscricao/', views.cancelar_inscricao, name='cancelar-inscricao'),
     path('listar-inscricoes/<str:post_type>/<int:post_id>/', views.listar_inscricoes_post, name='listar-inscricoes'),
     path('detalhes-inscricao/<int:inscricao_id>/', views.ver_detalhes_inscricao, name='detalhes-inscricao'),
+    path('increment-view/<str:post_type>/<int:post_id>/', views.increment_view_count, name='increment-view'),
 ]
