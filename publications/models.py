@@ -2,6 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 from wagtail.snippets.models import register_snippet
 
+COURSES = [
+    ('GPSI', 'Gestão e Programação de Sistemas Informáticos'),
+    ('MULT', 'Multimédia'),
+    ('AG', 'Artes Gráficas'),
+    ('SJ', 'Serviços Jurídicos'),
+    ('CAB', 'Cabeleireiro'),
+    ('nenhum', 'Nenhum (Todos os cursos)'),
+]
+
+YEAR_CHOICES = [
+    ('10', '10º Ano'),
+    ('11', '11º Ano'),
+    ('12', '12º Ano'),
+    ('todos', 'Todos os Anos'),
+]
+
 class BasePublication(models.Model):
     title = models.CharField(max_length=255, verbose_name="Título")
     content = models.TextField(verbose_name="Conteúdo")
@@ -10,6 +26,8 @@ class BasePublication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
     image = models.ImageField(upload_to='publications/images/', null=True, blank=True, verbose_name="Imagem de Destaque")
     views_count = models.PositiveIntegerField(default=0, verbose_name="Visualizações")
+    course = models.CharField(max_length=50, choices=COURSES, default='nenhum', verbose_name="Curso")
+    school_year = models.CharField(max_length=10, choices=YEAR_CHOICES, default='todos', verbose_name="Ano Escolar")
 
     class Meta:
         abstract = True
@@ -20,22 +38,6 @@ class BasePublication(models.Model):
 
 @register_snippet
 class Tarefa(BasePublication):
-    COURSES = [
-        ('GPSI', 'Gestão e Programação de Sistemas Informáticos'),
-        ('MULT', 'Multimédia'),
-        ('AG', 'Artes Gráficas'),
-        ('SJ', 'Serviços Jurídicos'),
-        ('CAB', 'Cabeleireiro'),
-        ('nenhum', 'Nenhum (Todos os cursos)'),
-    ]
-    YEAR_CHOICES = [
-        ('10', '10º Ano'),
-        ('11', '11º Ano'),
-        ('12', '12º Ano'),
-        ('todos', 'Todos os Anos'),
-    ]
-    course = models.CharField(max_length=50, choices=COURSES, default='nenhum', verbose_name="Curso")
-    school_year = models.CharField(max_length=10, choices=YEAR_CHOICES, default='todos', verbose_name="Ano Escolar")
     start_date = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="Data de Início")
     end_date = models.DateTimeField(null=True, blank=True, verbose_name="Data de Conclusão")
     participant_limit = models.PositiveIntegerField(null=True, blank=True, verbose_name="Limite de Participantes")
@@ -47,22 +49,6 @@ class Tarefa(BasePublication):
 
 @register_snippet
 class Concurso(BasePublication):
-    COURSES = [
-        ('GPSI', 'Gestão e Programação de Sistemas Informáticos'),
-        ('MULT', 'Multimédia'),
-        ('AG', 'Artes Gráficas'),
-        ('SJ', 'Jurídicos'),
-        ('CAB', 'Cabeleireiro'),
-        ('nenhum', 'Nenhum (Todos os cursos)'),
-    ]
-    YEAR_CHOICES = [
-        ('10', '10º Ano'),
-        ('11', '11º Ano'),
-        ('12', '12º Ano'),
-        ('todos', 'Todos os Anos'),
-    ]
-    course = models.CharField(max_length=50, choices=COURSES, default='nenhum', verbose_name="Curso")
-    school_year = models.CharField(max_length=10, choices=YEAR_CHOICES, default='todos', verbose_name="Ano Escolar")
     start_date = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="Data de Início")
     end_date = models.DateTimeField(null=True, blank=True, verbose_name="Data de Conclusão")
     document = models.FileField(upload_to='publications/documents/', null=True, blank=True, verbose_name="Documento/Edital")
@@ -74,22 +60,6 @@ class Concurso(BasePublication):
 
 @register_snippet
 class Projeto(BasePublication):
-    COURSES = [
-        ('GPSI', 'Gestão e Programação de Sistemas Informáticos'),
-        ('MULT', 'Multimédia'),
-        ('AG', 'Artes Gráficas'),
-        ('SJ', 'Jurídicos'),
-        ('CAB', 'Cabeleireiro'),
-        ('nenhum', 'Nenhum (Todos os cursos)'),
-    ]
-    YEAR_CHOICES = [
-        ('10', '10º Ano'),
-        ('11', '11º Ano'),
-        ('12', '12º Ano'),
-        ('todos', 'Todos os Anos'),
-    ]
-    course = models.CharField(max_length=50, choices=COURSES, default='nenhum', verbose_name="Curso")
-    school_year = models.CharField(max_length=10, choices=YEAR_CHOICES, default='todos', verbose_name="Ano Escolar")
     publication_date = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="Data de Publicação")
     document = models.FileField(upload_to='publications/documents/', null=True, blank=True, verbose_name="Documento do Projeto")
     

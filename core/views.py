@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 def is_admin(user):
     return user.is_superuser
@@ -67,6 +68,15 @@ def spa_page(request, page_name):
     page_number = request.GET.get('page', 1)
     filter_type = request.GET.get('filter', 'recentes')
 
+    # Mapeamento de Cursos (Aluno -> Publicação)
+    COURSE_MAPPING = {
+        'tgpsi': 'GPSI',
+        'tag': 'AG',
+        'tmult': 'MULT',
+        'tsj': 'SJ',
+        'tcab': 'CAB',
+    }
+
     # Lógica de Ordenação
     order_by = '-pk' # Recentes por padrão
     if filter_type == 'antigos':
@@ -74,25 +84,41 @@ def spa_page(request, page_name):
     elif filter_type == 'populares':
         order_by = '-views_count'
 
+    # Lógica de Filtragem por Curso
+    course_filter = None
+    if filter_type == 'meu_curso':
+        aluno_profile = getattr(request.user, 'aluno_profile', None)
+        if aluno_profile:
+            aluno_curso = aluno_profile.curso.lower()
+            target_course = COURSE_MAPPING.get(aluno_curso, 'nenhum')
+            course_filter = Q(course=target_course) | Q(course='nenhum')
+        else:
+            # Se não for aluno, não aplica filtro de curso especial (ou filtra apenas 'nenhum')
+            course_filter = Q(course='nenhum')
+
     # Carregar dados específicos por página com filtro
     if page_name == 'home':
-        context['tarefas_recentes'] = Tarefa.objects.all().order_by('-created_at')[:6]
-        context['concursos_recentes'] = Concurso.objects.all().order_by('-created_at')[:6]
-        context['projetos_recentes'] = Projeto.objects.all().order_by('-created_at')[:6]
+        context['tarefas_recentes'] = Tarefa.objects.all().order_by('-pk')[:6]
+        context['concursos_recentes'] = Concurso.objects.all().order_by('-pk')[:6]
+        context['projetos_recentes'] = Projeto.objects.all().order_by('-pk')[:6]
     elif page_name == 'tarefas':
         queryset = Tarefa.objects.all().order_by(order_by)
+        if course_filter: queryset = queryset.filter(course_filter)
         paginator = Paginator(queryset, 8)
         context['tarefas'] = paginator.get_page(page_number)
     elif page_name == 'concursos':
         queryset = Concurso.objects.all().order_by(order_by)
+        if course_filter: queryset = queryset.filter(course_filter)
         paginator = Paginator(queryset, 8)
         context['concursos'] = paginator.get_page(page_number)
     elif page_name == 'projetos':
         queryset = Projeto.objects.all().order_by(order_by)
+        if course_filter: queryset = queryset.filter(course_filter)
         paginator = Paginator(queryset, 6)
         context['projetos'] = paginator.get_page(page_number)
     elif page_name == 'eventos':
         queryset = Evento.objects.all().order_by(order_by)
+        if course_filter: queryset = queryset.filter(course_filter)
         paginator = Paginator(queryset, 6)
         context['eventos'] = paginator.get_page(page_number)
     

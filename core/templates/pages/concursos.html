@@ -47,6 +47,9 @@
                                         <li><a class="dropdown-item" href="#/concursos?filter=recentes">Mais Recentes</a></li>
                                         <li><a class="dropdown-item" href="#/concursos?filter=antigos">Mais Antigos</a></li>
                                         <li><a class="dropdown-item" href="#/concursos?filter=populares">Mais Populares</a></li>
+                                        {% if user.aluno_profile %}
+                                        <li><a class="dropdown-item" href="#/concursos?filter=meu_curso">Meu Curso</a></li>
+                                        {% endif %}
                                     </ul>
                                 </div>
                                 <div class="heading-section">

@@ -47,6 +47,9 @@
                                         <li><a class="dropdown-item" href="#/tarefas?filter=recentes">Mais Recentes</a></li>
                                         <li><a class="dropdown-item" href="#/tarefas?filter=antigos">Mais Antigos</a></li>
                                         <li><a class="dropdown-item" href="#/tarefas?filter=populares">Mais Populares</a></li>
+                                        {% if user.aluno_profile %}
+                                        <li><a class="dropdown-item" href="#/tarefas?filter=meu_curso">Meu Curso</a></li>
+                                        {% endif %}
                                     </ul>
                                 </div>
                                 <div class="heading-section">
