@@ -53,6 +53,9 @@ class Concurso(BasePublication):
     end_date = models.DateTimeField(null=True, blank=True, verbose_name="Data de Conclusão")
     document = models.FileField(upload_to='publications/documents/', null=True, blank=True, verbose_name="Documento/Edital")
     allow_files = models.BooleanField(default=True, verbose_name="Permitir Coleta de Arquivos")
+    winner_1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_1', verbose_name="1º Lugar")
+    winner_2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_2', verbose_name="2º Lugar")
+    winner_3 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_3', verbose_name="3º Lugar")
 
     class Meta:
         verbose_name = "Concurso"
@@ -84,6 +87,7 @@ class Inscricao(models.Model):
     titulo = models.CharField(max_length=255, verbose_name="Título da Inscrição")
     descricao = models.TextField(verbose_name="Descrição da Inscrição")
     arquivo = models.FileField(upload_to='inscriptions/files/', null=True, blank=True, verbose_name="Arquivo da Inscrição")
+    status = models.CharField(max_length=20, choices=[('pendente', 'Pendente'), ('aprovada', 'Aprovada'), ('rejeitada', 'Rejeitada')], default='pendente', verbose_name="Estado da Inscrição")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data de Inscrição")
 
     class Meta:

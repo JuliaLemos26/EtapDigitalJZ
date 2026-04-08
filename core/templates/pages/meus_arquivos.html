@@ -49,6 +49,9 @@
                                      data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}"
                                      {% else %}
                                      data-link="{{ item.link|default:'' }}" data-expiry="{{ item.expiration_date|date:'d/m/Y' }}"
+                                     data-winner-1="{{ item.winner_1.username|default:'' }}"
+                                     data-winner-2="{{ item.winner_2.username|default:'' }}"
+                                     data-winner-3="{{ item.winner_3.username|default:'' }}"
                                      data-color="#FFE29A"
                                      {% endif %}>
                                      <img src="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}" alt="{{ item.title }}">

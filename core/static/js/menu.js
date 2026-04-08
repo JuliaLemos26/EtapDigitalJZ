@@ -161,10 +161,10 @@ window.openPostModal = function (element) {
   // Determinar o tipo real: Priorizar data-attribute, fallback para hash
   let postType = element.getAttribute("data-post-type");
   if (!postType) {
-      if (window.location.hash.includes('concursos')) postType = 'concurso';
-      else if (window.location.hash.includes('eventos')) postType = 'evento';
-      else if (window.location.hash.includes('projetos')) postType = 'projeto';
-      else postType = 'tarefa';
+    if (window.location.hash.includes('concursos')) postType = 'concurso';
+    else if (window.location.hash.includes('eventos')) postType = 'evento';
+    else if (window.location.hash.includes('projetos')) postType = 'projeto';
+    else postType = 'tarefa';
   }
 
   // Preencher o Modal - Cabeçalho
@@ -209,6 +209,21 @@ window.openPostModal = function (element) {
     extrasHtml += `<div class="info-block" style="grid-column: span 2;"><label>Documento</label><a href="${documentPath}" target="_blank" class="content-box-link"><i class='bx bx-file'></i> Visualizar Documento</a></div>`;
   }
 
+  const w1 = element.getAttribute("data-winner-1");
+  const w2 = element.getAttribute("data-winner-2");
+  const w3 = element.getAttribute("data-winner-3");
+
+  if (w1 || w2 || w3) {
+    extrasHtml += `<div class="info-block" style="grid-column: span 2; margin-top: 15px; border: 1px solid #ffeeba; background: #fff3cd; border-radius: 8px; padding: 15px;">
+        <h5 style="margin: 0 0 10px 0; color: #856404; font-size: 16px;"><i class='bx bxs-award'></i> Vencedores do Concurso</h5>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            ${w1 ? `<div style="font-size: 14px; font-weight: bold; color: #d4af37;"><i class='bx bxs-trophy'></i> 1º Lugar: ${w1}</div>` : ''}
+            ${w2 ? `<div style="font-size: 14px; font-weight: bold; color: #aaa9ad;"><i class='bx bxs-trophy'></i> 2º Lugar: ${w2}</div>` : ''}
+            ${w3 ? `<div style="font-size: 14px; font-weight: bold; color: #cd7f32;"><i class='bx bxs-trophy'></i> 3º Lugar: ${w3}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
   // NOVA LÓGICA: Botões de Inscrição / Gerenciamento
   const authorIds = (element.getAttribute("data-author-ids") || "").split(",");
   const isAuthor = authorIds.includes(window.currentUserId);
@@ -216,8 +231,8 @@ window.openPostModal = function (element) {
   const userRole = window.userRole || 'aluno';
 
   if (postType === 'tarefa' || postType === 'concurso') {
-      if (isAuthor) {
-          extrasHtml += `
+    if (isAuthor) {
+      extrasHtml += `
             <div class="info-block" style="grid-column: span 2; margin-top: 15px; margin-bottom: 30px;">
               <button class="btn-manage" onclick="openManageInscriptions('${postType}', '${postId}', '${color}')" 
                 style="background: transparent; color: ${color}; width: 100%; height: 45px; border-radius: 25px; font-weight: 600; border: 2px solid ${color}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"
@@ -226,12 +241,12 @@ window.openPostModal = function (element) {
                 <i class='bx bx-group'></i> Ver Inscrições Recebidas
               </button>
             </div>`;
-      } else if (userRole === 'aluno' && !isAuthor) {
-          const btnText = isSubscribed ? "Cancelar Minha Inscrição" : "Inscrever-se Agora";
-          const btnColor = isSubscribed ? "#ff4d4d" : color;
-          const actualAction = isSubscribed ? "cancelarInscricao" : "openInscriptionModal";
-          
-          extrasHtml += `
+    } else if (userRole === 'aluno' && !isAuthor) {
+      const btnText = isSubscribed ? "Cancelar Minha Inscrição" : "Inscrever-se Agora";
+      const btnColor = isSubscribed ? "#ff4d4d" : color;
+      const actualAction = isSubscribed ? "cancelarInscricao" : "openInscriptionModal";
+
+      extrasHtml += `
             <div class="info-block" style="grid-column: span 2; margin-top: 15px; margin-bottom: 30px;">
               <button class="btn-subscribe" onclick="${actualAction}('${postType}', '${postId}', '${color}')" 
                 style="background: transparent; color: ${btnColor}; width: 100%; height: 45px; border-radius: 25px; font-weight: 700; border: 2px solid ${btnColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"
@@ -240,7 +255,7 @@ window.openPostModal = function (element) {
                 <i class='bx bx-edit'></i> ${btnText}
               </button>
             </div>`;
-      }
+    }
   }
 
   extrasHtml += '<div style="height: 50px; width: 100%; grid-column: span 2;"></div>';
@@ -255,180 +270,276 @@ window.openPostModal = function (element) {
 
 // --- Inscription Flow ---
 
-window.openInscriptionModal = function(type, id, color) {
-    const mainModal = document.getElementById("js-modal-holder");
-    const insOverlay = document.getElementById("js-inscription-overlay");
-    const insModal = document.getElementById("js-inscription-holder");
-    const header = document.getElementById("inscription-header");
-    const form = document.getElementById("inscription-form");
-    
-    // Resetar formulário para limpar dados anteriores
-    if (form) form.reset();
-    
-    // Cor do Modal
-    if (header && color) {
-        header.style.backgroundColor = color;
-        const confirmBtn = form.querySelector('button[type="submit"]');
-        if (confirmBtn) confirmBtn.style.backgroundColor = color;
-    }
-    
-    // Fechar modal de detalhes
-    if (mainModal) mainModal.classList.remove("show");
-    
-    // Preparar modal de inscrição
-    document.getElementById("ins-post-id").value = id;
-    document.getElementById("ins-post-type").value = type;
-    
-    const fileField = document.getElementById("ins-file-field");
-    const fileInput = document.getElementById("ins-file-input");
-    if (type === 'concurso') {
-        fileField.style.display = 'block';
-        fileInput.required = true;
-    } else {
-        fileField.style.display = 'none';
-        fileInput.required = false;
-    }
-    
-    insOverlay.classList.add("show");
-    insModal.classList.add("show");
+window.openInscriptionModal = function (type, id, color) {
+  const mainModal = document.getElementById("js-modal-holder");
+  const insOverlay = document.getElementById("js-inscription-overlay");
+  const insModal = document.getElementById("js-inscription-holder");
+  const header = document.getElementById("inscription-header");
+  const form = document.getElementById("inscription-form");
+
+  // Resetar formulário para limpar dados anteriores
+  if (form) form.reset();
+
+  // Cor do Modal
+  if (header && color) {
+    header.style.backgroundColor = color;
+    const confirmBtn = form.querySelector('button[type="submit"]');
+    if (confirmBtn) confirmBtn.style.backgroundColor = color;
+  }
+
+  // Fechar modal de detalhes
+  if (mainModal) mainModal.classList.remove("show");
+
+  // Preparar modal de inscrição
+  document.getElementById("ins-post-id").value = id;
+  document.getElementById("ins-post-type").value = type;
+
+  const fileField = document.getElementById("ins-file-field");
+  const fileInput = document.getElementById("ins-file-input");
+  if (type === 'concurso') {
+    fileField.style.display = 'block';
+    fileInput.required = true;
+  } else {
+    fileField.style.display = 'none';
+    fileInput.required = false;
+  }
+
+  insOverlay.classList.add("show");
+  insModal.classList.add("show");
 };
 
-window.openManageInscriptions = function(type, id, color) {
-    const mainModal = document.getElementById("js-modal-holder");
-    const manageOverlay = document.getElementById("js-manage-overlay");
-    const manageModal = document.getElementById("js-manage-holder");
-    const container = document.getElementById("manage-list-container");
-    const header = document.getElementById("manage-header");
-    
-    // Cor do Modal
-    if (header && color) {
-        header.style.backgroundColor = color;
-    }
+window.openManageInscriptions = function (type, id, color) {
+  const mainModal = document.getElementById("js-modal-holder");
+  const manageOverlay = document.getElementById("js-manage-overlay");
+  const manageModal = document.getElementById("js-manage-holder");
+  const container = document.getElementById("manage-list-container");
+  const header = document.getElementById("manage-header");
 
-    if (mainModal) mainModal.classList.remove("show");
-    
-    container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 30px; color: #6C9FF9;"></i></div>';
-    
-    manageOverlay.classList.add("show");
-    manageModal.classList.add("show");
-    
-    fetch(`/publications/listar-inscricoes/${type}/${id}/`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                if (data.inscricoes.length === 0) {
-                    container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px; color: #888;">Nenhuma inscrição recebida ainda.</div>';
-                } else {
-                    container.innerHTML = data.inscricoes.map(ins => `
+  // Cor do Modal
+  if (header && color) {
+    header.style.backgroundColor = color;
+  }
+
+  if (mainModal) mainModal.classList.remove("show");
+
+  container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 30px; color: #6C9FF9;"></i></div>';
+
+  manageOverlay.classList.add("show");
+  manageModal.classList.add("show");
+
+  fetch(`/publications/listar-inscricoes/${type}/${id}/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        if (data.inscricoes.length === 0) {
+          container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px; color: #888;">Nenhuma inscrição recebida ainda.</div>';
+        } else {
+          let html = '';
+          if (type === 'concurso') {
+            html += `
+                        <div style="grid-column: span 2; padding: 15px; background: rgba(255,193,7,0.1); border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;">
+                            <h5 style="margin: 0; font-size: 14px; color: #856404;">Selecionar Vencedores</h5>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <select id="winner_1" style="flex:1; padding: 8px; border-radius: 4px; border: 1px solid #ffeeba;">
+                                    <option value="">1º Lugar...</option>
+                                    ${data.inscricoes.map(i => `<option value="${i.user_id}">${i.username}</option>`).join('')}
+                                </select>
+                                <select id="winner_2" style="flex:1; padding: 8px; border-radius: 4px; border: 1px solid #ffeeba;">
+                                    <option value="">2º Lugar...</option>
+                                    ${data.inscricoes.map(i => `<option value="${i.user_id}">${i.username}</option>`).join('')}
+                                </select>
+                                <select id="winner_3" style="flex:1; padding: 8px; border-radius: 4px; border: 1px solid #ffeeba;">
+                                    <option value="">3º Lugar...</option>
+                                    ${data.inscricoes.map(i => `<option value="${i.user_id}">${i.username}</option>`).join('')}
+                                </select>
+                            </div>
+                            <button onclick="saveConcursoWinners(${id})" style="background: #ffc107; color: #212529; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">Salvar Vencedores</button>
+                        </div>
+                        `;
+          }
+
+          html += data.inscricoes.map(ins => {
+            let actions = '';
+            if (type === 'tarefa') {
+              const isApproved = ins.status === 'aprovada';
+              const btnColor = isApproved ? '#A6E4B2' : '#ddd';
+              const txtColor = isApproved ? '#2d7a3a' : '#555';
+              const btnText = isApproved ? 'Aprovada' : 'Aprovar Inscrição';
+
+              actions = `
+                            <button onclick="toggleTaskValidation(event, ${ins.id}, '${isApproved ? 'pendente' : 'aprovada'}')" style="margin-top: 10px; width: 100%; border: none; background: ${btnColor}; color: ${txtColor}; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600;">
+                                ${btnText}
+                            </button>
+                            `;
+            }
+
+            return `
                         <div class="ins-card" onclick="openInscriptionDetail(${ins.id}, '${color}')" style="background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; cursor: pointer; transition: all 0.2s;">
                             <h5 style="margin: 0; font-size: 15px; color: #333;">${ins.titulo}</h5>
                             <span style="font-size: 12px; color: #888;"><i class='bx bx-user'></i> ${ins.username}</span>
+                            ${actions}
                         </div>
-                    `).join('');
-                }
-            } else {
-                container.innerHTML = `<div style="grid-column: span 2; color: red;">${data.error}</div>`;
-            }
-        });
+                        `;
+          }).join('');
+          container.innerHTML = html;
+        }
+      } else {
+        container.innerHTML = `<div style="grid-column: span 2; color: red;">${data.error}</div>`;
+      }
+    });
 };
 
-window.openInscriptionDetail = function(id, color) {
-    const detailOverlay = document.getElementById("js-ins-detail-overlay");
-    const detailModal = document.getElementById("js-ins-detail-holder");
-    const header = document.getElementById("ins-detail-header");
-    
-    if (header && color) header.style.backgroundColor = color;
-    
-    fetch(`/publications/detalhes-inscricao/${id}/`)
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                const d = result.data;
-                document.getElementById("det-ins-titulo").innerText = d.titulo;
-                document.getElementById("det-ins-user").innerText = d.username;
-                document.getElementById("det-ins-desc").innerText = d.descricao;
-                
-                const fileContainer = document.getElementById("det-ins-file-container");
-                if (d.arquivo_url) {
-                    fileContainer.style.display = 'block';
-                    document.getElementById("det-ins-file").innerHTML = `<a href="${d.arquivo_url}" target="_blank" style="color: ${color || '#6C9FF9'}; font-weight: 600;"><i class='bx bx-download'></i> Baixar ${d.arquivo_nome}</a>`;
-                } else {
-                    fileContainer.style.display = 'none';
-                }
-                
-                detailOverlay.classList.add("show");
-                detailModal.classList.add("show");
-            } else {
-                alert(result.error);
-            }
-        });
+window.openInscriptionDetail = function (id, color) {
+  const detailOverlay = document.getElementById("js-ins-detail-overlay");
+  const detailModal = document.getElementById("js-ins-detail-holder");
+  const header = document.getElementById("ins-detail-header");
+
+  if (header && color) header.style.backgroundColor = color;
+
+  fetch(`/publications/detalhes-inscricao/${id}/`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.success) {
+        const d = result.data;
+        document.getElementById("det-ins-titulo").innerText = d.titulo;
+        document.getElementById("det-ins-user").innerText = d.username;
+        document.getElementById("det-ins-desc").innerText = d.descricao;
+
+        const fileContainer = document.getElementById("det-ins-file-container");
+        if (d.arquivo_url) {
+          fileContainer.style.display = 'block';
+          document.getElementById("det-ins-file").innerHTML = `<a href="${d.arquivo_url}" target="_blank" style="color: ${color || '#6C9FF9'}; font-weight: 600;"><i class='bx bx-download'></i> Baixar ${d.arquivo_nome}</a>`;
+        } else {
+          fileContainer.style.display = 'none';
+        }
+
+        detailOverlay.classList.add("show");
+        detailModal.classList.add("show");
+      } else {
+        alert(result.error);
+      }
+    });
+};
+
+window.saveConcursoWinners = function (postId) {
+  const formData = new FormData();
+  formData.append('winner_1', document.getElementById('winner_1').value);
+  formData.append('winner_2', document.getElementById('winner_2').value);
+  formData.append('winner_3', document.getElementById('winner_3').value);
+
+  fetch(`/publications/choose-winners/${postId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Vencedores salvos com sucesso!");
+      } else {
+        alert("Erro ao salvar: " + data.error);
+      }
+    }).catch(err => alert("Erro na requisição."));
+};
+
+window.toggleTaskValidation = function (e, inscricaoId, novoStatus) {
+  e.stopPropagation();
+  const formData = new FormData();
+  formData.append('status', novoStatus);
+
+  fetch(`/publications/toggle-task-validation/${inscricaoId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Atualizar UI repescando (re-abrindo o modal já tem o estado local, mas para ser simples recarregamos localizando na DOM se possível)
+        // ou apenas atualizamos visualmente:
+        const btn = e.target;
+        if (data.status === 'aprovada') {
+          btn.style.background = '#A6E4B2';
+          btn.style.color = '#2d7a3a';
+          btn.innerText = 'Aprovada';
+          btn.setAttribute('onclick', `toggleTaskValidation(event, ${inscricaoId}, 'pendente')`);
+        } else {
+          btn.style.background = '#ddd';
+          btn.style.color = '#555';
+          btn.innerText = 'Aprovar Inscrição';
+          btn.setAttribute('onclick', `toggleTaskValidation(event, ${inscricaoId}, 'aprovada')`);
+        }
+      } else {
+        alert("Erro ao validar: " + (data.error || ''));
+      }
+    }).catch(err => alert("Erro na requisição."));
 };
 
 // Fechar todos os modais e overlays (Limpa o Blur)
-window.closeAllModals = function() {
-    const overlays = [
-        "js-modal-overlay", "js-crud-overlay", "js-inscription-overlay", 
-        "js-manage-overlay", "js-ins-detail-overlay"
-    ];
-    const modals = [
-        "js-modal-holder", "js-crud-holder", "js-inscription-holder", 
-        "js-manage-holder", "js-ins-detail-holder"
-    ];
+window.closeAllModals = function () {
+  const overlays = [
+    "js-modal-overlay", "js-crud-overlay", "js-inscription-overlay",
+    "js-manage-overlay", "js-ins-detail-overlay"
+  ];
+  const modals = [
+    "js-modal-holder", "js-crud-holder", "js-inscription-holder",
+    "js-manage-holder", "js-ins-detail-holder"
+  ];
 
-    overlays.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("show");
-    });
-    modals.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("show");
-    });
+  overlays.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("show");
+  });
+  modals.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("show");
+  });
 };
 
 // Listeners de Fecho
 document.addEventListener('DOMContentLoaded', () => {
-    // Configurações de fecho para cada par overlay/modal
-    const configs = [
-        { overlay: 'js-inscription-overlay', modal: 'js-inscription-holder', close: 'js-inscription-close' },
-        { overlay: 'js-manage-overlay', modal: 'js-manage-holder', close: 'js-manage-close' },
-        { overlay: 'js-ins-detail-overlay', modal: 'js-ins-detail-holder', close: 'js-ins-detail-close' },
-        { overlay: 'js-modal-overlay', modal: 'js-modal-holder', close: 'js-close-button' },
-        { overlay: 'js-crud-overlay', modal: 'js-crud-holder', close: 'js-crud-close' }
-    ];
-    
-    configs.forEach(cfg => {
-        const ov = document.getElementById(cfg.overlay);
-        const md = document.getElementById(cfg.modal);
-        const cl = document.getElementById(cfg.close);
-        
-        if (cl) cl.onclick = () => closeAllModals();
-        if (ov) ov.onclick = (e) => { if (e.target === ov) closeAllModals(); };
-    });
+  // Configurações de fecho para cada par overlay/modal
+  const configs = [
+    { overlay: 'js-inscription-overlay', modal: 'js-inscription-holder', close: 'js-inscription-close' },
+    { overlay: 'js-manage-overlay', modal: 'js-manage-holder', close: 'js-manage-close' },
+    { overlay: 'js-ins-detail-overlay', modal: 'js-ins-detail-holder', close: 'js-ins-detail-close' },
+    { overlay: 'js-modal-overlay', modal: 'js-modal-holder', close: 'js-close-button' },
+    { overlay: 'js-crud-overlay', modal: 'js-crud-holder', close: 'js-crud-close' }
+  ];
 
-    const insForm = document.getElementById("inscription-form");
-    if (insForm) {
-        insForm.onsubmit = function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch('/publications/fazer-inscricao/', {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-CSRFToken': getCookie('csrftoken') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    closeAllModals();
-                    loadRoute();
-                    // Fallback se loadRoute não recarregar tudo
-                    setTimeout(() => { if(window.location.hash.includes('meus_arquivos')) loadRoute(); }, 500);
-                } else {
-                    alert("Erro: " + data.error);
-                }
-            });
-        };
-    }
+  configs.forEach(cfg => {
+    const ov = document.getElementById(cfg.overlay);
+    const md = document.getElementById(cfg.modal);
+    const cl = document.getElementById(cfg.close);
+
+    if (cl) cl.onclick = () => closeAllModals();
+    if (ov) ov.onclick = (e) => { if (e.target === ov) closeAllModals(); };
+  });
+
+  const insForm = document.getElementById("inscription-form");
+  if (insForm) {
+    insForm.onsubmit = function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch('/publications/fazer-inscricao/', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            closeAllModals();
+            loadRoute();
+            // Fallback se loadRoute não recarregar tudo
+            setTimeout(() => { if (window.location.hash.includes('meus_arquivos')) loadRoute(); }, 500);
+          } else {
+            alert("Erro: " + data.error);
+          }
+        });
+    };
+  }
 });
 
 // --- CRUD Logic (Global Scope) ---
@@ -437,11 +548,11 @@ function getCookie(name) {
   if (document.cookie && document.cookie !== '') {
     const cookies = document.cookie.split(';');
     for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-        }
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
   }
   return cookieValue;
@@ -460,17 +571,17 @@ window.confirmDelete = (type, id) => {
       method: 'POST',
       headers: { 'X-CSRFToken': getCookie('csrftoken') }
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        const currentPage = window.location.hash.substring(1) || 'home';
-        if (typeof loadRoute === 'function') loadRoute(currentPage);
-        else window.location.reload();
-      } else {
-        alert("Erro: " + data.error);
-      }
-    });
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          const currentPage = window.location.hash.substring(1) || 'home';
+          if (typeof loadRoute === 'function') loadRoute(currentPage);
+          else window.location.reload();
+        } else {
+          alert("Erro: " + data.error);
+        }
+      });
   }
 };
 
@@ -483,7 +594,7 @@ window.openEditModal = (type, id) => {
   crudModal.classList.add("show");
   const container = document.getElementById("crud-form-content");
   container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="bx bx-loader-alt bx-spin" style="font-size:30px;color:#6C9FF9;"></i></div>';
-  
+
   document.getElementById("edit-post-id").value = id;
   document.getElementById("edit-post-type").value = type;
 
@@ -512,7 +623,7 @@ function renderEditForm(type, data) {
   `;
 
   if (type === 'tarefa' || type === 'concurso' || type === 'projeto' || type === 'evento') {
-     html += `
+    html += `
        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
           <div>
               <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Curso</label>
@@ -539,7 +650,7 @@ function renderEditForm(type, data) {
   }
 
   if (data.end_date !== undefined) {
-      html += `
+    html += `
         <div style="margin-bottom:15px;">
           <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Data Limite</label>
           <input type="datetime-local" name="end_date" value="${data.end_date || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
@@ -548,7 +659,7 @@ function renderEditForm(type, data) {
   }
 
   if (data.link !== undefined) {
-      html += `
+    html += `
         <div style="margin-bottom:15px;">
           <label style="display:block;margin-bottom:5px;font-weight:600;color:#555;">Link Externo</label>
           <input type="url" name="link" value="${data.link || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
@@ -568,41 +679,41 @@ function renderEditForm(type, data) {
 
 // Inicializar listeners de fecho globais
 document.addEventListener('DOMContentLoaded', () => {
-    const crudOverlay = document.getElementById("js-crud-overlay");
-    const crudClose = document.getElementById("js-crud-close");
-    const crudCancel = document.getElementById("js-crud-cancel");
-    const crudForm = document.getElementById("crud-form");
+  const crudOverlay = document.getElementById("js-crud-overlay");
+  const crudClose = document.getElementById("js-crud-close");
+  const crudCancel = document.getElementById("js-crud-cancel");
+  const crudForm = document.getElementById("crud-form");
 
-    [crudClose, crudCancel, crudOverlay].forEach(btn => {
-        if (btn) btn.addEventListener('click', (e) => {
-            if (e.target === btn || btn !== crudOverlay) closeCrudModal();
-        });
+  [crudClose, crudCancel, crudOverlay].forEach(btn => {
+    if (btn) btn.addEventListener('click', (e) => {
+      if (e.target === btn || btn !== crudOverlay) closeCrudModal();
     });
+  });
 
-    if (crudForm) {
-        crudForm.onsubmit = function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const type = document.getElementById("edit-post-type").value;
-            const id = document.getElementById("edit-post-id").value;
+  if (crudForm) {
+    crudForm.onsubmit = function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const type = document.getElementById("edit-post-type").value;
+      const id = document.getElementById("edit-post-id").value;
 
-            fetch(`/publications/edit/${type}/${id}/`, {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-CSRFToken': getCookie('csrftoken') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    closeCrudModal();
-                    const currentPage = window.location.hash.substring(1) || 'home';
-                    if (typeof loadRoute === 'function') loadRoute(currentPage);
-                    else window.location.reload();
-                } else {
-                    alert("Erro ao salvar: " + data.error);
-                }
-            });
-        };
-    }
+      fetch(`/publications/edit/${type}/${id}/`, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            closeCrudModal();
+            const currentPage = window.location.hash.substring(1) || 'home';
+            if (typeof loadRoute === 'function') loadRoute(currentPage);
+            else window.location.reload();
+          } else {
+            alert("Erro ao salvar: " + data.error);
+          }
+        });
+    };
+  }
 });

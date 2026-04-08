@@ -11,4 +11,6 @@ urlpatterns = [
     path('listar-inscricoes/<str:post_type>/<int:post_id>/', views.listar_inscricoes_post, name='listar-inscricoes'),
     path('detalhes-inscricao/<int:inscricao_id>/', views.ver_detalhes_inscricao, name='detalhes-inscricao'),
     path('increment-view/<str:post_type>/<int:post_id>/', views.increment_view_count, name='increment-view'),
+    path('choose-winners/<int:post_id>/', views.choose_winners, name='choose-winners'),
+    path('toggle-task-validation/<int:inscricao_id>/', views.toggle_task_validation, name='toggle-task-validation'),
 ]

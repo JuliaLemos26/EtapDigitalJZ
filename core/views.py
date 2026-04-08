@@ -51,9 +51,11 @@ def user_logout(request):
     logout(request)
     return redirect('signup')
 
-from publications.models import Tarefa, Concurso, Projeto, Evento
+from publications.models import Tarefa, Concurso, Projeto, Evento, Inscricao
 from home.models import Aluno
 from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
 
 from django.core.paginator import Paginator
 
@@ -97,18 +99,27 @@ def spa_page(request, page_name):
             course_filter = Q(course='nenhum')
 
     # Carregar dados específicos por página com filtro
+    now = timezone.now()
     if page_name == 'home':
-        context['tarefas_recentes'] = Tarefa.objects.all().order_by('-pk')[:6]
-        context['concursos_recentes'] = Concurso.objects.all().order_by('-pk')[:6]
+        context['tarefas_recentes'] = Tarefa.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by('-pk')[:6]
+        context['concursos_recentes'] = Concurso.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by('-pk')[:6]
         context['projetos_recentes'] = Projeto.objects.all().order_by('-pk')[:6]
     elif page_name == 'tarefas':
-        queryset = Tarefa.objects.all().order_by(order_by)
+        queryset = Tarefa.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by(order_by)
         if course_filter: queryset = queryset.filter(course_filter)
         paginator = Paginator(queryset, 8)
         context['tarefas'] = paginator.get_page(page_number)
     elif page_name == 'concursos':
-        queryset = Concurso.objects.all().order_by(order_by)
+        queryset = Concurso.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now - timedelta(days=1))).order_by(order_by)
         if course_filter: queryset = queryset.filter(course_filter)
+        final_qs_ids = []
+        for c in queryset:
+            if c.end_date and c.end_date < now:
+                if Inscricao.objects.filter(user=request.user, post_type='concurso', post_id=c.id).exists():
+                    final_qs_ids.append(c.id)
+            else:
+                final_qs_ids.append(c.id)
+        queryset = Concurso.objects.filter(id__in=final_qs_ids).order_by(order_by)
         paginator = Paginator(queryset, 8)
         context['concursos'] = paginator.get_page(page_number)
     elif page_name == 'projetos':

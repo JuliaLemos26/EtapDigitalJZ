@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Tarefa, Concurso, Projeto, Evento, Inscricao
@@ -188,19 +189,24 @@ def listar_inscricoes_post(request, post_type, post_id):
     post = get_object_or_404(model, id=post_id)
     
     # Permissão: Superuser ou Autor
+    is_admin = request.user.is_superuser or request.user.groups.filter(name='Administrador').exists() or hasattr(request.user, 'professor_profile')
     is_author = post.author == request.user or (hasattr(post, 'secondary_author') and post.secondary_author == request.user)
-    if not (request.user.is_superuser or is_author):
+    if not (is_admin or is_author):
         return JsonResponse({'success': False, 'error': 'Sem permissão'}, status=403)
     
     inscricoes = Inscricao.objects.filter(post_type=post_type, post_id=post_id).select_related('user')
     data = []
     for ins in inscricoes:
-        data.append({
+        ins_data = {
             'id': ins.id,
             'titulo': ins.titulo,
+            'user_id': ins.user.id,
             'username': ins.user.username,
             'data': ins.created_at.strftime('%d/%m/%Y %H:%M')
-        })
+        }
+        if hasattr(ins, 'status'):
+            ins_data['status'] = ins.status
+        data.append(ins_data)
     
     return JsonResponse({'success': True, 'inscricoes': data})
 
@@ -212,8 +218,9 @@ def ver_detalhes_inscricao(request, inscricao_id):
     model = get_post_model(inscricao.post_type)
     post = get_object_or_404(model, id=inscricao.post_id)
     
+    is_admin = request.user.is_superuser or request.user.groups.filter(name='Administrador').exists() or hasattr(request.user, 'professor_profile')
     is_author = post.author == request.user or (hasattr(post, 'secondary_author') and post.secondary_author == request.user)
-    if not (request.user.is_superuser or is_author or inscricao.user == request.user):
+    if not (is_admin or is_author or inscricao.user == request.user):
         return JsonResponse({'success': False, 'error': 'Sem permissão'}, status=403)
     
     data = {
@@ -226,6 +233,45 @@ def ver_detalhes_inscricao(request, inscricao_id):
     }
     
     return JsonResponse({'success': True, 'data': data})
+
+@login_required
+def choose_winners(request, post_id):
+    if request.method != 'POST': return JsonResponse({'success': False}, status=405)
+    concurso = get_object_or_404(Concurso, id=post_id)
+    if not (concurso.author == request.user or (concurso.secondary_author and concurso.secondary_author == request.user)):
+        return JsonResponse({'success': False, 'error': 'Sem permissão'}, status=403)
+    try:
+        w1_id = request.POST.get('winner_1')
+        w2_id = request.POST.get('winner_2')
+        w3_id = request.POST.get('winner_3')
+        if w1_id: concurso.winner_1 = User.objects.get(id=w1_id)
+        if w2_id: concurso.winner_2 = User.objects.get(id=w2_id)
+        if w3_id: concurso.winner_3 = User.objects.get(id=w3_id)
+        concurso.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required
+def toggle_task_validation(request, inscricao_id):
+    if request.method != 'POST': return JsonResponse({'success': False}, status=405)
+    inscricao = get_object_or_404(Inscricao, id=inscricao_id)
+    if inscricao.post_type != 'tarefa': return JsonResponse({'success': False}, status=400)
+    tarefa = get_object_or_404(Tarefa, id=inscricao.post_id)
+    if not (tarefa.author == request.user or (tarefa.secondary_author and tarefa.secondary_author == request.user)):
+        return JsonResponse({'success': False, 'error': 'Sem permissão'}, status=403)
+    novo_status = request.POST.get('status')
+    if novo_status not in ['pendente', 'aprovada', 'rejeitada']:
+        return JsonResponse({'success': False}, status=400)
+    
+    if novo_status == 'aprovada' and tarefa.participant_limit:
+        current_aprovadas = Inscricao.objects.filter(post_type='tarefa', post_id=tarefa.id, status='aprovada').count()
+        if inscricao.status != 'aprovada' and current_aprovadas >= tarefa.participant_limit:
+            return JsonResponse({'success': False, 'error': 'Limite de participantes atingido.'}, status=400)
+            
+    inscricao.status = novo_status
+    inscricao.save()
+    return JsonResponse({'success': True, 'status': inscricao.status})
 
 @login_required
 def my_posts(request):
