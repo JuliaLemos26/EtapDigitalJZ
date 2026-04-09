@@ -57,6 +57,12 @@
                                      <img src="{% if item.image %}{{ item.image.url }}{% else %}{% if active_tab == 'tarefas' %}{% static 'imagensteste/testeazul.png' %}{% else %}{% static 'imagensteste/testelaranja.png' %}{% endif %}{% endif %}" alt="{{ item.title }}">
                                      <h4>{{ item.title }}<br><span>{% if item.secondary_author %}{{ item.secondary_author.username }}{% else %}{{ item.author.username }}{% endif %}</span></h4>
                                      
+                                     {% if active_tab == 'tarefas' %}
+                                     <div class="points-badge"><i class='bx bxs-star'></i> 100 Pontos</div>
+                                     {% elif active_tab == 'concursos' %}
+                                     <div class="points-badge"><i class='bx bxs-star'></i> 150 Pontos</div>
+                                     {% endif %}
+                                     
                                      {% if user.is_superuser or user.professor_profile and item.author == user or user.professor_profile and item.secondary_author == user %}
                                      <div class="post-actions">
                                          <button class="action-btn edit" onclick="event.stopPropagation(); openEditModal('{% if active_tab == 'tarefas' %}tarefa{% else %}concurso{% endif %}', {{ item.id }})" title="Editar">

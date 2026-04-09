@@ -159,13 +159,17 @@ window.openPostModal = function (element) {
   const postId = element.getAttribute("data-post-id");
 
   // Determinar o tipo real: Priorizar data-attribute, fallback para hash
-  let postType = element.getAttribute("data-post-type");
+  let rawPostType = element.getAttribute("data-post-type") || "";
+  let postType = rawPostType.toLowerCase().trim();
+
   if (!postType) {
     if (window.location.hash.includes('concursos')) postType = 'concurso';
     else if (window.location.hash.includes('eventos')) postType = 'evento';
     else if (window.location.hash.includes('projetos')) postType = 'projeto';
     else postType = 'tarefa';
   }
+
+  console.log("Post Modal Open:", { postType, postId }); // Debug log
 
   // Preencher o Modal - Cabeçalho
   const header = document.querySelector(".modal__header-custom");
@@ -207,6 +211,33 @@ window.openPostModal = function (element) {
   }
   if (documentPath && documentPath !== "None" && documentPath !== "") {
     extrasHtml += `<div class="info-block" style="grid-column: span 2;"><label>Documento</label><a href="${documentPath}" target="_blank" class="content-box-link"><i class='bx bx-file'></i> Visualizar Documento</a></div>`;
+  }
+
+  // Se for concurso, mostrar info de premiação
+  // Se for concurso, mostrar info de premiação
+  if (postType === 'concurso' || postType === 'concursos') {
+    extrasHtml += `
+      <div class="info-block" style="grid-column: span 2; margin-top: 15px; border-radius: 12px; padding: 15px; background: rgba(236, 96, 144, 0.05); border: 1px solid rgba(236, 96, 144, 0.1);">
+        <h5 style="margin: 0 0 12px 0; color: #ec6090; font-size: 15px; font-weight: 700;"><i class='bx bxs-gift'></i> Premiação do Concurso</h5>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div style="text-align: center; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; color: #888; margin-bottom: 2px;">1º Lugar</div>
+            <div style="font-weight: 800; color: #d4af37; font-size: 13px;"><i class='bx bxs-star'></i> 500</div>
+          </div>
+          <div style="text-align: center; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; color: #888; margin-bottom: 2px;">2º Lugar</div>
+            <div style="font-weight: 800; color: #aaa9ad; font-size: 13px;"><i class='bx bxs-star'></i> 400</div>
+          </div>
+          <div style="text-align: center; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; color: #888; margin-bottom: 2px;">3º Lugar</div>
+            <div style="font-weight: 800; color: #cd7f32; font-size: 13px;"><i class='bx bxs-star'></i> 300</div>
+          </div>
+        </div>
+        <p style="margin: 0; font-size: 12px; color: #666; text-align: center; line-height: 1.4;">
+           Participantes inscritos: <span style="font-weight: 700; color: #ec6090;">150 pontos</span>
+        </p>
+      </div>
+    `;
   }
 
   const w1 = element.getAttribute("data-winner-1");

@@ -30,9 +30,11 @@
             <div class="row">
                 <div class="col-lg-12">
                     <!-- ***** Pontos ***** -->
-                    <div class="score-display">
-                        <i class='bx  bx-star'    ></i>    120
+                    {% if user.is_authenticated and user.aluno_profile %}
+<div class="score-display">
+                        <i class='bx  bx-star'    ></i>    {{ user.aluno_profile.pontos }}
                     </div>
+{% endif %}
                     <div class="most-popular">
                         <div class="row">
                             <div class="col-lg-12">

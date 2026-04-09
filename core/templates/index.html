@@ -9,7 +9,7 @@
   <title>ETAP Digital</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <script src="{% static 'js/menu.js' %}?v=6.0"></script>
+   <script src="{% static 'js/menu.js' %}?v=7.2"></script>
    <script>
      window.currentUserId = "{{ user.id }}";
      window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";

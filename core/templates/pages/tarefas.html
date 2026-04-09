@@ -31,9 +31,11 @@
             <div class="row">
                 <div class="col-lg-12">
                     <!-- ***** Pontos ***** -->
-                    <div class="score-display">
-                        <i class='bx  bx-star'    ></i>    120
+                    {% if user.is_authenticated and user.aluno_profile %}
+<div class="score-display">
+                        <i class='bx  bx-star'    ></i>    {{ user.aluno_profile.pontos }}
                     </div>
+{% endif %}
                     <div class="most-popular">
                         <div class="row">
                             <div class="col-lg-12">
@@ -73,6 +75,7 @@
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                                              <img src="{% if tarefa.image %}{{ tarefa.image.url }}{% else %}{% static 'imagensteste/testeazul.png' %}{% endif %}" class="d-block w-100" alt="{{ tarefa.title }}">
                                              <h4>{{ tarefa.title }}<br><span>{% if tarefa.secondary_author %}{{ tarefa.secondary_author.username }}{% else %}{{ tarefa.author.username }}{% endif %}</span></h4>
+                                             <div class="points-badge"><i class='bx bxs-star'></i> 100 Pontos</div>
                                              
                                              {% if user.is_superuser or user.professor_profile and tarefa.author == user or user.professor_profile and tarefa.secondary_author == user %}
                                              <div class="post-actions">

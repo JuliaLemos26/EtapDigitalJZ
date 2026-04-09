@@ -31,9 +31,11 @@
             <div class="row">
                 <div class="col-lg-12">
                     <!-- ***** Pontos ***** -->
-                    <div class="score-display">
-                        <i class='bx  bx-star'    ></i>    120
+                    {% if user.is_authenticated and user.aluno_profile %}
+<div class="score-display">
+                        <i class='bx  bx-star'    ></i>    {{ user.aluno_profile.pontos }}
                     </div>
+{% endif %}
                     <div class="most-popular">
                         <div class="row">
                             <div class="col-lg-12">
@@ -77,6 +79,7 @@
                                              data-color="{% cycle '#6C9FF9' '#A6E4B2' '#FFE29A' '#F8A5C2' %}">
                                              <img src="{% if concurso.image %}{{ concurso.image.url }}{% else %}{% static 'imagensteste/testeamarelo.png' %}{% endif %}" class="d-block w-100" alt="{{ concurso.title }}">
                                              <h4>{{ concurso.title }}<br><span>{% if concurso.secondary_author %}{{ concurso.secondary_author.username }}{% else %}{{ concurso.author.username }}{% endif %}</span></h4>
+                                             <div class="points-badge"><i class='bx bxs-star'></i> 150 Pontos</div>
                                              
                                              {% if user.is_superuser or user.professor_profile and concurso.author == user or user.professor_profile and concurso.secondary_author == user %}
                                              <div class="post-actions">
