@@ -42,6 +42,8 @@ class Tarefa(BasePublication):
     end_date = models.DateTimeField(null=True, blank=True, verbose_name="Data de Conclusão")
     participant_limit = models.PositiveIntegerField(null=True, blank=True, verbose_name="Limite de Participantes")
     needs_approval = models.BooleanField(default=True, verbose_name="Requer Aprovação de Inscrição")
+    notified_finished = models.BooleanField(default=False, verbose_name="Notificado: Finalizado")
+    notified_approaching_end = models.BooleanField(default=False, verbose_name="Notificado: Prazo Próximo")
 
     class Meta:
         verbose_name = "Tarefa"
@@ -56,6 +58,42 @@ class Concurso(BasePublication):
     winner_1 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_1', verbose_name="1º Lugar")
     winner_2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_2', verbose_name="2º Lugar")
     winner_3 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concurso_winner_3', verbose_name="3º Lugar")
+    notified_finished = models.BooleanField(default=False, verbose_name="Notificado: Finalizado")
+    notified_approaching_end = models.BooleanField(default=False, verbose_name="Notificado: Prazo Próximo")
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_winners = {}
+        if not is_new:
+            try:
+                old_inst = Concurso.objects.get(pk=self.pk)
+                old_winners = {
+                    1: old_inst.winner_1,
+                    2: old_inst.winner_2,
+                    3: old_inst.winner_3,
+                }
+            except Concurso.DoesNotExist:
+                pass
+            
+        super().save(*args, **kwargs)
+
+        from home.models import SystemAviso
+
+        if not is_new and old_winners:
+            new_winners = {
+                1: self.winner_1,
+                2: self.winner_2,
+                3: self.winner_3,
+            }
+            
+            for position, user in new_winners.items():
+                if user and user != old_winners.get(position):
+                    SystemAviso.objects.create(
+                        title=f"Parabéns! Pódio Alcançado em {self.title}",
+                        content=f"Alcançaste o {position}º lugar no concurso '{self.title}'!",
+                        type='particular',
+                        target_user=user
+                    )
 
     class Meta:
         verbose_name = "Concurso"
@@ -97,3 +135,48 @@ class Inscricao(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_status = None
+        
+        if not is_new:
+            try:
+                old_status = Inscricao.objects.get(pk=self.pk).status
+            except Inscricao.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+        from home.models import SystemAviso
+        from publications.models import Tarefa, Concurso
+
+        if is_new:
+            post_model = Tarefa if self.post_type == 'tarefa' else Concurso
+            try:
+                post = post_model.objects.get(id=self.post_id)
+                # Aviso para autor principal
+                SystemAviso.objects.create(
+                    title=f"Nova inscrição: {post.title}",
+                    content=f"{self.user.username} inscreveu-se no seu post.",
+                    type='particular',
+                    target_user=post.author
+                )
+                # Aviso para autor secundário se existir
+                if post.secondary_author:
+                    SystemAviso.objects.create(
+                        title=f"Nova inscrição: {post.title}",
+                        content=f"{self.user.username} inscreveu-se no seu post.",
+                        type='particular',
+                        target_user=post.secondary_author
+                    )
+            except post_model.DoesNotExist:
+                pass
+                
+        elif old_status == 'pendente' and self.status == 'aprovada':
+            SystemAviso.objects.create(
+                title=f"Inscrição Aprovada",
+                content=f"A sua inscrição em '{self.titulo}' foi validada com sucesso!",
+                type='particular',
+                target_user=self.user
+            )

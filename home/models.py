@@ -54,6 +54,7 @@ class Professor(models.Model):
 
 class PlatformSettings(models.Model):
     is_suspended = models.BooleanField(default=False)
+    last_notifications_run = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"Manutenção: {'Ativada' if self.is_suspended else 'Desativada'}"

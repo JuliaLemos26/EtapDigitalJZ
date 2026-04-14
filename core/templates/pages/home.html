@@ -222,7 +222,7 @@
         <small class="text-muted">{{ aviso.created_at|timesince }} atrás</small>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body text-dark" style="background: white;">
+      <div class="toast-body text-dark" style="background: white; max-height: 250px; overflow-y: auto; word-wrap: break-word; white-space: pre-wrap;">
         {{ aviso.content|linebreaksbr }}
       </div>
     </div>

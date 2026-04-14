@@ -117,7 +117,7 @@ def spa_page(request, page_name):
                 Q(expiration_date__isnull=True) | Q(expiration_date__gte=now)
             ).filter(
                 Q(type='geral') |
-                Q(type='filtrado', target_course__in=['', u_course], target_year__in=['', u_year]) |
+                Q(type='filtrado', target_course__in=['', None, u_course], target_year__in=['', None, u_year]) |
                 Q(type='particular', target_user=request.user)
             ).order_by('-created_at')[:3]
             context['avisos'] = avisos

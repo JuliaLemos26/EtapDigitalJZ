@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.urls import reverse
 from home.models import PlatformSettings
+from home.utils_notifications import trigger_daily_notifications
 
 class PlatformSuspensionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        # Trigger daily notifications (cheap operation, quick check inside)
+        trigger_daily_notifications()
+
         # Fetch the suspension setting
         setting = PlatformSettings.get_settings()
         
