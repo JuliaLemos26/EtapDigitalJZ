@@ -35,22 +35,23 @@
             </div>
 {% endif %}
           <!-- ***** Banner Start ***** -->
-            <div id="carouselExampleIndicators" class="carousel slide main-banner" data-bs-ride="carousel" data-bs-interval="3000">
+          {% if banners %}
+          <div id="carouselExampleIndicators" class="carousel slide main-banner" data-bs-ride="carousel" data-bs-interval="3000">
             <div class="carousel-indicators">
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+              {% for banner in banners %}
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+              {% endfor %}
             </div>
             <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img src="{% static 'imagensteste/testeamarelo.png' %}" class="d-block w-100">
+              {% for banner in banners %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                {% if banner.file.url|lower|slice:"-4:" == ".mp4" or banner.file.url|lower|slice:"-5:" == ".webm" %}
+                    <video src="{{ banner.file.url }}" class="d-block w-100" style="object-fit: cover; max-height: 485px; width: 100%; border-radius: 23px;" muted loop autoplay></video>
+                {% else %}
+                    <img src="{{ banner.file.url }}" class="d-block w-100" style="object-fit: cover; max-height: 485px; width: 100%; border-radius: 23px;">
+                {% endif %}
               </div>
-              <div class="carousel-item">
-                <img src="{% static 'imagensteste/testerosa.png' %}" class="d-block w-100">
-              </div>
-              <div class="carousel-item">
-                <img src="{% static 'imagensteste/testeverde.png' %}" class="d-block w-100">
-              </div>
+              {% endfor %}
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
               <span class="carousel-control-prev-icon"></span>
@@ -59,7 +60,7 @@
               <span class="carousel-control-next-icon"></span>
             </button>
           </div>
-          
+          {% endif %}
           <!-- ***** Banner End ***** -->
 
           <!-- ***** Tarefas recentes ***** -->
@@ -210,6 +211,24 @@
   <script src="{% static 'js/novo.js' %}"></script>
   
 
+
+  {% if avisos %}
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+    {% for aviso in avisos %}
+    <div class="toast show animate__animated animate__slideInRight" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+      <div class="toast-header" style="background: rgba(166, 228, 178, 0.2); border-bottom: 2px solid #A6E4B2;">
+        <i class='bx bxs-bell-ring ms-2' style="color: #A6E4B2; font-size: 1.2rem;"></i>
+        <strong class="me-auto text-dark ms-2">{{ aviso.title|default:"Aviso Importante" }}</strong>
+        <small class="text-muted">{{ aviso.created_at|timesince }} atrás</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body text-dark" style="background: white;">
+        {{ aviso.content|linebreaksbr }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   </body>
 

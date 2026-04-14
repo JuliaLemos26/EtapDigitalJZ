@@ -1,0 +1,491 @@
+{% load static %}
+<div class="container">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="premium-dashboard-container">
+            <!-- 1. Top Hero Banner (Elegante e Claro) -->
+            <div class="dashboard-hero-card mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);">
+                <div class="hero-content p-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="display-6 fw-bold mb-2" style="color: #333;">Painel de Comando <span style="color: #A6E4B2;">Admin</span></h2>
+                        <p class="text-muted mb-0">Gerencie a comunidade ETAP Digital com ferramentas de elite.</p>
+                        <div class="hero-stats mt-4 d-flex gap-4">
+                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ alunos.count }}</span><small class="text-muted">Alunos</small></div>
+                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ professores.count }}</span><small class="text-muted">Profs</small></div>
+                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ banners.count }}</span><small class="text-muted">Banners</small></div>
+                        </div>
+                    </div>
+                    <div class="hero-illustration d-none d-lg-block">
+                        <i class='bx bxs-shield-quarter' style="font-size: 120px; color: #A6E4B2; opacity: 0.2;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Navegação em Abas (Estilo do Site) -->
+            <div class="tabs-navigation-wrapper mb-4">
+                <div class="tabs-navigation-scroll">
+                    <a href="#/admin-dashboard?tab=alunos" class="tab-item-p {% if active_tab == 'alunos' %}active{% endif %}" data-tab="alunos">
+                        <i class='bx bxs-graduation'></i> Alunos
+                    </a>
+                    <a href="#/admin-dashboard?tab=profs" class="tab-item-p {% if active_tab == 'profs' %}active{% endif %}" data-tab="profs">
+                        <i class='bx bxs-briefcase-alt-2'></i> Administração
+                    </a>
+
+                    <a href="#/admin-dashboard?tab=banners" class="tab-item-p {% if active_tab == 'banners' %}active{% endif %}" data-tab="banners">
+                        <i class='bx bxs-image'></i> Banners
+                    </a>
+                    <a href="#/admin-dashboard?tab=avisos" class="tab-item-p {% if active_tab == 'avisos' %}active{% endif %}" data-tab="avisos">
+                        <i class='bx bxs-megaphone'></i> Avisos
+                    </a>
+                    <a href="#/admin-dashboard?tab=sistema" class="tab-item-p {% if active_tab == 'sistema' %}active{% endif %}" data-tab="sistema">
+                        <i class='bx bxs-cog'></i> Sistema
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Área de Conteúdo -->
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="content-section-card">
+                        {% if active_tab == 'alunos' %}
+                            <div class="section-header mb-4 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold"><i class='bx bxs-group' style="color: #A6E4B2;"></i> Gestão de Alunos</h5>
+                                <span class="badge rounded-pill" style="background: #e8f5e9; color: #2e7d32;">{{ alunos.count }} total</span>
+                            </div>
+                            <div class="row g-3">
+                                {% for aluno in alunos %}
+                                <div class="col-md-6">
+                                    <div class="user-card-p">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-sq" style="background: #e8f0fe; color: #1967d2;">{{ aluno.user.username|make_list|first|upper }}</div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0 fw-bold">{{ aluno.user.username }}</h6>
+                                                <small class="text-muted">{{ aluno.get_curso_display }} | {{ aluno.ano_inicio }}º ano</small>
+                                            </div>
+                                            <div class="status-dot {% if aluno.user.is_active %}online{% else %}offline{% endif %}"></div>
+                                        </div>
+                                        <div class="pts-info mt-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <small class="text-muted">Pontuação</small>
+                                                <small class="fw-bold" style="color: #1967d2;">{{ aluno.pontos }}</small>
+                                            </div>
+                                            <div class="progress" style="height: 6px; background: #f0f0f4;">
+                                                <div class="progress-bar" style="width: {% widthratio aluno.pontos 1000 100 %}%; background: #A6E4B2;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="actions-footer mt-3 pt-3 border-top d-flex justify-content-end gap-2">
+                                            <button onclick="openAdminRelocateModal('{{ aluno.user.id }}', '{{ aluno.curso }}', '{{ aluno.ano_inicio }}')" class="btn-action-s" title="Mudar Turma"><i class='bx bx-transfer'></i></button>
+
+                                            <button onclick="handleUserAction('{{ aluno.user.id }}', '{% if aluno.user.is_active %}suspend{% else %}unsuspend{% endif %}')" class="btn-action-s {% if not aluno.user.is_active %}text-success{% else %}text-warning{% endif %}" title="{% if aluno.user.is_active %}Suspender{% else %}Ativar{% endif %}">
+                                                <i class='bx {% if aluno.user.is_active %}bx-lock{% else %}bx-lock-open{% endif %}'></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                        {% elif active_tab == 'profs' %}
+                            <div class="section-header mb-4"><h5>Administradores & Professores</h5></div>
+                            <div class="row g-3">
+                                {% for prof in professores %}
+                                <div class="col-md-6">
+                                    <div class="user-card-p">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-sq" style="background: #fff3e0; color: #e65100;">{{ prof.user.username|make_list|first|upper }}</div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0 fw-bold">{% if prof.user.get_full_name %}{{ prof.user.get_full_name }}{% else %}{{ prof.user.username }}{% endif %}</h6>
+                                                <small class="{% if prof.user.is_superuser %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                                                    {% if prof.user.is_superuser %}Administrador Master{% else %}Professor{% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="actions-footer mt-4 d-flex gap-2">
+                                            {% if not prof.user.is_superuser %}
+                                            <button onclick="handleUserAction('{{ prof.user.id }}', 'promote')" class="btn-site w-100" title="Promover a Admin">Promover</button>
+                                            <button onclick="handleUserAction('{{ prof.user.id }}', '{% if prof.user.is_active %}suspend{% else %}unsuspend{% endif %}')" class="btn-site w-100 {% if not prof.user.is_active %}bg-success{% else %}bg-warning{% endif %}" title="Alterar Estado">
+                                                {% if prof.user.is_active %}Suspender{% else %}Ativar{% endif %}
+                                            </button>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+
+                        {% elif active_tab == 'banners' %}
+                            <div class="section-header mb-4 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold">Carrossel da Home</h5>
+                                <button class="btn-site" data-bs-toggle="modal" data-bs-target="#newBannerModal">Novo Banner</button>
+                            </div>
+                            <div class="row g-3">
+                                {% for banner in banners %}
+                                <div class="col-md-4">
+                                    <div class="banner-card-s">
+                                        {% if banner.file.url|lower|slice:"-4:" == ".mp4" or banner.file.url|lower|slice:"-5:" == ".webm" %}
+                                            <video src="{{ banner.file.url }}" class="img-fluid rounded-top" style="height: 120px; object-fit: cover; width: 100%;" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                                        {% else %}
+                                            <img src="{{ banner.file.url }}" class="img-fluid rounded-top" style="height: 120px; object-fit: cover; width: 100%;">
+                                        {% endif %}
+                                            <h6 class="text-truncate fw-bold mb-1">{{ banner.title|default:"Promoção" }}</h6>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">Ordem: {{ banner.order }}</small>
+                                                <div class="d-flex gap-1">
+                                                    <button onclick="handleBannerAction({{ banner.id }}, 'toggle')" class="btn btn-sm {% if banner.is_active %}text-success{% else %}text-muted{% endif %}">
+                                                        <i class='bx bxs-circle'></i>
+                                                    </button>
+                                                    <button onclick="handleBannerAction({{ banner.id }}, 'delete')" class="btn btn-sm text-danger">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        {% elif active_tab == 'avisos' %}
+                            <div class="section-header mb-4"><h5>Central de Notificações</h5></div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-card-s p-4 mb-4">
+                                        <h6 class="fw-bold mb-3"><i class='bx bx-paper-plane'></i> Novo Comunicado</h6>
+                                        <form id="avisoForm" onsubmit="submitAjaxForm(event, '{% url 'send_aviso' %}')">
+                                            {% csrf_token %}
+                                            <div class="row g-3">
+                                                <div class="col-md-6"><label class="small text-muted">Título</label><input type="text" name="title" class="form-control-site" required></div>
+                                                <div class="col-md-6">
+                                                    <label class="small text-muted">Tipo de Alcance</label>
+                                                    <select name="type" class="form-control-site" onchange="toggleAvisoFilters(this.value)">
+                                                        <option value="geral">Todos os Utilizadores</option>
+                                                        <option value="filtrado">Filtrar por Curso/Ano</option>
+                                                        <option value="particular">Utilizador Específico</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div id="filter-curso-ano" class="col-12" style="display: none;">
+                                                    <div class="row g-2">
+                                                        <div class="col-md-6">
+                                                            <select name="target_course" class="form-control-site">
+                                                                <option value="">Todos os Cursos</option>
+                                                                <option value="tgpsi">TGPSI</option><option value="tag">TAG</option><option value="tmult">TMULT</option><option value="tsj">TSJ</option><option value="tcab">TCAB</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select name="target_year" class="form-control-site">
+                                                                <option value="">Todos os Anos</option>
+                                                                <option value="10">10º Ano</option><option value="11">11º Ano</option><option value="12">12º Ano</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="filter-user" class="col-12" style="display: none;">
+                                                    <select name="user_destiny" class="form-control-site">
+                                                        {% for u in all_users %}<option value="{{ u.id }}">{{ u.username }}</option>{% endfor %}
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-12"><textarea name="content" class="form-control-site" placeholder="Escreva a mensagem..." style="height: 100px;"></textarea></div>
+                                                <div class="col-md-6"><label class="small text-muted">Expirar em</label><input type="datetime-local" name="expiration_date" class="form-control-site"></div>
+                                                <div class="col-md-6 d-flex align-items-end"><button type="submit" class="btn-site w-100 py-2">Enviar Aviso</button></div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% elif active_tab == 'sistema' %}
+                            <div class="section-header mb-4"><h5>Infraestrutura</h5></div>
+                            <div class="row">
+                                <div class="col-md-12 text-center p-5">
+                                    <div class="power-btn-container mb-4">
+                                        <i class='bx bx-power-off' style="font-size: 80px; color: {% if settings.platform_suspended %}#dc3545{% else %}#A6E4B2{% endif %}; cursor: pointer;" onclick="handleTogglePlatform()"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">Modo de Manutenção</h4>
+                                    <p class="text-muted mb-4 mx-auto" style="max-width: 450px;">
+                                        Ativar a manutenção interrompe o acesso de todos os utilizadores (alunos/profs). Apenas Super-Administradores poderão entrar na plataforma.
+                                    </p>
+                                    <button onclick="handleTogglePlatform()" class="btn-site btn-lg px-5" style="background: {% if settings.platform_suspended %}#A6E4B2{% else %}#ffcdd2; color: #b71c1c{% endif %};">
+                                        {% if settings.platform_suspended %}REATIVAR PLATAFORMA{% else %}SUSPENDER ACESSO GERAL{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Info Sidebar (Lado Direito) -->
+                <div class="col-lg-4">
+                    <div class="stats-sidebar">
+                        <div class="sidebar-card-site mb-4 p-4">
+                            <h6 class="fw-bold mb-3">Atalhos Administrativos</h6>
+                            <div class="d-grid gap-2">
+                                <a href="/django-admin/" target="_blank" class="btn-side-lnk"><i class='bx bxs-keyboard'></i> Backend Django</a>
+                                <a href="/admin/" target="_blank" class="btn-side-lnk"><i class='bx bxs-paint-roll'></i> Painel Wagtail</a>
+                                <a href="/index/" class="btn-side-lnk"><i class='bx bx-home-alt'></i> Voltar ao Lobby</a>
+                            </div>
+                        </div>
+                        <div class="sidebar-card-site mb-4 p-4" style="border-left: 5px solid #ffcc80;">
+                            <h6 class="fw-bold mb-2">Monitor Servidor</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="status-indicator online"></div>
+                                <small>Operacional ({{ total_posts }} posts ativos)</small>
+                            </div>
+                        </div>
+                        <div class="sidebar-card-site p-4">
+                            <h6 class="fw-bold mb-3">Calendário</h6>
+                            <div class="date-widget text-center py-3 rounded" style="background: #f0fdf4; color: #166534; border: 1px solid #dcfce7;">
+                                <div class="h2 fw-bold mb-0">{% now "d" %}</div>
+                                <div class="text-uppercase small fw-bold">{% now "F Y" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="adminRelocateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-site">
+        <form id="adminRelocateForm" onsubmit="submitDynamicAction(event, 'relocate')">
+            {% csrf_token %}
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Mudar Turma</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4">
+                <select name="curso" id="adminRelocateCurso" class="form-control-site mb-3">
+                    <option value="tgpsi">TGPSI</option><option value="tag">TAG</option><option value="tmult">TMULT</option><option value="tsj">TSJ</option><option value="tcab">TCAB</option>
+                </select>
+                <select name="ano" id="adminRelocateAno" class="form-control-site">
+                    <option value="10">10º Ano</option><option value="11">11º Ano</option><option value="12">12º Ano</option>
+                </select>
+            </div>
+            <div class="modal-footer border-0"><button type="submit" class="btn-site w-100">Atualizar Aluno</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="newBannerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-site">
+        <form id="newBannerForm" onsubmit="submitAjaxForm(event, '{% url 'manage_banners' %}', true)">
+            {% csrf_token %}<input type="hidden" name="action" value="add">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Novo Banner Carrossel</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4">
+                <input type="text" name="title" class="form-control-site mb-3" placeholder="Título (Interno)">
+                <label class="small text-muted mb-1">Imagem ou Vídeo (MP4/WebM)</label>
+                <input type="file" name="file" class="form-control-site mb-3" accept="image/*,video/*" required>
+                <input type="number" name="order" class="form-control-site" value="0" placeholder="Ordem">
+            </div>
+            <div class="modal-footer border-0"><button type="submit" class="btn-site w-100">Salvar Banner</button></div>
+        </form>
+    </div></div>
+</div>
+
+
+
+<style>
+/* --- ESTÉTICA CLARA SITE PREMIUM --- */
+.premium-dashboard-container { background: transparent; min-height: 100vh; padding: 10px; border-radius: 20px; }
+
+.dashboard-hero-card, .content-section-card, .sidebar-card-site, .user-card-p, .form-card-s, .banner-card-s, .modal-site {
+    background: white; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);
+}
+.content-section-card { padding: 35px; min-height: 600px; }
+.user-card-p { padding: 20px; border: 1px solid #f0f0f4; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+.user-card-p:hover { border-color: #A6E4B2; transform: translateY(-5px); box-shadow: 0 15px 35px rgba(166, 228, 178, 0.15); }
+
+/* Tabs */
+.tabs-navigation-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.tabs-navigation-scroll::-webkit-scrollbar { display: none; }
+
+.tab-item-p {
+    padding: 14px 28px; border-radius: 15px; color: #777 !important; text-decoration: none;
+    background: white; border: 1px solid #efefef; transition: 0.3s; font-weight: 600; font-size: 14px; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+}
+.tab-item-p:hover { background: #fdfdfd; border-color: #A6E4B2; color: #A6E4B2 !important; }
+.tab-item-p.active { background: #A6E4B2; color: white !important; border-color: #A6E4B2; box-shadow: 0 8px 20px rgba(166, 228, 178, 0.4); }
+
+/* Form Control */
+.form-control-site {
+    width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid #e0e0e0; background: #fdfdfd;
+    color: #333; outline: none; transition: 0.3s; font-size: 14px;
+}
+.form-control-site:focus { border-color: #A6E4B2; background: white; box-shadow: 0 0 0 4px rgba(166, 228, 178, 0.15); }
+
+.btn-site {
+    background: #A6E4B2; color: white; border: none; border-radius: 12px; padding: 12px 25px;
+    font-weight: 700; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(0,0,0,0.05);
+}
+.btn-site:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(166, 228, 178, 0.3); opacity: 0.95; }
+
+.btn-action-s {
+    width: 36px; height: 36px; border-radius: 10px; border: none; background: #f8f9fa;
+    color: #666; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.btn-action-s:hover { background: #A6E4B2; color: white; transform: rotate(5deg) scale(1.1); }
+
+.avatar-sq { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+.status-indicator { width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+.online { background: #10b981; } .offline { background: #94a3b8; }
+
+.banner-card-s { overflow: hidden; transition: 0.3s; }
+.banner-card-s:hover { transform: scale(1.02); }
+
+/* Power Button Pulse */
+.power-btn-container i { animation: pulse 2s infinite; border-radius: 50%; padding: 20px; }
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(166, 228, 178, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(166, 228, 178, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(166, 228, 178, 0); }
+}
+</style>
+
+<script>
+    // Injetar funções globais se não existirem
+    if (typeof getCookie !== 'function') {
+        window.getCookie = function(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+    }
+
+    window.submitAjaxForm = async function(e, url, isMultipart = false) {
+        if (e) e.preventDefault();
+        const form = e.target;
+        const formData = isMultipart ? new FormData(form) : new URLSearchParams(new FormData(form));
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+            const data = await response.json();
+            if (data.status === 'success' || data.success) {
+                // Notificação premium
+                showGlobalAlert(data.message || 'Operação concluída', 'success');
+                // Pequeno delay para o DB processar a transação
+                await new Promise(r => setTimeout(r, 300));
+                if (window.loadRoute) await window.loadRoute();
+                const modals = document.querySelectorAll('.modal.show');
+                modals.forEach(m => {
+                   const inst = bootstrap.Modal.getInstance(m);
+                   if (inst) inst.hide();
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao processar pedido.');
+        }
+    };
+
+    window.submitDynamicAction = async function(e, type) {
+        e.preventDefault();
+        const form = e.target;
+        const actionUrl = form.getAttribute('data-action-url');
+        window.submitAjaxForm(e, actionUrl);
+    };
+
+    window.handleUserAction = async function(userId, action) {
+        if (action === 'promote' && !confirm('Confirmar promoção a Administrador?')) return;
+        
+        const params = new URLSearchParams();
+        params.append('action', action);
+        
+        try {
+            const response = await fetch(`/admin-dashboard/user/${userId}/action/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: params
+            });
+            const data = await response.json();
+            
+            let finalMessage = data.message;
+            if (data.temp_pass) {
+                finalMessage = `<strong>Senha Resetada!</strong><br>Nova senha: <code style="background:rgba(0,0,0,0.1); padding:2px 5px; border-radius:4px;">${data.temp_pass}</code><br><small>Por favor, anote-a e entregue ao utilizador.</small>`;
+            }
+            
+            showGlobalAlert(finalMessage, data.status === 'success' ? 'success' : 'error');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (err) {
+            console.error(err);
+            showGlobalAlert('Erro na ação do utilizador', 'error');
+        }
+    };
+
+    window.handleBannerAction = async function(bannerId, action) {
+        if (action === 'delete' && !confirm('Eliminar este banner?')) return;
+        const params = new URLSearchParams();
+        params.append('action', action);
+        params.append('banner_id', bannerId);
+        
+        try {
+            const response = await fetch(`/admin-dashboard/banners/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: params
+            });
+            const data = await response.json();
+            showGlobalAlert(data.message, 'success');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (e) {
+            showGlobalAlert('Erro ao gerir banner', 'error');
+        }
+    };
+
+    window.handleTogglePlatform = async function() {
+        if (!confirm('Alterar o estado de manutenção da plataforma?')) return;
+        try {
+            const response = await fetch(`/admin-dashboard/toggle-platform/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            showGlobalAlert(data.message, 'success');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (e) {
+            showGlobalAlert('Erro ao alternar plataforma', 'error');
+        }
+    };
+
+    window.toggleAvisoFilters = function(type) {
+        document.getElementById('filter-curso-ano').style.display = (type == 'filtrado') ? 'block' : 'none';
+        document.getElementById('filter-user').style.display = (type == 'particular') ? 'block' : 'none';
+    };
+
+
+    window.openAdminRelocateModal = function(userId, curso, ano) {
+        document.getElementById('adminRelocateCurso').value = curso;
+        document.getElementById('adminRelocateAno').value = ano;
+        document.getElementById('adminRelocateForm').setAttribute('data-action-url', '/admin-dashboard/user/' + userId + '/relocate/');
+        new bootstrap.Modal(document.getElementById('adminRelocateModal')).show();
+    };
+
+
+</script>

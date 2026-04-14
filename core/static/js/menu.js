@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     angariacoes: '/pages/angariacoes/',
     lojinha: '/pages/lojinha/',
     formpost: '/pages/formpost/',
-    meusarquivos: '/publications/meus-arquivos/'
+    meusarquivos: '/publications/meus-arquivos/',
+    'admin-dashboard': '/admin-dashboard/'
   };
 
   function normalizeRoute(hash) {

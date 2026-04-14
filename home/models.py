@@ -50,3 +50,54 @@ class Professor(models.Model):
 
     def __str__(self):
         return f"Professor: {self.user.username}"
+
+
+class PlatformSettings(models.Model):
+    is_suspended = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Manutenção: {'Ativada' if self.is_suspended else 'Desativada'}"
+
+    @classmethod
+    def get_settings(cls):
+        obj, created = cls.objects.get_or_create(id=1)
+        return obj
+
+
+class HomeBanner(models.Model):
+    title = models.CharField(max_length=100, blank=True, null=True)
+    file = models.FileField(upload_to='banners/')
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return self.title or f"Banner {self.id}"
+
+
+class SystemAviso(models.Model):
+    TYPE_CHOICES = [
+        ('geral', 'Geral'),
+        ('filtrado', 'Filtrado'),
+        ('particular', 'Particular'),
+    ]
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    
+    # Filters
+    target_course = models.CharField(max_length=50, blank=True, null=True)
+    target_year = models.CharField(max_length=10, blank=True, null=True)
+    target_user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='directed_avisos')
+
+    expiration_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title

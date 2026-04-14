@@ -5,6 +5,7 @@ from django.urls import path, include
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from django.views.generic import RedirectView
+from core import views as core_views
 from core.views import IndexView, dashboard, spa_page, admin_dashboard
 from search import views as search_views
 from .views import user_logout
@@ -29,6 +30,11 @@ urlpatterns = [
     path('pages/<str:page_name>/', spa_page, name='spa-page'),
     path('logout/', user_logout, name='logout'),
     path('admin-dashboard/', admin_dashboard, name='admin-dashboard'),
+    path('admin-dashboard/user/<int:user_id>/action/', core_views.admin_user_action, name='admin_user_action'),
+    path('admin-dashboard/user/<int:user_id>/relocate/', core_views.admin_user_relocate, name='admin_user_relocate'),
+    path('admin-dashboard/banners/', core_views.manage_banners, name='manage_banners'),
+    path('admin-dashboard/toggle-platform/', core_views.toggle_platform, name='toggle_platform'),
+    path('admin-dashboard/avisos/send/', core_views.send_aviso, name='send_aviso'),
     path('publications/', include('publications.urls')),
 ]
 

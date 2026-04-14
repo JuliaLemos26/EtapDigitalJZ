@@ -101,9 +101,26 @@ def spa_page(request, page_name):
     # Carregar dados específicos por página com filtro
     now = timezone.now()
     if page_name == 'home':
+        from home.models import HomeBanner, SystemAviso
         context['tarefas_recentes'] = Tarefa.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by('-pk')[:6]
         context['concursos_recentes'] = Concurso.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by('-pk')[:6]
         context['projetos_recentes'] = Projeto.objects.all().order_by('-pk')[:6]
+        context['banners'] = HomeBanner.objects.filter(is_active=True)
+        
+        # Filtros de avisos para o utilizador atual
+        if request.user.is_authenticated:
+            aluno_prof = getattr(request.user, 'aluno_profile', None)
+            u_course = aluno_prof.curso.lower() if aluno_prof else 'nenhum'
+            u_year = aluno_prof.ano_inicio if aluno_prof else 'todos'
+            
+            avisos = SystemAviso.objects.filter(
+                Q(expiration_date__isnull=True) | Q(expiration_date__gte=now)
+            ).filter(
+                Q(type='geral') |
+                Q(type='filtrado', target_course__in=['', u_course], target_year__in=['', u_year]) |
+                Q(type='particular', target_user=request.user)
+            ).order_by('-created_at')[:3]
+            context['avisos'] = avisos
     elif page_name == 'tarefas':
         queryset = Tarefa.objects.filter(Q(end_date__isnull=True) | Q(end_date__gte=now)).order_by(order_by)
         if course_filter: queryset = queryset.filter(course_filter)
@@ -195,4 +212,126 @@ def spa_page(request, page_name):
 
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    return render(request, 'admin/dashboard.html')
+    from home.models import Aluno, Professor, PlatformSettings, HomeBanner
+    from django.contrib.auth.models import User
+    
+    context = {
+        'alunos': Aluno.objects.select_related('user').all(),
+        'professores': Professor.objects.select_related('user').all(),
+        'all_users': User.objects.filter(is_active=True).exclude(is_superuser=True),
+        'banners': HomeBanner.objects.all(),
+        'settings': PlatformSettings.get_settings(),
+        'active_tab': request.GET.get('tab', 'alunos'),
+    }
+    return render(request, 'pages/admin_dashboard.html', context)
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from home.models import Aluno, PlatformSettings, HomeBanner, SystemAviso
+
+@require_POST
+@user_passes_test(is_admin)
+def admin_user_action(request, user_id):
+    from django.contrib.auth.models import Group, User
+    action = request.POST.get('action')
+    try:
+        u = User.objects.get(id=user_id)
+        if action == 'suspend':
+            u.is_active = False
+            u.save()
+            return JsonResponse({'status': 'success', 'message': 'Utilizador suspenso.'})
+        elif action == 'unsuspend':
+            u.is_active = True
+            u.save()
+            return JsonResponse({'status': 'success', 'message': 'Utilizador reativado.'})
+        elif action == 'promote':
+            u.is_staff = True
+            u.is_superuser = True
+            u.save()
+            return JsonResponse({'status': 'success', 'message': 'Promovido a Administrador Master.'})
+    except User.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Utilizador não encontrado.'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Ação inválida.'}, status=400)
+
+
+@require_POST
+@user_passes_test(is_admin)
+def admin_user_relocate(request, user_id):
+    try:
+        curso = request.POST.get('curso')
+        ano = request.POST.get('ano')
+        aluno = Aluno.objects.get(user__id=user_id)
+        aluno.curso = curso
+        aluno.ano_inicio = ano
+        aluno.save()
+        return JsonResponse({'status': 'success', 'message': 'Turma alterada com sucesso.'})
+    except Aluno.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Aluno não encontrado.'}, status=404)
+
+
+@require_POST
+@user_passes_test(is_admin)
+def toggle_platform(request):
+    settings = PlatformSettings.get_settings()
+    settings.is_suspended = not settings.is_suspended
+    settings.save()
+    status_str = "suspensa" if settings.is_suspended else "reativada"
+    return JsonResponse({'status': 'success', 'message': f'Plataforma {status_str} com sucesso.'})
+
+
+@require_POST
+@user_passes_test(is_admin)
+def manage_banners(request):
+    action = request.POST.get('action')
+    if action == 'add':
+        title = request.POST.get('title')
+        order = request.POST.get('order', 0)
+        file = request.FILES.get('file')
+        if file:
+            HomeBanner.objects.create(title=title, order=order, file=file)
+            return JsonResponse({'status': 'success', 'message': 'Banner adicionado.'})
+        return JsonResponse({'status': 'error', 'message': 'Ficheiro obrigatório.'}, status=400)
+    
+    banner_id = request.POST.get('banner_id')
+    try:
+        banner = HomeBanner.objects.get(id=banner_id)
+        if action == 'toggle':
+            banner.is_active = not banner.is_active
+            banner.save()
+            return JsonResponse({'status': 'success', 'message': 'Estado do banner alterado.'})
+        elif action == 'delete':
+            banner.delete()
+            return JsonResponse({'status': 'success', 'message': 'Banner eliminado.'})
+    except HomeBanner.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Banner não encontrado.'}, status=404)
+    
+    return JsonResponse({'status': 'error', 'message': 'Ação inválida.'}, status=400)
+
+
+@require_POST
+@user_passes_test(is_admin)
+def send_aviso(request):
+    from django.contrib.auth.models import User
+    title = request.POST.get('title')
+    content = request.POST.get('content')
+    type = request.POST.get('type')
+    target_course = request.POST.get('target_course')
+    target_year = request.POST.get('target_year')
+    user_destiny_id = request.POST.get('user_destiny')
+    expiration_date = request.POST.get('expiration_date') or None
+
+    try:
+        user_destiny = User.objects.get(id=user_destiny_id) if user_destiny_id else None
+        SystemAviso.objects.create(
+            title=title,
+            content=content,
+            type=type,
+            target_course=target_course,
+            target_year=target_year,
+            target_user=user_destiny,
+            expiration_date=expiration_date
+        )
+        return JsonResponse({'status': 'success', 'message': 'Aviso publicado e enviado.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
