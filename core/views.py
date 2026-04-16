@@ -335,3 +335,40 @@ def send_aviso(request):
         return JsonResponse({'status': 'success', 'message': 'Aviso publicado e enviado.'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+def get_user_profile(request):
+    try:
+        aluno = getattr(request.user, 'aluno_profile', None)
+        if not aluno:
+            return JsonResponse({'status': 'error', 'message': 'Perfil de aluno não encontrado.'}, status=404)
+        
+        return JsonResponse({
+            'status': 'success',
+            'username': request.user.username,
+            'curso': aluno.get_curso_display(),
+            'ano': aluno.ano_inicio,
+            'pontos': aluno.pontos
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@require_POST
+@login_required
+def update_username(request):
+    new_username = request.POST.get('username')
+    if not new_username:
+        return JsonResponse({'status': 'error', 'message': 'O nome de usuário não pode estar vazio.'}, status=400)
+    
+    # Verificar se o username já existe
+    if User.objects.filter(username=new_username).exclude(id=request.user.id).exists():
+        return JsonResponse({'status': 'error', 'message': 'Este nome de usuário já está em uso.'}, status=400)
+    
+    try:
+        request.user.username = new_username
+        request.user.save()
+        return JsonResponse({'status': 'success', 'message': 'Nome de usuário atualizado com sucesso!'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ETAP Digital - Cadastro</title>
+  <title>ETAP Digital - Registe-se</title>
   <link rel="stylesheet" href="../../static/css/stylelogin.css" />
 </head>
   <body>
     <section class="wrapper">
       <div class="form signup">
-        <header>Registre-se</header>
+        <header>Registe-se</header>
         <form method="post">
           {% csrf_token %}
           <input type="text" name="username" placeholder="Nome de usuário" value="{{ form.username.value|default:'' }}" required />
