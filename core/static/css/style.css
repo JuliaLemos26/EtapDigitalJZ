@@ -653,3 +653,33 @@
   left: 15px;
   right: auto;
 }
+
+/* --- Tidio Custom Floating Button --- */
+.floating-chat-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background-color: #A6E4B2;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(166, 228, 178, 0.4);
+  z-index: 9998;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-chat-btn:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 8px 25px rgba(166, 228, 178, 0.6);
+  background-color: #95d4a1;
+}
+
+.floating-chat-btn i {
+  line-height: 1;
+}

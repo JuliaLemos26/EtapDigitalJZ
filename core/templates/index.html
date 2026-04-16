@@ -11,10 +11,40 @@
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <script src="{% static 'js/menu.js' %}?v=7.2"></script>
-   <script>
-     window.currentUserId = "{{ user.id }}";
-     window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";
-   </script>
+    <script>
+      window.currentUserId = "{{ user.id }}";
+      window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";
+    </script>
+    
+    {# Tidio Chat Integration #}
+    {% if user.is_authenticated and user.aluno_profile or user.professor_profile %}
+    <script src="//code.tidio.co/vcccmoui3wfecpxvzakb3k3fheg4fkqr.js" async></script>
+    <script>
+      (function() {
+        function onTidioChatApiReady() {
+          window.tidioChatApi.hide();
+          window.tidioChatApi.on('close', function() {
+            window.tidioChatApi.hide();
+          });
+          window.tidioChatApi.setVisitorData({
+            name: "{{ user.username }}",
+            email: "{{ user.email }}"
+          });
+        }
+
+        if (window.tidioChatApi) {
+          window.tidioChatApi.on('ready', onTidioChatApiReady);
+        } else {
+          document.addEventListener('tidioChat-ready', onTidioChatApiReady);
+        }
+
+        window.openTidioChat = function() {
+          window.tidioChatApi.show();
+          window.tidioChatApi.open();
+        };
+      })();
+    </script>
+    {% endif %}
 </head>
 
 <body>
@@ -422,6 +452,14 @@
   <script src="{% static 'js/custom.js' %}"></script>
   <script src="{% static 'js/isotope.js' %}"></script>
   <script src="{% static 'js/novo.js' %}"></script>
+  <script src="{% static 'js/script.js' %}"></script>
+    
+  {# Botão Flutuante do Tidio (No Body) #}
+  {% if user.is_authenticated and user.aluno_profile or user.professor_profile %}
+  <div class="floating-chat-btn" onclick="openTidioChat()" title="Suporte Etap Digital" style="z-index: 10000;">
+    <i class='bx bx-message-square-dots'></i>
+  </div>
+  {% endif %}
 </body>
 
 </html>
