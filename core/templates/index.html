@@ -20,29 +20,12 @@
     {% if user.is_authenticated and user.aluno_profile or user.professor_profile %}
     <script src="//code.tidio.co/vcccmoui3wfecpxvzakb3k3fheg4fkqr.js" async></script>
     <script>
-      (function() {
-        function onTidioChatApiReady() {
-          window.tidioChatApi.hide();
-          window.tidioChatApi.on('close', function() {
-            window.tidioChatApi.hide();
-          });
-          window.tidioChatApi.setVisitorData({
-            name: "{{ user.username }}",
-            email: "{{ user.email }}"
-          });
-        }
-
-        if (window.tidioChatApi) {
-          window.tidioChatApi.on('ready', onTidioChatApiReady);
-        } else {
-          document.addEventListener('tidioChat-ready', onTidioChatApiReady);
-        }
-
-        window.openTidioChat = function() {
-          window.tidioChatApi.show();
-          window.tidioChatApi.open();
-        };
-      })();
+      document.addEventListener('tidioChat-ready', function() {
+        window.tidioChatApi.setVisitorData({
+          name: "{{ user.username }}",
+          email: "{{ user.email }}"
+        });
+      });
     </script>
     {% endif %}
 </head>
@@ -453,13 +436,6 @@
   <script src="{% static 'js/isotope.js' %}"></script>
   <script src="{% static 'js/novo.js' %}"></script>
   <script src="{% static 'js/script.js' %}"></script>
-    
-  {# Botão Flutuante do Tidio (No Body) #}
-  {% if user.is_authenticated and user.aluno_profile or user.professor_profile %}
-  <div class="floating-chat-btn" onclick="openTidioChat()" title="Suporte Etap Digital" style="z-index: 10000;">
-    <i class='bx bx-message-square-dots'></i>
-  </div>
-  {% endif %}
 </body>
 
 </html>
