@@ -221,7 +221,9 @@ def admin_dashboard(request):
         'all_users': User.objects.filter(is_active=True).exclude(is_superuser=True),
         'banners': HomeBanner.objects.all(),
         'settings': PlatformSettings.get_settings(),
+        'settings': PlatformSettings.get_settings(),
         'active_tab': request.GET.get('tab', 'alunos'),
+        'avisos_ativos': SystemAviso.objects.all(),
     }
     return render(request, 'pages/admin_dashboard.html', context)
 
@@ -349,7 +351,8 @@ def get_user_profile(request):
             'username': request.user.username,
             'curso': aluno.get_curso_display(),
             'ano': aluno.ano_inicio,
-            'pontos': aluno.pontos
+            'pontos': aluno.pontos_disponiveis,
+            'patinho_nome': aluno.patinho_nome or "Qual o nome do seu patinho etap?"
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -371,4 +374,31 @@ def update_username(request):
         request.user.save()
         return JsonResponse({'status': 'success', 'message': 'Nome de usuário atualizado com sucesso!'})
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_POST
+@user_passes_test(is_admin)
+def delete_aviso(request, aviso_id):
+    try:
+        aviso = SystemAviso.objects.get(id=aviso_id)
+        aviso.delete()
+        return JsonResponse({'status': 'success', 'message': 'Aviso removido com sucesso.'})
+    except SystemAviso.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Aviso não encontrado.'}, status=404)
+
+
+@require_POST
+@login_required
+def set_duck_name(request):
+    new_name = request.POST.get('patinho_nome')
+    if not new_name:
+        return JsonResponse({'status': 'error', 'message': 'O nome do patinho não pode estar vazio.'}, status=400)
+    
+    try:
+        aluno = request.user.aluno_profile
+        aluno.patinho_nome = new_name
+        aluno.save()
+        return JsonResponse({'status': 'success', 'message': 'Nome do patinho atualizado com sucesso!'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+

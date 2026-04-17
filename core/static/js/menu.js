@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let closeBtn = document.querySelector("#btn");
   let searchBtn = document.querySelector(".bx-search");
   const container = document.querySelector('.home-section');
-  if (!container) return;
-
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       sidebar.classList.toggle("open");
@@ -18,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
       menuBtnChange();
     });
   }
+
+  if (!container) return;
 
   function menuBtnChange() {
     if (sidebar.classList.contains("open")) {

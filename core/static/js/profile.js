@@ -18,8 +18,10 @@ function openProfileModal() {
                 document.getElementById("profile-display-name").innerText = data.username;
                 document.getElementById("input-profile-name").value = data.username;
                 document.getElementById("profile-course").innerText = data.curso;
-                document.getElementById("profile-year").innerText = data.ano + "º Ano";
+                document.getElementById("profile-year").innerText = data.ano;
                 document.getElementById("profile-points").innerText = data.pontos;
+                document.getElementById("duck-name-display").innerText = data.patinho_nome;
+                document.getElementById("input-duck-name").value = data.patinho_nome === "Qual o nome do seu patinho etap?" ? "" : data.patinho_nome;
 
                 overlay.classList.add("show");
                 modal.classList.add("show");
@@ -76,6 +78,48 @@ function saveProfileName() {
     .catch(err => {
         console.error(err);
         alert("Erro na requisição de atualização.");
+    });
+}
+
+function toggleEditDuckName() {
+    const view = document.getElementById("duck-name-view");
+    const edit = document.getElementById("duck-name-edit");
+
+    if (view.style.display === "none") {
+        view.style.display = "flex";
+        edit.style.display = "none";
+    } else {
+        view.style.display = "none";
+        edit.style.display = "flex";
+        document.getElementById("input-duck-name").focus();
+    }
+}
+
+function saveDuckName() {
+    const newName = document.getElementById("input-duck-name").value;
+    if (!newName) return;
+
+    const formData = new FormData();
+    formData.append('patinho_nome', newName);
+
+    fetch('/api/profile/duck-name/update/', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById("duck-name-display").innerText = newName;
+            toggleEditDuckName();
+            alert("Nome do patinho atualizado!");
+        } else {
+            alert("Erro: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Erro na requisição.");
     });
 }
 

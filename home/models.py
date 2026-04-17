@@ -1,5 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
+import re
+from django.utils import timezone
+
+
+YEAR_CHOICES = [
+    ('22', 'Matrícula em 2022'),
+    ('23', 'Matrícula em 2023'),
+    ('24', 'Matrícula em 2024'),
+    ('25', 'Matrícula em 2025'),
+    ('26', 'Matrícula em 2026'),
+]
 
 class Aluno(models.Model):
     CURSO_CHOICES = [
@@ -11,7 +22,38 @@ class Aluno(models.Model):
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='aluno_profile')
     curso = models.CharField(max_length=10, choices=CURSO_CHOICES)
-    ano_inicio = models.CharField(max_length=2)
+    ano_inicio = models.CharField(max_length=2, choices=YEAR_CHOICES, verbose_name="Ano de Matrícula")
+    patinho_nome = models.CharField(max_length=50, blank=True, null=True, verbose_name="Nome do Patinho")
+    pontos_gastos = models.PositiveIntegerField(default=0, verbose_name="Pontos Gastos")
+
+    @property
+    def ano_escolar_label(self):
+        """Calcula se é 10º, 11º ou 12º ano baseado no email ou ano_inicio."""
+        year_str = self.ano_inicio
+        # Tenta extrair do email se o campo estiver vazio ou não numérico
+        if not year_str or not year_str.isdigit():
+            match = re.search(r'\d{2}', self.user.email)
+            if match:
+                year_str = match.group(0)
+            else:
+                return "Ano N/D"
+
+        try:
+            enrollment_year = int(year_str)
+            now = timezone.now()
+            # O ano letivo começa em Setembro (mês 9)
+            # Se estamos em Abril 2026, o início do ano letivo foi 2025
+            current_school_year_start = now.year if now.month >= 9 else now.year - 1
+            current_school_year_short = current_school_year_start % 100
+            
+            # 23 -> 25 - 23 + 10 = 12
+            year_num = (current_school_year_short - enrollment_year) + 10
+            
+            if year_num < 10: return "Pré-10º"
+            if year_num > 12: return "Graduado"
+            return f"{year_num}º Ano"
+        except (ValueError, TypeError):
+            return "Erro no Cálculo"
 
     def __str__(self):
         return f"Aluno: {self.user.username} ({self.get_curso_display()})"
@@ -44,6 +86,10 @@ class Aluno(models.Model):
                     pontos_total += 150
                     
         return pontos_total
+
+    @property
+    def pontos_disponiveis(self):
+        return max(0, self.pontos - self.pontos_gastos)
 
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='professor_profile')
@@ -102,3 +148,60 @@ class SystemAviso(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class AvatarPart(models.Model):
+    is_base = models.BooleanField(default=False)
+    image = models.FileField(upload_to='avatar/parts/')
+    z_index = models.IntegerField(default=0)
+    pos_x = models.IntegerField(default=0)
+    pos_y = models.IntegerField(default=0)
+    scale = models.FloatField(default=1.0)
+    label = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['z_index']
+
+    def __str__(self):
+        return f"{self.label or 'Parte'} (Z: {self.z_index})"
+
+
+class Outfit(models.Model):
+    name = models.CharField(max_length=200)
+    price = models.PositiveIntegerField(default=0)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_outfits')
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_outfits')
+    preview_image = models.ImageField(upload_to='outfits/previews/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class OutfitPart(models.Model):
+    outfit = models.ForeignKey(Outfit, on_delete=models.CASCADE, related_name='parts')
+    image = models.FileField(upload_to='outfits/parts/')
+    z_index = models.IntegerField(default=0)
+    pos_x = models.IntegerField(default=0)
+    pos_y = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['z_index']
+
+
+class OutfitPurchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='outfit_purchases')
+    outfit = models.ForeignKey(Outfit, on_delete=models.CASCADE)
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'outfit')
+
+
+class UserAvatarState(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='avatar_state')
+    active_outfit = models.ForeignKey(Outfit, on_delete=models.SET_NULL, null=True, blank=True)
+    active_emotion = models.CharField(max_length=50, default='normal')
+
+    def __str__(self):
+        return f"Avatar de {self.user.username}"

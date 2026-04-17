@@ -60,7 +60,7 @@
                                             <div class="avatar-sq" style="background: #e8f0fe; color: #1967d2;">{{ aluno.user.username|make_list|first|upper }}</div>
                                             <div class="flex-grow-1">
                                                 <h6 class="mb-0 fw-bold">{{ aluno.user.username }}</h6>
-                                                <small class="text-muted">{{ aluno.get_curso_display }} | {{ aluno.ano_inicio }}º ano</small>
+                                                <small class="text-muted">{{ aluno.get_curso_display }} | {{ aluno.ano_escolar_label }}</small>
                                             </div>
                                             <div class="status-dot {% if aluno.user.is_active %}online{% else %}offline{% endif %}"></div>
                                         </div>
@@ -176,7 +176,9 @@
                                                         <div class="col-md-6">
                                                             <select name="target_year" class="form-control-site">
                                                                 <option value="">Todos os Anos</option>
-                                                                <option value="10">10º Ano</option><option value="11">11º Ano</option><option value="12">12º Ano</option>
+                                                                <option value="23">Alunos 12º (Matrícula 23)</option>
+                                                                <option value="24">Alunos 11º (Matrícula 24)</option>
+                                                                <option value="25">Alunos 10º (Matrícula 25)</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -193,6 +195,37 @@
                                                 <div class="col-md-6 d-flex align-items-end"><button type="submit" class="btn-site w-100 py-2">Enviar Aviso</button></div>
                                             </div>
                                         </form>
+                                    </div>
+
+                                    <div class="active-avisos-section mt-5">
+                                        <h6 class="fw-bold mb-3"><i class='bx bx-list-check'></i> Comunicados Ativos</h6>
+                                        <div class="row g-3">
+                                            {% for aviso in avisos_ativos %}
+                                            <div class="col-md-6">
+                                                <div class="form-card-s p-3" style="border-left: 4px solid #A6E4B2;">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="mb-1 fw-bold" style="color: #333;">{{ aviso.title }}</h6>
+                                                            <div class="badge mb-2" style="background: rgba(166, 228, 178, 0.2); color: #2e7d32; font-size: 10px;">{{ aviso.get_type_display }}</div>
+                                                            <p class="small text-muted mb-2 text-truncate" style="max-width: 200px;">{{ aviso.content }}</p>
+                                                            {% if aviso.expiration_date %}
+                                                                <small class="d-block text-danger" style="font-size: 11px;"><i class='bx bx-time'></i> Expira: {{ aviso.expiration_date|date:"d/m H:i" }}</small>
+                                                            {% else %}
+                                                                <small class="d-block text-muted" style="font-size: 11px;"><i class='bx bx-infinite'></i> Permanente</small>
+                                                            {% endif %}
+                                                        </div>
+                                                        <button onclick="handleDeleteAviso({{ aviso.id }})" class="btn btn-sm text-danger p-0" title="Eliminar Aviso">
+                                                            <i class='bx bx-trash' style="font-size: 20px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% empty %}
+                                            <div class="col-12 text-center py-4 text-muted">
+                                                <small>Nenhum aviso ativo no momento.</small>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -261,7 +294,11 @@
                     <option value="tgpsi">TGPSI</option><option value="tag">TAG</option><option value="tmult">TMULT</option><option value="tsj">TSJ</option><option value="tcab">TCAB</option>
                 </select>
                 <select name="ano" id="adminRelocateAno" class="form-control-site">
-                    <option value="10">10º Ano</option><option value="11">11º Ano</option><option value="12">12º Ano</option>
+                    <option value="22">Matrícula em 2022 (12º+)</option>
+                    <option value="23">Matrícula em 2023 (12º)</option>
+                    <option value="24">Matrícula em 2024 (11º)</option>
+                    <option value="25">Matrícula em 2025 (10º)</option>
+                    <option value="26">Matrícula em 2026 (Novos)</option>
                 </select>
             </div>
             <div class="modal-footer border-0"><button type="submit" class="btn-site w-100">Atualizar Aluno</button></div>
@@ -296,6 +333,8 @@
 }
 .content-section-card { padding: 35px; min-height: 600px; }
 .user-card-p { padding: 20px; border: 1px solid #f0f0f4; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+.user-card-p h6 { color: #333 !important; }
+.user-card-p small { color: #666 !important; }
 .user-card-p:hover { border-color: #A6E4B2; transform: translateY(-5px); box-shadow: 0 15px 35px rgba(166, 228, 178, 0.15); }
 
 /* Tabs */
@@ -488,5 +527,21 @@
         new bootstrap.Modal(document.getElementById('adminRelocateModal')).show();
     };
 
-
+    window.handleDeleteAviso = async function(avisoId) {
+        if (!confirm('Eliminar este aviso permanentemente?')) return;
+        try {
+            const response = await fetch(`/admin-dashboard/avisos/${avisoId}/delete/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            showGlobalAlert(data.message, 'success');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (e) {
+            showGlobalAlert('Erro ao eliminar aviso', 'error');
+        }
+    };
 </script>

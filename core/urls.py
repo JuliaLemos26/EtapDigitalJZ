@@ -7,7 +7,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from django.views.generic import RedirectView
 from core import views as core_views
 from search import views as search_views
-from core.views import IndexView, dashboard, spa_page, admin_dashboard, get_user_profile, update_username
+from core.views import IndexView, dashboard, spa_page, admin_dashboard, get_user_profile, update_username, set_duck_name
 from .views import user_logout
 
 urlpatterns = [
@@ -35,8 +35,10 @@ urlpatterns = [
     path('admin-dashboard/banners/', core_views.manage_banners, name='manage_banners'),
     path('admin-dashboard/toggle-platform/', core_views.toggle_platform, name='toggle_platform'),
     path('admin-dashboard/avisos/send/', core_views.send_aviso, name='send_aviso'),
+    path('admin-dashboard/avisos/<int:aviso_id>/delete/', core_views.delete_aviso, name='delete_aviso'),
     path('api/profile/', get_user_profile, name='get_user_profile'),
     path('api/profile/update/', update_username, name='update_username'),
+    path('api/profile/duck-name/update/', set_duck_name, name='set_duck_name'),
     path('publications/', include('publications.urls')),
 ]
 
