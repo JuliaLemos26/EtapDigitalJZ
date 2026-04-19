@@ -40,6 +40,12 @@
                     <a href="#/admin-dashboard?tab=sistema" class="tab-item-p {% if active_tab == 'sistema' %}active{% endif %}" data-tab="sistema">
                         <i class='bx bxs-cog'></i> Sistema
                     </a>
+                    <a href="#/admin-dashboard?tab=avatar" class="tab-item-p {% if active_tab == 'avatar' %}active{% endif %}" data-tab="avatar">
+                        <i class='bx bxs-face'></i> Criador Pato Base
+                    </a>
+                    <a href="#/admin-dashboard?tab=outfits" class="tab-item-p {% if active_tab == 'outfits' %}active{% endif %}" data-tab="outfits">
+                        <i class='bx bx-store'></i> Lojinha (Outfits)
+                    </a>
                 </div>
             </div>
 
@@ -246,6 +252,88 @@
                                     </button>
                                 </div>
                             </div>
+                        {% elif active_tab == 'avatar' %}
+                            <div class="section-header mb-4 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold"><i class='bx bxs-paint' style="color: #A6E4B2;"></i> Construtor do Pato Base</h5>
+                                <button class="btn-site" data-bs-toggle="modal" data-bs-target="#newAvatarPartModal">Nova Parte (+)</button>
+                            </div>
+                            <p class="text-muted small">Arrasta as partes para alinhá-las corretamente no construtor. O estado é salvo automaticamente quando soltas uma peça.</p>
+                            
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div id="avatarBuilderArea" style="width: 400px; height: 500px; background: #e8f5e9; border: 2px dashed #A6E4B2; border-radius: 20px; position: relative; margin: 0 auto; overflow: hidden;">
+                                        {% for part in avatar_parts %}
+                                            <div class="avatar-part-draggable" 
+                                                 data-id="{{ part.id }}" 
+                                                 data-scale="{{ part.scale|stringformat:'f'|default:'1.0' }}"
+                                                 onmousedown="window.initAvatarDragStart(event)"
+                                                 style="position: absolute; left: {{ part.pos_x }}px; top: {{ part.pos_y }}px; z-index: {{ part.z_index }}; cursor: grab;">
+                                                <img src="{{ part.image.url }}" alt="{{ part.label }}" style="pointer-events: none; max-width: 400px; max-height: 500px; transform-origin: top left;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <h6 class="fw-bold mb-3">Camadas Base (Z-Index)</h6>
+                                    <div class="list-group">
+                                        {% for part in avatar_parts %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">{{ part.label }}</h6>
+                                                <small class="text-muted d-block mt-1">
+                                                    Z: <input type="number" class="z-index-input" value="{{ part.z_index }}" style="width: 40px; padding: 0 4px; border: 1px solid #ddd; border-radius: 4px;" onchange="window.updateAvatarZ(event, {{ part.id }})"> | 
+                                                    Tam: <input type="number" step="0.1" value="{{ part.scale|stringformat:'f'|default:'1.0' }}" style="width: 50px; padding: 0 4px; border: 1px solid #ddd; border-radius: 4px;" onchange="window.updateAvatarScale(event, {{ part.id }})"> | 
+                                                    X: <span id="lblX_{{ part.id }}">{{ part.pos_x }}</span> | 
+                                                    Y: <span id="lblY_{{ part.id }}">{{ part.pos_y }}</span>
+                                                </small>
+                                            </div>
+                                            <button onclick="handleDeleteAvatarPart({{ part.id }})" class="btn btn-sm text-danger"><i class='bx bx-trash'></i></button>
+                                        </div>
+                                        {% empty %}
+                                        <div class="text-center text-muted p-3">Nenhuma parte guardada.</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif active_tab == 'outfits' %}
+                            <div class="section-header mb-4 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold"><i class='bx bx-store' style="color: #A6E4B2;"></i> Gestão de Outfits da Lojinha</h5>
+                                <button class="btn-site" data-bs-toggle="modal" data-bs-target="#newOutfitModal">+ Novo Outfit</button>
+                            </div>
+
+                            {% if outfits %}
+                            <div class="row g-3">
+                                {% for outfit in outfits %}
+                                <div class="col-md-6">
+                                    <div class="user-card-p d-flex gap-3 align-items-center">
+                                        {% if outfit.preview_image %}
+                                        <img src="{{ outfit.preview_image.url }}" style="width:60px; height:60px; object-fit:cover; border-radius:12px; flex-shrink:0;">
+                                        {% else %}
+                                        <div style="width:60px; height:60px; background:#e8f5e9; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i class='bx bxs-t-shirt' style="font-size:28px; color:#A6E4B2;"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0 fw-bold">{{ outfit.name }}</h6>
+                                            <small class="text-muted">
+                                                <i class='bx bxs-star' style="color:#f6c90e;"></i> {{ outfit.price }} pts
+                                                &bull; {{ outfit.parts.count }} camadas
+                                            </small>
+                                        </div>
+                                        <button onclick="handleDeleteOutfit({{ outfit.id }}, '{{ outfit.name|escapejs }}')" class="btn-action-s text-danger" title="Apagar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class='bx bx-store' style="font-size:48px; color:#c6f6d5; display:block; margin-bottom:12px;"></i>
+                                <p>Ainda não existem outfits criados.<br>Clica em "+ Novo Outfit" para criar o primeiro!</p>
+                            </div>
+                            {% endif %}
+
                         {% endif %}
                     </div>
                 </div>
@@ -283,6 +371,49 @@
     </div>
 </div>
 
+
+<!-- Modal para Nova Parte do Avatar -->
+<div class="modal fade" id="newAvatarPartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-site">
+        <form id="newAvatarPartForm" onsubmit="submitAjaxForm(event, '{% url 'save_avatar_part' %}', true)">
+            {% csrf_token %}
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Adicionar Parte do Pato</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4">
+                <input type="text" name="label" class="form-control-site mb-3" placeholder="Nome da Camada (ex: Corpo, Bico)" required>
+                <label class="small text-muted mb-1">Imagem da Camada (PNG Transparente Recomendado)</label>
+                <input type="file" name="image" class="form-control-site mb-3" accept="image/png, image/jpeg, image/webp" required>
+                <label class="small text-muted mb-1">Z-Index (Camadas maiores ficam por cima)</label>
+                <input type="number" name="z_index" class="form-control-site" value="0" placeholder="Z-Index">
+            </div>
+            <div class="modal-footer border-0"><button type="submit" class="btn-site w-100">Adicionar Camada</button></div>
+        </form>
+    </div></div>
+</div>
+
+<!-- Modal para Novo Outfit -->
+<div class="modal fade" id="newOutfitModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-site">
+        <form id="newOutfitForm" onsubmit="submitAjaxForm(event, '{% url 'create_outfit' %}', true)">
+            {% csrf_token %}
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class='bx bx-store' style="color:#A6E4B2;"></i> Novo Outfit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <label class="small text-muted mb-1">Nome do Outfit</label>
+                <input type="text" name="name" class="form-control-site mb-3" placeholder="Ex: Fato de Astronauta" required>
+                <label class="small text-muted mb-1">Preço (em Pontos)</label>
+                <input type="number" name="price" class="form-control-site mb-3" value="100" min="0" required>
+                <label class="small text-muted mb-1">Imagem de Pré-visualização (opcional)</label>
+                <input type="file" name="preview_image" class="form-control-site mb-1" accept="image/*">
+                <p class="small text-muted">Podes adicionar as camadas do outfit depois de criá-lo, na secção de edição.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="submit" class="btn-site w-100">Criar Outfit 🎉</button>
+            </div>
+        </form>
+    </div></div>
+</div>
 
 <div class="modal fade" id="adminRelocateModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-site">
@@ -329,10 +460,30 @@
 .premium-dashboard-container { background: transparent; min-height: 100vh; padding: 10px; border-radius: 20px; }
 
 .dashboard-hero-card, .content-section-card, .sidebar-card-site, .user-card-p, .form-card-s, .banner-card-s, .modal-site {
-    background: white; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);
+    background: white; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); color: #333;
 }
-.content-section-card { padding: 35px; min-height: 600px; }
-.user-card-p { padding: 20px; border: 1px solid #f0f0f4; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+/* Força a cor do texto para que não desapareça no fundo branco */
+.premium-dashboard-container h1, 
+.premium-dashboard-container h2, 
+.premium-dashboard-container h3, 
+.premium-dashboard-container h4, 
+.premium-dashboard-container h5, 
+.premium-dashboard-container h6,
+.premium-dashboard-container p,
+.premium-dashboard-container label,
+.modal-site h1, .modal-site h2, .modal-site h3, .modal-site h4, .modal-site h5, .modal-site h6,
+.modal-site p, .modal-site label {
+    color: #333 !important;
+}
+.premium-dashboard-container small, 
+.premium-dashboard-container .text-muted,
+.modal-site small, .modal-site .text-muted {
+    color: #666 !important;
+}
+
+.content-section-card { padding: 35px; min-height: 600px; color: #333; }
+.user-card-p { padding: 20px; border: 1px solid #f0f0f4; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); color: #333; }
 .user-card-p h6 { color: #333 !important; }
 .user-card-p small { color: #666 !important; }
 .user-card-p:hover { border-color: #A6E4B2; transform: translateY(-5px); box-shadow: 0 15px 35px rgba(166, 228, 178, 0.15); }
@@ -542,6 +693,153 @@
             if (window.loadRoute) await window.loadRoute();
         } catch (e) {
             showGlobalAlert('Erro ao eliminar aviso', 'error');
+
         }
     };
+
+    window.handleDeleteOutfit = async function(outfitId, outfitName) {
+        if (!confirm(`Apagar o outfit "${outfitName}" permanentemente?`)) return;
+        try {
+            const response = await fetch(`/admin-dashboard/outfits/${outfitId}/delete/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            showGlobalAlert(data.message, data.status === 'success' ? 'success' : 'error');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (e) {
+            showGlobalAlert('Erro ao eliminar outfit', 'error');
+        }
+    };
+
+    window.handleDeleteAvatarPart = async function(partId) {
+        if (!confirm('Tem a certeza que deseja apagar esta parte do pato permanentemente?')) return;
+        try {
+            const response = await fetch(`/admin-dashboard/avatar/${partId}/delete/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            showGlobalAlert(data.message, data.status === 'success' ? 'success' : 'error');
+            if (window.loadRoute) await window.loadRoute();
+        } catch (e) {
+            showGlobalAlert('Erro ao eliminar parte', 'error');
+        }
+    };
+
+    window.avatarBuilderState = { isDragging: false, activeEl: null, startX: 0, startY: 0, initialX: 0, initialY: 0 };
+
+    window.initAvatarDragStart = function(e) {
+        if (e.target.tagName.toLowerCase() === 'img') e.preventDefault();
+        window.avatarBuilderState.activeEl = e.currentTarget;
+        window.avatarBuilderState.isDragging = true;
+        window.avatarBuilderState.startX = e.clientX;
+        window.avatarBuilderState.startY = e.clientY;
+        window.avatarBuilderState.initialX = parseInt(window.avatarBuilderState.activeEl.style.left) || 0;
+        window.avatarBuilderState.initialY = parseInt(window.avatarBuilderState.activeEl.style.top) || 0;
+        
+        document.addEventListener('mousemove', window.avatarDrag);
+        document.addEventListener('mouseup', window.avatarDragEnd);
+    };
+
+    window.avatarDrag = function(e) {
+        const s = window.avatarBuilderState;
+        if (!s.isDragging) return;
+        e.preventDefault();
+        const newX = s.initialX + (e.clientX - s.startX);
+        const newY = s.initialY + (e.clientY - s.startY);
+        s.activeEl.style.left = `${newX}px`;
+        s.activeEl.style.top = `${newY}px`;
+        
+        const partId = s.activeEl.getAttribute('data-id');
+        const lblX = document.getElementById(`lblX_${partId}`);
+        const lblY = document.getElementById(`lblY_${partId}`);
+        if (lblX) lblX.textContent = newX;
+        if (lblY) lblY.textContent = newY;
+    };
+
+    window.avatarDragEnd = async function(e) {
+        const s = window.avatarBuilderState;
+        if (!s.isDragging) return;
+        s.isDragging = false;
+        document.removeEventListener('mousemove', window.avatarDrag);
+        document.removeEventListener('mouseup', window.avatarDragEnd);
+        
+        const partId = s.activeEl.getAttribute('data-id');
+        const newX = parseInt(s.activeEl.style.left) || 0;
+        const newY = parseInt(s.activeEl.style.top) || 0;
+        
+        const formData = new FormData();
+        formData.append('part_id', partId);
+        formData.append('pos_x', newX);
+        formData.append('pos_y', newY);
+        formData.append('z_index', s.activeEl.style.zIndex || 0);
+        
+        try {
+            await fetch('/admin-dashboard/avatar/save/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: formData
+            });
+        } catch (err) {}
+        s.activeEl = null;
+
+        // Auto reload after 200ms to ensure changes stick
+        setTimeout(() => { if (window.loadRoute) window.loadRoute(); }, 200);
+    };
+
+    window.updateAvatarZ = async function(e, partId) {
+        const newZ = e.target.value;
+        const draggable = document.querySelector(`.avatar-part-draggable[data-id="${partId}"]`);
+        if(draggable) draggable.style.zIndex = newZ;
+        
+        const formData = new FormData();
+        formData.append('part_id', partId);
+        formData.append('z_index', newZ);
+        formData.append('pos_x', draggable ? parseInt(draggable.style.left) || 0 : 0);
+        formData.append('pos_y', draggable ? parseInt(draggable.style.top) || 0 : 0);
+        
+        try {
+            await fetch('/admin-dashboard/avatar/save/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: formData });
+            // Auto reload
+            setTimeout(() => { if (window.loadRoute) window.loadRoute(); }, 200);
+        } catch (err) {}
+    };
+
+    window.updateAvatarScale = async function(e, partId) {
+        const newScale = e.target.value.replace(',', '.');
+        const draggable = document.querySelector(`.avatar-part-draggable[data-id="${partId}"]`);
+        if(draggable) {
+            let img = draggable.querySelector('img');
+            if(img) { img.style.transform = `scale(${newScale})`; img.style.transformOrigin = 'top left'; }
+        }
+        
+        const formData = new FormData();
+        formData.append('part_id', partId);
+        formData.append('scale', newScale);
+        formData.append('pos_x', draggable ? parseInt(draggable.style.left) || 0 : 0);
+        formData.append('pos_y', draggable ? parseInt(draggable.style.top) || 0 : 0);
+        
+        try {
+            await fetch('/admin-dashboard/avatar/save/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: formData });
+        } catch (err) {}
+    };
+
+    // Apply init scale
+    setTimeout(() => {
+        document.querySelectorAll('.avatar-part-draggable').forEach(el => {
+            let sc = el.getAttribute('data-scale');
+            if (sc) {
+                sc = sc.replace(',', '.');
+                let img = el.querySelector('img');
+                if (img) { img.style.transform = `scale(${sc})`; img.style.transformOrigin = 'top left'; }
+            }
+        });
+    }, 100);
 </script>

@@ -10,7 +10,7 @@ from search import views as search_views
 from core.views import IndexView, spa_page
 from django.urls import path
 from .views import user_logout
-
+from core.views import save_avatar_part, delete_avatar_part
 urlpatterns = [
     #minha parte
     path("django-admin/", admin.site.urls),
@@ -33,6 +33,10 @@ urlpatterns = [
     path("dashboard/", dashboard, name="dashboard"),
     path('pages/<str:page_name>/', spa_page, name='spa-page'),
     path('logout/', user_logout, name='logout'),
+    
+    # Avatar Builder admin endpoints
+    path('admin-dashboard/avatar/save/', save_avatar_part, name='save_avatar_part'),
+    path('admin-dashboard/avatar/<int:part_id>/delete/', delete_avatar_part, name='delete_avatar_part'),
 ]
 
 

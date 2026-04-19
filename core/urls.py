@@ -7,7 +7,9 @@ from wagtail.documents import urls as wagtaildocs_urls
 from django.views.generic import RedirectView
 from core import views as core_views
 from search import views as search_views
-from core.views import IndexView, dashboard, spa_page, admin_dashboard, get_user_profile, update_username, set_duck_name
+from core.views import (IndexView, dashboard, spa_page, admin_dashboard, get_user_profile, 
+    update_username, set_duck_name, save_avatar_part, delete_avatar_part,
+    create_outfit, delete_outfit, lojinha_data, buy_outfit)
 from .views import user_logout
 
 urlpatterns = [
@@ -40,6 +42,18 @@ urlpatterns = [
     path('api/profile/update/', update_username, name='update_username'),
     path('api/profile/duck-name/update/', set_duck_name, name='set_duck_name'),
     path('publications/', include('publications.urls')),
+    
+    # Avatar Builder admin endpoints
+    path('admin-dashboard/avatar/save/', save_avatar_part, name='save_avatar_part'),
+    path('admin-dashboard/avatar/<int:part_id>/delete/', delete_avatar_part, name='delete_avatar_part'),
+    
+    # Outfit management (admin)
+    path('admin-dashboard/outfits/create/', create_outfit, name='create_outfit'),
+    path('admin-dashboard/outfits/<int:outfit_id>/delete/', delete_outfit, name='delete_outfit'),
+    
+    # Lojinha API (alunos)
+    path('api/lojinha/', lojinha_data, name='lojinha_data'),
+    path('api/lojinha/buy/', buy_outfit, name='buy_outfit'),
 ]
 
 

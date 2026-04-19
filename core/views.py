@@ -212,7 +212,7 @@ def spa_page(request, page_name):
 
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    from home.models import Aluno, Professor, PlatformSettings, HomeBanner
+    from home.models import Aluno, Professor, PlatformSettings, HomeBanner, AvatarPart, Outfit
     from django.contrib.auth.models import User
     
     context = {
@@ -221,9 +221,10 @@ def admin_dashboard(request):
         'all_users': User.objects.filter(is_active=True).exclude(is_superuser=True),
         'banners': HomeBanner.objects.all(),
         'settings': PlatformSettings.get_settings(),
-        'settings': PlatformSettings.get_settings(),
         'active_tab': request.GET.get('tab', 'alunos'),
         'avisos_ativos': SystemAviso.objects.all(),
+        'avatar_parts': AvatarPart.objects.filter(is_base=True).order_by('z_index'),
+        'outfits': Outfit.objects.prefetch_related('parts').all().order_by('-created_at'),
     }
     return render(request, 'pages/admin_dashboard.html', context)
 
@@ -346,13 +347,28 @@ def get_user_profile(request):
         if not aluno:
             return JsonResponse({'status': 'error', 'message': 'Perfil de aluno não encontrado.'}, status=404)
         
+        from home.models import AvatarPart
+        base_parts = AvatarPart.objects.filter(is_base=True).order_by('z_index')
+        parts_data = []
+        for part in base_parts:
+            parts_data.append({
+                'id': part.id,
+                'image': part.image.url if part.image else '',
+                'label': part.label,
+                'z_index': part.z_index,
+                'pos_x': part.pos_x,
+                'pos_y': part.pos_y,
+                'scale': part.scale,
+            })
+            
         return JsonResponse({
             'status': 'success',
             'username': request.user.username,
             'curso': aluno.get_curso_display(),
             'ano': aluno.ano_inicio,
             'pontos': aluno.pontos_disponiveis,
-            'patinho_nome': aluno.patinho_nome or "Qual o nome do seu patinho etap?"
+            'patinho_nome': aluno.patinho_nome or "Qual o nome do seu patinho etap?",
+            'avatar_parts': parts_data
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -401,4 +417,150 @@ def set_duck_name(request):
         return JsonResponse({'status': 'success', 'message': 'Nome do patinho atualizado com sucesso!'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_POST
+@user_passes_test(is_admin)
+def save_avatar_part(request):
+    from home.models import AvatarPart
+    # Se ID existe, estamos a editar (apenas posições/z-index)
+    part_id = request.POST.get('part_id')
+    if part_id:
+        try:
+            part = AvatarPart.objects.get(id=part_id)
+            part.z_index = int(request.POST.get('z_index', part.z_index))
+            part.pos_x = int(request.POST.get('pos_x', part.pos_x))
+            part.pos_y = int(request.POST.get('pos_y', part.pos_y))
+            if 'scale' in request.POST:
+                part.scale = float(str(request.POST.get('scale', part.scale)).replace(',', '.'))
+            part.save()
+            return JsonResponse({'status': 'success', 'message': 'Posição guardada com sucesso.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    # Se não há ID, estamos a criar
+    label = request.POST.get('label')
+    image = request.FILES.get('image')
+    z_index = int(request.POST.get('z_index', 0))
+    
+    if not label or not image:
+        return JsonResponse({'status': 'error', 'message': 'Faltam dados da parte do pato.'}, status=400)
+        
+    try:
+        AvatarPart.objects.create(
+            is_base=True,
+            image=image,
+            z_index=z_index,
+            label=label,
+            pos_x=0,
+            pos_y=0
+        )
+        return JsonResponse({'status': 'success', 'message': 'Parte do patinho adicionada!'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_POST
+@user_passes_test(is_admin)
+def delete_avatar_part(request, part_id):
+    from home.models import AvatarPart
+    try:
+        part = AvatarPart.objects.get(id=part_id)
+        part.delete()
+        return JsonResponse({'status': 'success', 'message': 'Parte apagada com sucesso.'})
+    except AvatarPart.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Parte não encontrada.'}, status=404)
+
+
+# ─── OUTFIT MANAGEMENT ────────────────────────────────────────────────
+
+@require_POST
+@user_passes_test(is_admin)
+def create_outfit(request):
+    from home.models import Outfit
+    try:
+        name = request.POST.get('name')
+        price = int(request.POST.get('price', 0))
+        preview = request.FILES.get('preview_image')
+        if not name:
+            return JsonResponse({'status': 'error', 'message': 'Nome obrigatório.'}, status=400)
+        outfit = Outfit.objects.create(
+            name=name,
+            price=price,
+            uploaded_by=request.user,
+            preview_image=preview,
+        )
+        return JsonResponse({'status': 'success', 'message': f'Outfit "{name}" criado!', 'outfit_id': outfit.id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@require_POST
+@user_passes_test(is_admin)
+def delete_outfit(request, outfit_id):
+    from home.models import Outfit
+    try:
+        outfit = Outfit.objects.get(id=outfit_id)
+        outfit.delete()
+        return JsonResponse({'status': 'success', 'message': 'Outfit apagado.'})
+    except Outfit.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Outfit não encontrado.'}, status=404)
+
+
+@login_required
+def lojinha_data(request):
+    """API endpoint: returns outfits list and user points for the shop."""
+    from home.models import Outfit, OutfitPurchase
+    outfits = Outfit.objects.prefetch_related('parts').all().order_by('-created_at')
+    aluno = getattr(request.user, 'aluno_profile', None)
+    pontos = aluno.pontos_disponiveis if aluno else 0
+
+    # IDs já comprados
+    purchased_ids = []
+    if aluno:
+        purchased_ids = list(OutfitPurchase.objects.filter(user=request.user).values_list('outfit_id', flat=True))
+
+    data = []
+    for o in outfits:
+        parts = []
+        for p in o.parts.all():
+            parts.append({
+                'image': p.image.url if p.image else '',
+                'z_index': p.z_index,
+                'pos_x': p.pos_x,
+                'pos_y': p.pos_y,
+            })
+        data.append({
+            'id': o.id,
+            'name': o.name,
+            'price': o.price,
+            'preview_image': o.preview_image.url if o.preview_image else '',
+            'parts': parts,
+            'purchased': o.id in purchased_ids,
+        })
+
+    return JsonResponse({'status': 'success', 'outfits': data, 'pontos': pontos, 'purchased_ids': purchased_ids})
+
+
+@require_POST
+@login_required
+def buy_outfit(request):
+    """Purchase an outfit by deducting points."""
+    from home.models import Outfit, OutfitPurchase
+    outfit_id = request.POST.get('outfit_id')
+    try:
+        outfit = Outfit.objects.get(id=outfit_id)
+        aluno = request.user.aluno_profile
+        if OutfitPurchase.objects.filter(user=request.user, outfit=outfit).exists():
+            return JsonResponse({'status': 'error', 'message': 'Já tens este outfit!'}, status=400)
+        if aluno.pontos_disponiveis < outfit.price:
+            return JsonResponse({'status': 'error', 'message': 'Pontos insuficientes!'}, status=400)
+        OutfitPurchase.objects.create(user=request.user, outfit=outfit)
+        aluno.pontos_gastos += outfit.price
+        aluno.save()
+        return JsonResponse({'status': 'success', 'message': f'"{outfit.name}" adquirido! 🎉', 'new_pontos': aluno.pontos_disponiveis})
+    except Outfit.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Outfit não encontrado.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
 

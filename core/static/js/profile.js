@@ -23,8 +23,118 @@ function openProfileModal() {
                 document.getElementById("duck-name-display").innerText = data.patinho_nome;
                 document.getElementById("input-duck-name").value = data.patinho_nome === "Qual o nome do seu patinho etap?" ? "" : data.patinho_nome;
 
+                // Render Avatar Paper Doll
+                const avatarContainer = document.querySelector('.profile-avatar-placeholder');
+                if (avatarContainer && data.avatar_parts && data.avatar_parts.length > 0) {
+                    avatarContainer.innerHTML = ''; // Clean previous structure
+                    
+                    const breatheDiv = document.createElement('div');
+                    breatheDiv.className = 'duck-animated-breathe';
+                    breatheDiv.style.position = 'absolute';
+                    breatheDiv.style.width = '400px';
+                    breatheDiv.style.height = '500px';
+                    
+                    // Centralize e dê Scale no container base (400x500 original do builder)
+                    const cw = avatarContainer.clientWidth || 300;
+                    const ch = avatarContainer.clientHeight || 340;
+                    // Multiplicador aumentado para que o pato fique bem maior e mais fofo no perfil!
+                    const fitScale = Math.min(cw / 400, ch / 500) * 1.35; 
+                    
+                    // Calcula margens para centrar o content de 400x500 escalado
+                    const leftOffset = (cw - 400) / 2;
+                    const topOffset = (ch - 500) / 2;
+                    
+                    breatheDiv.style.left = leftOffset + 'px';
+                    breatheDiv.style.top = topOffset + 'px';
+                    breatheDiv.style.transform = `scale(${fitScale})`;
+                    breatheDiv.style.transformOrigin = 'center center';
+                    breatheDiv.style.pointerEvents = 'none';
+
+                    // Loop nas camadas e renderizar com a MESMA estrutura HTML do construtor
+                    data.avatar_parts.forEach(part => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'avatar-part-wrapper';
+                        wrapper.style.position = 'absolute';
+                        wrapper.style.left = part.pos_x + 'px';
+                        wrapper.style.top = part.pos_y + 'px';
+                        wrapper.style.zIndex = part.z_index;
+
+                        const img = document.createElement('img');
+                        img.src = part.image;
+                        img.dataset.label = part.label; // For Blink Logic
+                        img.style.pointerEvents = 'none';
+                        img.style.maxWidth = '400px';
+                        img.style.maxHeight = '500px';
+                        
+                        const scaleNum = part.scale.toString().replace(',', '.');
+                        img.style.transform = `scale(${scaleNum})`;
+                        img.style.transformOrigin = 'top left';
+                        
+                        wrapper.appendChild(img);
+                        breatheDiv.appendChild(wrapper);
+                    });
+                    
+                    avatarContainer.appendChild(breatheDiv);
+
+                    // --- BLINK LOGIC (PISCAR OS OLHOS) ---
+                    const eyeWrappers = Array.from(breatheDiv.children).filter(wrapper => wrapper.children[0] && wrapper.children[0].dataset.label && wrapper.children[0].dataset.label.toLowerCase().includes('olho'));
+                    const openEyes = eyeWrappers.filter(w => !w.children[0].dataset.label.toLowerCase().includes('fechad') && !w.children[0].dataset.label.toLowerCase().includes('pisc'));
+                    const closedEyes = eyeWrappers.filter(w => w.children[0].dataset.label.toLowerCase().includes('fechad') || w.children[0].dataset.label.toLowerCase().includes('pisc'));
+                    
+                    if (closedEyes.length > 0) {
+                        closedEyes.forEach(e => e.style.opacity = '0');
+                        setInterval(() => {
+                            openEyes.forEach(e => e.style.opacity = '0');
+                            closedEyes.forEach(e => e.style.opacity = '1');
+                            setTimeout(() => {
+                                openEyes.forEach(e => e.style.opacity = '1');
+                                closedEyes.forEach(e => e.style.opacity = '0');
+                            }, 150);
+                        }, 4000);
+                    } else if (openEyes.length > 0) {
+                        // Fallback vertical squash on the wrapper
+                        openEyes.forEach(e => e.style.transition = 'transform 0.1s');
+                        setInterval(() => {
+                            openEyes.forEach(e => {
+                                const currentScale = e.style.transform.includes('scaleY') ? e.style.transform : e.style.transform + ' scaleY(1)';
+                                e.style.transform = currentScale.replace('scaleY(1)', 'scaleY(0.1)'); // Close
+                            });
+                            setTimeout(() => {
+                                openEyes.forEach(e => {
+                                    e.style.transform = e.style.transform.replace('scaleY(0.1)', 'scaleY(1)'); // Open
+                                });
+                            }, 150);
+                        }, 4000);
+                    }
+                    // --- END BLINK LOGIC ---
+                    
+                    if (!document.getElementById('duckAnims')) {
+                        const style = document.createElement('style');
+                        style.id = 'duckAnims';
+                        // Breath animation: escala o corpo base ligeiramente
+                        style.innerHTML = `
+                            @keyframes duckBreathe {
+                                0% { transform: scale(var(--fit-scale)) scaleY(1); }
+                                50% { transform: scale(var(--fit-scale)) scaleY(1.03) translateY(-1px); }
+                                100% { transform: scale(var(--fit-scale)) scaleY(1); }
+                            }
+                            .duck-animated-breathe {
+                                --fit-scale: ${fitScale};
+                                animation: duckBreathe 3.5s ease-in-out infinite;
+                                transform-origin: bottom center !important;
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    } else {
+                        // Update the var scale variable
+                        const style = document.getElementById('duckAnims');
+                        style.innerHTML = style.innerHTML.replace(/--fit-scale: [^;]+;/, `--fit-scale: ${fitScale};`);
+                    }
+                }
+
                 overlay.classList.add("show");
                 modal.classList.add("show");
+                _startProfileQuack(); // 🦆 Start quacking!
             } else {
                 alert("Erro ao carregar perfil: " + data.message);
             }
@@ -33,6 +143,26 @@ function openProfileModal() {
             console.error(err);
             alert("Erro de conexão ao carregar perfil.");
         });
+}
+
+// --- QUACK SOUND ---
+const _quackAudio = new Audio('/static/sounds/quack.mp3');
+_quackAudio.volume = 0.6;
+let _quackTimer = null;
+
+function _playQuack() {
+    _quackAudio.currentTime = 0;
+    _quackAudio.play().catch(() => {}); // Browser may block if no user interaction yet
+}
+
+function _startProfileQuack() {
+    if (_quackTimer) return;
+    _playQuack(); // Quack immediately when duck appears!
+    _quackTimer = setInterval(_playQuack, 90000); // Then every 1min 30sec
+}
+
+function _stopProfileQuack() {
+    if (_quackTimer) { clearInterval(_quackTimer); _quackTimer = null; }
 }
 
 function toggleEditProfileName() {
@@ -132,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn.onclick = () => {
             overlay.classList.remove("show");
             document.getElementById("js-profile-holder").classList.remove("show");
+            _stopProfileQuack();
         };
     }
 
@@ -140,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === overlay) {
                 overlay.classList.remove("show");
                 document.getElementById("js-profile-holder").classList.remove("show");
+                _stopProfileQuack();
             }
         };
     }
