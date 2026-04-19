@@ -8,9 +8,10 @@ from django.views.generic import RedirectView
 from core import views as core_views
 from search import views as search_views
 from core.views import (IndexView, dashboard, spa_page, admin_dashboard, get_user_profile, 
-    update_username, set_duck_name, save_avatar_part, delete_avatar_part,
+    update_username, update_student_profile, save_avatar_part, delete_avatar_part,
     create_outfit, delete_outfit, lojinha_data, buy_outfit)
 from .views import user_logout
+
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
@@ -39,8 +40,9 @@ urlpatterns = [
     path('admin-dashboard/avisos/send/', core_views.send_aviso, name='send_aviso'),
     path('admin-dashboard/avisos/<int:aviso_id>/delete/', core_views.delete_aviso, name='delete_aviso'),
     path('api/profile/', get_user_profile, name='get_user_profile'),
-    path('api/profile/update/', update_username, name='update_username'),
-    path('api/profile/duck-name/update/', set_duck_name, name='set_duck_name'),
+    path('api/profile/update/', update_student_profile, name='update_student_profile'),
+    path('api/profile/username/update/', update_username, name='update_username'),
+
     path('publications/', include('publications.urls')),
     
     # Avatar Builder admin endpoints
@@ -50,10 +52,14 @@ urlpatterns = [
     # Outfit management (admin)
     path('admin-dashboard/outfits/create/', create_outfit, name='create_outfit'),
     path('admin-dashboard/outfits/<int:outfit_id>/delete/', delete_outfit, name='delete_outfit'),
+    path('admin-dashboard/outfits/parts/save/', core_views.save_outfit_part, name='save_outfit_part'),
+    path('admin-dashboard/outfits/parts/<int:part_id>/delete/', core_views.delete_outfit_part, name='delete_outfit_part'),
     
-    # Lojinha API (alunos)
+    # Lojinha e Guarda-Roupa API (alunos)
     path('api/lojinha/', lojinha_data, name='lojinha_data'),
     path('api/lojinha/buy/', buy_outfit, name='buy_outfit'),
+    path('api/wardrobe/', core_views.wardrobe_data, name='wardrobe_data'),
+    path('api/wardrobe/equip/', core_views.equip_outfit, name='equip_outfit'),
 ]
 
 

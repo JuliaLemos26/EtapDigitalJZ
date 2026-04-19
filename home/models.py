@@ -184,8 +184,11 @@ class OutfitPart(models.Model):
     z_index = models.IntegerField(default=0)
     pos_x = models.IntegerField(default=0)
     pos_y = models.IntegerField(default=0)
+    scale = models.FloatField(default=1.0)
+    label = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
+
         ordering = ['z_index']
 
 

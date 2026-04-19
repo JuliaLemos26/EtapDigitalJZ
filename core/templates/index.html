@@ -11,7 +11,10 @@
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <script src="{% static 'js/menu.js' %}?v=7.2"></script>
+   <script src="{% static 'js/profile.js' %}?v=2.5"></script>
+   <script src="{% static 'js/wardrobe.js' %}?v=1.5"></script>
     <script>
+
       window.currentUserId = "{{ user.id }}";
       window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";
     </script>
@@ -149,6 +152,7 @@
         </a>
         <span class="tooltip">Lojinha</span>
       </li>
+
 
       {% if user.is_superuser %}
       <li>
@@ -407,8 +411,22 @@
               <div id="profile-course" class="content-box" style="padding: 10px 12px; background: #f9fbff; border: 1px solid #ddecff; border-radius: 10px; font-weight: 600; font-size: 14px; color: #444;">-</div>
             </div>
             <div class="info-block">
-              <label style="color: #6C9FF9; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block;">Ano</label>
-              <div id="profile-year" class="content-box" style="padding: 10px 12px; background: #f9fbff; border: 1px solid #ddecff; border-radius: 10px; font-weight: 600; font-size: 14px; color: #444;">-</div>
+              <label style="color: #6C9FF9; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block;">Ano Escolar</label>
+              <div class="content-box" style="padding: 10px 12px; background: #f9fbff; border: 1px solid #ddecff; border-radius: 10px; display: flex; align-items: center; justify-content: space-between;">
+                <div id="profile-year-view" style="display: flex; align-items: center; gap: 8px;">
+                  <span id="profile-year" style="font-weight: 600; font-size: 14px; color: #444;">-</span>
+                  <i class='bx bx-edit-alt' style="cursor: pointer; font-size: 16px; color: #6C9FF9; opacity: 0.7;" onclick="toggleEditYear()"></i>
+                </div>
+                <div id="profile-year-edit" style="display: none; align-items: center; gap: 8px; width: 100%;">
+                  <select id="select-profile-year" style="flex: 1; padding: 4px; border-radius: 6px; border: 1px solid #6C9FF9; font-size: 13px; outline: none;">
+                    <option value="25">10º Ano</option>
+                    <option value="24">11º Ano</option>
+                    <option value="23">12º Ano</option>
+                  </select>
+                  <i class='bx bx-check' style="cursor: pointer; font-size: 18px; color: #27ae60;" onclick="saveYear()"></i>
+                  <i class='bx bx-x' style="cursor: pointer; font-size: 18px; color: #e74c3c;" onclick="toggleEditYear()"></i>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -428,9 +446,9 @@
 
           <!-- Footer/Guarda-roupa -->
           <div class="profile-footer" style="margin-top: 5px; padding-top: 15px; border-top: 1px solid #f0f0f4; display: flex; justify-content: flex-end;">
-            <div class="wardrobe-placeholder" style="display: flex; align-items: center; gap: 10px; opacity: 0.5; cursor: not-allowed; background: #f5f5f5; padding: 8px 16px; border-radius: 10px; border: 1px solid #ddd;" title="Guarda-roupa (Em breve)">
-              <i class='bx bx-closet' style="font-size: 20px; color: #888;"></i>
-              <span style="font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase;">Guarda-roupa</span>
+            <div class="wardrobe-active-btn" style="display: flex; align-items: center; gap: 10px; background: #6C9FF9; padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: all 0.3s;" onclick="openWardrobeModal()">
+              <i class='bx bx-closet' style="font-size: 20px; color: #fff;"></i>
+              <span style="font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">Meu Guarda-Roupa</span>
             </div>
           </div>
 
@@ -439,8 +457,27 @@
     </div>
   </div>
 
+  <!-- ***** Sistema de Modal do Guarda-Roupa (Camarim) ***** -->
+  <div class="modal-overlay" id="js-wardrobe-overlay"></div>
+  <div class="modal-holder" id="js-wardrobe-holder" style="max-width: 950px; background: #fff; color: #333;">
+    <div class="modal__close" id="js-wardrobe-close" style="color: #333;">
+      <i class='bx bx-x'></i>
+    </div>
+
+    <div class="modal__body-custom" style="padding: 0;">
+      <!-- O conteúdo do Camarim será injetado pelo wardrobe.js via AJAX/Fetch -->
+      <div id="wardrobe-modal-content">
+        <div style="padding: 60px; text-align: center;">
+          <div class="spinner-border text-pink" role="status"></div>
+          <p style="margin-top: 15px;">A abrir o teu Camarim...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts Globais -->
-  <script src="{% static 'js/profile.js' %}?v=1.9"></script>
+  {% include 'components/wardrobe_styles.html' %}
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>

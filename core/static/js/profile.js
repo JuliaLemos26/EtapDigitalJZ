@@ -18,8 +18,12 @@ function openProfileModal() {
                 document.getElementById("profile-display-name").innerText = data.username;
                 document.getElementById("input-profile-name").value = data.username;
                 document.getElementById("profile-course").innerText = data.curso;
-                document.getElementById("profile-year").innerText = data.ano;
-                document.getElementById("profile-points").innerText = data.pontos;
+            document.getElementById("profile-year").innerText = data.ano;
+            if(document.getElementById("select-profile-year")) {
+                document.getElementById("select-profile-year").value = data.ano_inicio_raw || "25";
+            }
+            document.getElementById("profile-points").innerText = data.pontos;
+
                 document.getElementById("duck-name-display").innerText = data.patinho_nome;
                 document.getElementById("input-duck-name").value = data.patinho_nome === "Qual o nome do seu patinho etap?" ? "" : data.patinho_nome;
 
@@ -57,7 +61,11 @@ function openProfileModal() {
                         wrapper.style.position = 'absolute';
                         wrapper.style.left = part.pos_x + 'px';
                         wrapper.style.top = part.pos_y + 'px';
-                        wrapper.style.zIndex = part.z_index;
+                        
+                        // FÓRMULA IDENTICA AO PROVADOR: Base=100, Roupa=100+Z
+                        wrapper.style.zIndex = part.is_base ? 100 : (parseInt(part.z_index || 0) + 100);
+
+
 
                         const img = document.createElement('img');
                         img.src = part.image;
@@ -144,6 +152,60 @@ function openProfileModal() {
             alert("Erro de conexão ao carregar perfil.");
         });
 }
+
+// Global Points Update Helper
+window.updateAllPointsDisplay = function(newPoints) {
+    // 1. Atualiza no Modal de Perfil
+    const pts = document.getElementById("profile-points");
+    if(pts) pts.innerText = newPoints;
+    
+    // 2. Atualiza em todos os widgets .score-display da página (topo direito, etc)
+    const displays = document.querySelectorAll('.score-display');
+    displays.forEach(d => {
+        // Preserva o ícone e atualiza o texto (assume formato: <icon> pontos)
+        const icon = d.querySelector('i');
+        d.innerHTML = '';
+        if(icon) d.appendChild(icon);
+        d.appendChild(document.createTextNode(' ' + newPoints));
+    });
+}
+
+// Year Management
+window.toggleEditYear = function() {
+    const view = document.getElementById("profile-year-view");
+    const edit = document.getElementById("profile-year-edit");
+    if(view.style.display === "none") {
+        view.style.display = "flex";
+        edit.style.display = "none";
+    } else {
+        view.style.display = "none";
+        edit.style.display = "flex";
+    }
+}
+
+window.saveYear = function() {
+    const select = document.getElementById("select-profile-year");
+    const yearValue = select.value;
+    
+    const formData = new FormData();
+    formData.append('ano_inicio', yearValue);
+
+        fetch('/api/profile/update/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData
+        })
+.then(res => res.json()).then(data => {
+        if(data.status === 'success') {
+            document.getElementById("profile-year").innerText = data.new_label;
+            toggleEditYear();
+            alert("Ano escolar atualizado!");
+        }
+    });
+}
+
+
+
 
 // --- QUACK SOUND ---
 const _quackAudio = new Audio('/static/sounds/quack.mp3');
