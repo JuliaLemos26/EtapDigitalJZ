@@ -29,11 +29,6 @@
     <div class="row">
       <div class="col-lg-12">
           <!-- ***** Pontos ***** -->
-            {% if user.is_authenticated and user.aluno_profile %}
-<div class="score-display">
-               <i class='bx  bx-star'    ></i>    {{ user.aluno_profile.pontos }}
-            </div>
-{% endif %}
           <!-- ***** Banner Start ***** -->
           {% if banners %}
           <div id="carouselExampleIndicators" class="carousel slide main-banner" data-bs-ride="carousel" data-bs-interval="3000">

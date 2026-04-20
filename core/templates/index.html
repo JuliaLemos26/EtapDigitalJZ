@@ -34,7 +34,14 @@
 </head>
 
 <body>
+  {% if user.is_authenticated and user.aluno_profile %}
+  <div class="score-display" id="js-global-points">
+      <i class='bx bx-star'></i> {{ user.aluno_profile.pontos }}
+  </div>
+  {% endif %}
+  
   <div class="sidebar">
+
 
     <div class="logo-details">
       <!--i class="bx bxl-c-plus-plus icon"></i-->

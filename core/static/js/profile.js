@@ -159,16 +159,16 @@ window.updateAllPointsDisplay = function(newPoints) {
     const pts = document.getElementById("profile-points");
     if(pts) pts.innerText = newPoints;
     
-    // 2. Atualiza em todos os widgets .score-display da página (topo direito, etc)
-    const displays = document.querySelectorAll('.score-display');
-    displays.forEach(d => {
-        // Preserva o ícone e atualiza o texto (assume formato: <icon> pontos)
-        const icon = d.querySelector('i');
-        d.innerHTML = '';
-        if(icon) d.appendChild(icon);
-        d.appendChild(document.createTextNode(' ' + newPoints));
-    });
+    // 2. Atualiza o display global persistente (ID único js-global-points)
+    const globalDisplay = document.getElementById('js-global-points');
+    if(globalDisplay) {
+        const icon = globalDisplay.querySelector('i');
+        globalDisplay.innerHTML = '';
+        if(icon) globalDisplay.appendChild(icon);
+        globalDisplay.appendChild(document.createTextNode(' ' + newPoints));
+    }
 }
+
 
 // Year Management
 window.toggleEditYear = function() {
