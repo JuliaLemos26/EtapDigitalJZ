@@ -8,12 +8,6 @@
                 <div class="hero-content p-5 d-flex align-items-center justify-content-between">
                     <div>
                         <h2 class="display-6 fw-bold mb-2" style="color: #333;">Painel de Comando <span style="color: #A6E4B2;">Admin</span></h2>
-                        <p class="text-muted mb-0">Gerencie a comunidade ETAP Digital com ferramentas de elite.</p>
-                        <div class="hero-stats mt-4 d-flex gap-4">
-                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ alunos.count }}</span><small class="text-muted">Alunos</small></div>
-                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ professores.count }}</span><small class="text-muted">Profs</small></div>
-                            <div class="stat-item"><span class="h4 d-block fw-bold" style="color: #333;">{{ banners.count }}</span><small class="text-muted">Banners</small></div>
-                        </div>
                     </div>
                     <div class="hero-illustration d-none d-lg-block">
                         <i class='bx bxs-shield-quarter' style="font-size: 120px; color: #A6E4B2; opacity: 0.2;"></i>
@@ -409,24 +403,9 @@
                         <div class="sidebar-card-site mb-4 p-4">
                             <h6 class="fw-bold mb-3">Atalhos Administrativos</h6>
                             <div class="d-grid gap-2">
-                                <a href="/django-admin/" target="_blank" class="btn-side-lnk"><i class='bx bxs-keyboard'></i> Backend Django</a>
                                 <a href="/admin/" target="_blank" class="btn-side-lnk"><i class='bx bxs-paint-roll'></i> Painel Wagtail</a>
                                 <a href="https://www.tidio.com/panel/dashboard" target="_blank" class="btn-side-lnk" style="background: rgba(166, 228, 178, 0.1); border-color: #A6E4B2;"><i class='bx bx-chat'></i> Painel Tidio (Chat)</a>
                                 <a href="/index/" class="btn-side-lnk"><i class='bx bx-home-alt'></i> Voltar ao Lobby</a>
-                            </div>
-                        </div>
-                        <div class="sidebar-card-site mb-4 p-4" style="border-left: 5px solid #ffcc80;">
-                            <h6 class="fw-bold mb-2">Monitor Servidor</h6>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="status-indicator online"></div>
-                                <small>Operacional ({{ total_posts }} posts ativos)</small>
-                            </div>
-                        </div>
-                        <div class="sidebar-card-site p-4">
-                            <h6 class="fw-bold mb-3">Calendário</h6>
-                            <div class="date-widget text-center py-3 rounded" style="background: #f0fdf4; color: #166534; border: 1px solid #dcfce7;">
-                                <div class="h2 fw-bold mb-0">{% now "d" %}</div>
-                                <div class="text-uppercase small fw-bold">{% now "F Y" %}</div>
                             </div>
                         </div>
                     </div>
