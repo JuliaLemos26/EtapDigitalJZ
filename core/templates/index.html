@@ -5,7 +5,15 @@
 <head>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.2">
-  <link rel="stylesheet" href="{% static 'css/profile_modal.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'css/templatemo-cyborg-gaming.css' %}">
+  <link rel="stylesheet" href="{% static 'css/owl.css' %}">
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
   <meta charset="UTF-8" />
   <title>ETAP Digital</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -14,22 +22,17 @@
    <script src="{% static 'js/profile.js' %}?v=2.5"></script>
    <script src="{% static 'js/wardrobe.js' %}?v=1.5"></script>
     <script>
-
       window.currentUserId = "{{ user.id }}";
       window.userRole = "{% if user.is_superuser %}admin{% elif user.professor_profile %}professor{% else %}aluno{% endif %}";
+      window.userData = {
+          username: "{{ user.username }}",
+          email: "{{ user.email }}"
+      };
     </script>
     
     {# Tidio Chat Integration #}
     {% if user.is_authenticated and user.aluno_profile or user.professor_profile %}
     <script src="//code.tidio.co/vcccmoui3wfecpxvzakb3k3fheg4fkqr.js" async></script>
-    <script>
-      document.addEventListener('tidioChat-ready', function() {
-        window.tidioChatApi.setVisitorData({
-          name: "{{ user.username }}",
-          email: "{{ user.email }}"
-        });
-      });
-    </script>
     {% endif %}
 </head>
 
@@ -481,12 +484,15 @@
   </div>
 
   <!-- Scripts Globais -->
-  {% include 'components/wardrobe_styles.html' %}
+  <!-- Scripts Globais -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
   <script src="{% static 'js/custom.js' %}"></script>
+  <script src="{% static 'js/core_logic.js' %}"></script>
+  <script src="{% static 'js/admin_logic.js' %}"></script>
+  <script src="{% static 'js/lojinha.js' %}"></script>
   <script src="{% static 'js/isotope.js' %}"></script>
   <script src="{% static 'js/novo.js' %}"></script>
 

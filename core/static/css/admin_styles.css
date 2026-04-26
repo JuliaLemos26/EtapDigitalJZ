@@ -1,0 +1,81 @@
+/* 
+   ADMIN STYLES - ETAP Digital
+   Estilos específicos para o Painel de Administração
+*/
+
+.premium-dashboard-container { background: transparent; min-height: 100vh; padding: 10px; border-radius: 20px; }
+
+.dashboard-hero-card, .content-section-card, .sidebar-card-site, .user-card-p, .form-card-s, .banner-card-s, .modal-site {
+    background: white; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); color: #333;
+}
+
+/* Força a cor do texto para que não desapareça no fundo branco */
+.premium-dashboard-container h1, 
+.premium-dashboard-container h2, 
+.premium-dashboard-container h3, 
+.premium-dashboard-container h4, 
+.premium-dashboard-container h5, 
+.premium-dashboard-container h6,
+.premium-dashboard-container p,
+.premium-dashboard-container label,
+.modal-site h1, .modal-site h2, .modal-site h3, .modal-site h4, .modal-site h5, .modal-site h6,
+.modal-site p, .modal-site label {
+    color: #333 !important;
+}
+.premium-dashboard-container small, 
+.premium-dashboard-container .text-muted,
+.modal-site small, .modal-site .text-muted {
+    color: #666 !important;
+}
+
+.content-section-card { padding: 35px; min-height: 600px; color: #333; }
+.user-card-p { padding: 20px; border: 1px solid #f0f0f4; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); color: #333; }
+.user-card-p h6 { color: #333 !important; }
+.user-card-p small { color: #666 !important; }
+.user-card-p:hover { border-color: #A6E4B2; transform: translateY(-5px); box-shadow: 0 15px 35px rgba(166, 228, 178, 0.15); }
+
+/* Tabs */
+.tabs-navigation-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.tabs-navigation-scroll::-webkit-scrollbar { display: none; }
+
+.tab-item-p {
+    padding: 14px 28px; border-radius: 15px; color: #777 !important; text-decoration: none;
+    background: white; border: 1px solid #efefef; transition: 0.3s; font-weight: 600; font-size: 14px; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+}
+.tab-item-p:hover { background: #fdfdfd; border-color: #A6E4B2; color: #A6E4B2 !important; }
+.tab-item-p.active { background: #A6E4B2; color: white !important; border-color: #A6E4B2; box-shadow: 0 8px 20px rgba(166, 228, 178, 0.4); }
+
+/* Form Control */
+.form-control-site {
+    width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid #e0e0e0; background: #fdfdfd;
+    color: #333; outline: none; transition: 0.3s; font-size: 14px;
+}
+.form-control-site:focus { border-color: #A6E4B2; background: white; box-shadow: 0 0 0 4px rgba(166, 228, 178, 0.15); }
+
+.btn-site {
+    background: #A6E4B2; color: white; border: none; border-radius: 12px; padding: 12px 25px;
+    font-weight: 700; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(0,0,0,0.05);
+}
+.btn-site:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(166, 228, 178, 0.3); opacity: 0.95; }
+
+.btn-action-s {
+    width: 36px; height: 36px; border-radius: 10px; border: none; background: #f8f9fa;
+    color: #666; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.btn-action-s:hover { background: #A6E4B2; color: white; transform: rotate(5deg) scale(1.1); }
+
+.avatar-sq { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+.status-indicator { width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+.online { background: #10b981; } .offline { background: #94a3b8; }
+
+.banner-card-s { overflow: hidden; transition: 0.3s; }
+.banner-card-s:hover { transform: scale(1.02); }
+
+/* Power Button Pulse */
+.power-btn-container i { animation: pulse 2s infinite; border-radius: 50%; padding: 20px; }
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(166, 228, 178, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(166, 228, 178, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(166, 228, 178, 0); }
+}

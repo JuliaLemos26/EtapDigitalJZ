@@ -1,32 +1,5 @@
-<html lang="pt" dir="ltr">
-    <head>
-        {% load static %}
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-        <title>Eventos</title>
-    
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
-        <link rel="stylesheet" href="{% static 'css/templatemo-cyborg-gaming.css' %}">
-        <link rel="stylesheet" href="{% static 'css/owl.css' %}">
-        <link rel="stylesheet" href="{% static 'css/animate.css' %}">
-        <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-        <style>
-            .dropdown {
-                z-index: 9999 !important;
-                filter: none !important;
-            }
-            .dropdown__items {
-                z-index: 10000 !important;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- ***** Preloader Start ***** -->
-       
-        <div class="container">
+﻿{% load static %}
+<div class="container">
             <div class="row">
                 <div class="col-lg-12">
 
@@ -91,7 +64,7 @@
                                     <p style="color: #666; padding: 20px;">Nenhum evento encontrado.</p>
                                     {% endfor %}
                                 </div>
-                                <!-- Paginação Real -->
+                                <!-- PaginaÃ§Ã£o Real -->
                                 <div class="pagination-wrapper">
                                     <div class="pagination">
                                         {% if eventos.has_previous %}
@@ -118,22 +91,3 @@
                 </div>
             </div>
         </div>
-        <footer>
-            <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                <p>Uma plataforma de estutantes <a href="#">ETAP</a> para estudantes ETAP. 
-                <br>Se precisar: <a href="#" target="_blank" title="free CSS templates">Ajuda</a></p>
-                </div>
-            </div>
-            </div>
-        </footer>
-    </body>
-    <!-- Bootstrap core JavaScript -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{% static 'js/jquery.min.js' %}"></script>
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'js/custom.js' %}"></script>
-  <script src="{% static 'js/isotope.js' %}"></script>
-  <script src="{% static 'js/novo.js' %}"></script>
-</html>

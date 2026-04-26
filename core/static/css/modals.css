@@ -1,0 +1,29 @@
+.modal-holder.crud-modal { max-width: 650px; }
+.modal-header-blue { padding: 25px 40px; background: #6C9FF9; color: white; }
+.modal-title-m { margin: 0; font-size: 22px; }
+.modal-subtitle-m { font-size: 14px; opacity: 0.9; }
+.modal-body-white { padding: 30px 40px; background: #fff; }
+.form-loader-container { display: flex; justify-content: center; padding: 40px; }
+.form-loader-icon { font-size: 40px; color: #6C9FF9; }
+.modal-footer-actions { margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end; }
+.btn-cancel { background: #eee; color: #666; width: auto; padding: 0 25px; font-size: 15px; font-weight: 500; }
+.btn-save { background: #6C9FF9; color: white; width: auto; padding: 0 30px; font-size: 15px; font-weight: 600; }
+.modal-holder.inscription-modal { max-width: 600px; }
+.modal-body-p30 { padding: 30px; }
+.form-field-mb20 { margin-bottom: 20px; }
+.text-input-full { width: 100%; }
+.textarea-full { width: 100%; min-height: 120px; }
+.modal-holder.manage-modal { max-width: 700px; }
+.modal-header-dark { background: #333; color: white; }
+.manage-list-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-height: 400px; overflow-y: auto; }
+.modal-holder.detail-modal { max-width: 550px; }
+.content-box-pre { white-space: pre-wrap; }
+.profile-avatar-box { width: 100%; height: 340px; background: rgba(108, 159, 249, 0.05); border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 3px dashed #6C9FF9; position: relative; overflow: hidden; transition: all 0.3s ease; }
+.profile-user-icon { font-size: 20px; color: #fff; margin-right: 10px; }
+.profile-year-text { font-weight: 600; font-size: 14px; color: #444; }
+.score-display-modal-refined { display: flex; align-items: center; gap: 12px; padding: 15px; background: linear-gradient(135deg, rgba(108, 159, 249, 0.05) 0%, rgba(108, 159, 249, 0.1) 100%); border-radius: 15px; border: 1px solid #ddecff; }
+.score-icon-bg { width: 44px; height: 44px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(108, 159, 249, 0.15); }
+.score-star-icon { font-size: 24px; color: #f1c40f; }
+.wardrobe-icon-white { font-size: 20px; color: #fff; }
+.wardrobe-loader-refined { padding: 60px; text-align: center; }
+.wardrobe-spinner-margin { margin-top: 15px; }

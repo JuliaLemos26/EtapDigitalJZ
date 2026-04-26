@@ -1,0 +1,232 @@
+@keyframes duckBreatheProvador {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(1.03) translateY(-2px); }
+    100% { transform: scaleY(1); }
+}
+
+.duck-mini-breathe {
+    animation: duckBreatheProvador 3.5s ease-in-out infinite;
+}
+
+.item-pequeno-standard {
+    background-color: #FAFAFC;
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    transition: all .3s;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.item-pequeno-standard:hover {
+    background-color: #fff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.item-info-lojinha {
+    margin-top: 10px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.item-info-lojinha h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #1C1C1E;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.price-tag-lojinha {
+    color: #ec6090;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.lojinha-loader-container { padding: 40px; }
+.lojinha-loader-icon { font-size: 40px; color: #e75e8d; }
+.lojinha-loader-text { color: #666; margin-top: 10px; }
+
+.provador-modal { 
+    max-width: 500px; 
+    padding: 0; 
+    border: none; 
+    overflow: hidden; 
+    background: #fff; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+}
+
+.provador-close-btn { 
+    z-index: 1000; 
+    color: white; 
+    background: rgba(0,0,0,0.2); 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    top: 15px; 
+    right: 15px; 
+    position: absolute; 
+    cursor: pointer; 
+}
+
+.provador-header { 
+    padding: 30px 25px; 
+    background: linear-gradient(135deg, #e75e8d 0%, #ff89ab 100%); 
+    color: white; 
+    text-align: center; 
+    position: relative; 
+}
+
+.provador-title { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.provador-subtitle { margin: 5px 0 0 0; font-size: 13px; opacity: 0.9; font-weight: 500; }
+
+.provador-header-curve { 
+    position: absolute; 
+    bottom: -1px; 
+    left: 0; 
+    width: 100%; 
+    height: 20px; 
+    background: #fff; 
+    border-radius: 20px 20px 0 0; 
+}
+
+.provador-body { 
+    padding: 0 30px 30px 30px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.provador-stage { 
+    background: #f8f9fa; 
+    background-image: radial-gradient(#e75e8d11 1px, transparent 1px); 
+    background-size: 20px 20px; 
+    border-radius: 20px; 
+    border: 1px solid #eee; 
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); 
+    width: 400px; 
+    height: 500px; 
+    position: relative; 
+    overflow: hidden; 
+    margin-top: 5px; 
+    margin-bottom: 25px; 
+}
+
+.provador-stage-loader { display: flex; align-items: center; justify-content: center; height: 100%; }
+.provador-loader-icon { font-size: 30px; color: #e75e8d; }
+
+.provador-info-bar { 
+    width: 100%; 
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    margin-bottom: 25px; 
+    border-bottom: 1px solid #f1f1f1; 
+    padding-bottom: 15px; 
+}
+
+.provador-info-left { text-align: left; }
+.provador-author-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; margin-bottom: 2px; }
+.provador-item-name { margin: 0; font-size: 20px; color: #222; font-weight: 800; }
+.provador-info-right { text-align: right; }
+
+.provador-price-badge { 
+    background: #f1c40f22; 
+    color: #f39c12; 
+    padding: 5px 12px; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    font-size: 16px; 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+}
+
+.provador-actions { width: 100%; display: flex; gap: 15px; }
+
+.btn-buy-base { 
+    background: linear-gradient(135deg, #e75e8d 0%, #fd4a8b 100%); 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 15px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    box-shadow: 0 4px 15px rgba(231, 94, 141, 0.3); 
+}
+
+.btn-purchased { 
+    background: #27ae60 !important; 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 15px; 
+    font-weight: 700; 
+    cursor: not-allowed; 
+    opacity: 0.8; 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+.btn-insufficient { 
+    background: #aaa !important; 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 15px; 
+    font-weight: 700; 
+    cursor: not-allowed; 
+    opacity: 0.8; 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+.btn-buy-active:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(231, 94, 141, 0.4); }
+.msg-success { color: #27ae60 !important; }
+.msg-error { color: #e74c3c !important; }
+
+.btn-success { 
+    background: #27ae60 !important; 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 15px; 
+    font-weight: 700; 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+.outfit-card-stage { height: 240px; width: 100%; position: relative; overflow: hidden; background: rgba(255,255,255,0.05); border-radius: 15px; margin-bottom: 10px; }
+.outfit-preview-fallback { width: 100%; height: 100%; object-fit: contain; }
+.outfit-preview-inner { width: 400px; height: 500px; position: absolute; top: 0; left: 50%; margin-left: -90px; transform: scale(0.45); transform-origin: top left; pointer-events: none; }
+.outfit-part-img { max-width: none; max-height: none; border-radius: 0; transform-origin: top left; }
+
+.provador-msg-box { text-align: center; margin-top: 15px; font-size: 13px; font-weight: 700; color: #e75e8d; }

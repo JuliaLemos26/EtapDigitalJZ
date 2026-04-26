@@ -1,4 +1,4 @@
-{% if user.is_authenticated and user.aluno_profile %}
+﻿{% if user.is_authenticated and user.aluno_profile %}
 <div class="score-display">
     <i class='bx bx-star'></i> {{ user.aluno_profile.pontos }}
 </div>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-muted p-4">Nenhum concurso disponível no momento.</p>
+                <p class="text-muted p-4">Nenhum concurso disponÃ­vel no momento.</p>
                 {% endfor %}
             </div>
             
